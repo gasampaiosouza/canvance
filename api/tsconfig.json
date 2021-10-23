@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+
+    "target": "es5",
+    "resolveJsonModule": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+
+    // aliases
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@config/*": ["./config/*"],
+
+      "app/*": ["./src/app/*"],
+      
+      "controllers/*": ["./src/app/controllers/*"],
+      "middlewares/*": ["./src/app/middlewares/*"],
+      "models/*": ["./src/app/models/*"],
+    }
+  },
+}
