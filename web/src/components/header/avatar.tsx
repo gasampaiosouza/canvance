@@ -1,11 +1,12 @@
 import { UserInfo } from './styles';
 import Link from 'next/link';
+import { useAuth } from 'hooks/useAuth';
 
 interface IAvatar {
   name: string;
 }
 
-const getNameInitials = (userName: string) => {
+function getNameInitials(userName: string) {
   const names = userName.split(' ');
   let initials = names[0].substring(0, 1).toUpperCase();
 
@@ -14,15 +15,16 @@ const getNameInitials = (userName: string) => {
   }
 
   return initials;
-};
+}
 
 const Avatar: React.FC<IAvatar> = ({ name }) => {
+  const { signOut } = useAuth();
   // const avatar_colors = ['#ef476f', '#ffd166', '#06d6a0', '#f07167'];
   // const random_number = Math.floor(Math.random() * avatar_colors.length + 1);
 
   return (
-    <Link href="/account">
-      <a>
+    <Link href="/">
+      <a onClick={signOut}>
         <UserInfo color="#6E44FF">{getNameInitials(name)}</UserInfo>
       </a>
     </Link>

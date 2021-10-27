@@ -1,10 +1,16 @@
+import { handleMissingFields } from '@/utils/handle-missing-fields';
 import { Request, Response } from 'express';
-import { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 
 import Category from '../models/category.model';
-import Task, { TaskDocument } from '../models/task.model';
 
 // req.userId
+
+interface RequestType {
+  name: string;
+  description: string;
+  priority: string;
+}
 
 async function getAllCategoriesController(req: Request, res: Response) {
   try {
@@ -20,17 +26,20 @@ async function getAllCategoriesController(req: Request, res: Response) {
   }
 }
 
-interface RequestType {
-  name: string;
-  priority: string;
-  tasks: TaskDocument[];
-  categoryId?: ObjectId;
-}
-
 async function createCategoriesController(
   req: Request<{}, {}, RequestType>,
   res: Response
 ) {
+  const { isMissingFields, fieldsMissing } = handleMissingFields(
+    ['name', 'description', 'priority'],
+    req.body
+  );
+
+  if (isMissingFields) {
+    res.status(422).send({ error: 'fields.missing', fields: fieldsMissing });
+    return;
+  }
+
   try {
     const category = await Category.create(req.body);
 
@@ -45,6 +54,11 @@ async function createCategoriesController(
 }
 
 async function getCategoryByIdController(req: Request, res: Response) {
+  if (!mongoose.isValidObjectId(req.params.categoryId || '')) {
+    res.status(400).send({ error: 'O ID da categoria não é válido' });
+    return;
+  }
+
   try {
     const categories = await Category.findById(req.params.categoryId);
 
@@ -62,6 +76,21 @@ async function updateCategoryByIdController(
   req: Request<{ categoryId: string }, {}, RequestType>,
   res: Response
 ) {
+  if (!mongoose.isValidObjectId(req.params.categoryId || '')) {
+    res.status(400).send({ error: 'O ID da categoria não é válido' });
+    return;
+  }
+
+  const { isMissingFields, fieldsMissing } = handleMissingFields(
+    ['name', 'description', 'priority'],
+    req.body
+  );
+
+  if (isMissingFields) {
+    res.status(422).send({ error: 'fields.missing', fields: fieldsMissing });
+    return;
+  }
+
   try {
     const category = await Category.findByIdAndUpdate(
       req.params.categoryId,
@@ -80,6 +109,11 @@ async function updateCategoryByIdController(
 }
 
 async function deleteCategoryByIdController(req: Request, res: Response) {
+  if (!mongoose.isValidObjectId(req.params.categoryId || '')) {
+    res.status(400).send({ error: 'O ID da categoria não é válido' });
+    return;
+  }
+
   try {
     await Category.findByIdAndRemove(req.params.categoryId);
 

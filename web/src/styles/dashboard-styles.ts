@@ -4,7 +4,6 @@ const SIDEBAR_WIDTH = '250px';
 
 export const Container = styled.section`
   display: grid;
-  /* height: 100%; */
 
   grid-template-columns: ${SIDEBAR_WIDTH} 4fr;
   grid-template-rows: auto 1fr;

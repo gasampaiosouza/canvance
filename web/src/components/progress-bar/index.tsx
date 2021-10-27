@@ -1,19 +1,15 @@
-import { TasksContext } from 'contexts/TasksContext';
-import { useContext } from 'react';
-
+import { useTaskList } from 'hooks/useTaskList';
 import { Container, FilledBar, InnerBar } from './styles';
 
 const ProgressBar = () => {
-  const { tasksList } = useContext(TasksContext);
+  const { userTasks, finishedTasks } = useTaskList();
 
-  const tasksDone = tasksList.filter((task) => task.completed);
-
-  let percentage = (tasksDone.length * 100) / tasksList.length;
+  let percentage = (finishedTasks.length * 100) / userTasks.length;
 
   // remove unnecessary width
   if (percentage > 100) percentage = 100;
 
-  const title_data = `${tasksDone.length}/${tasksList.length}`;
+  const title_data = `${finishedTasks.length}/${userTasks.length}`;
 
   return (
     <Container>

@@ -4,13 +4,11 @@ import Header from 'components/header';
 import ProgressBar from 'components/progress-bar';
 import UserTasks from 'components/user-tasks';
 import Sidebar from 'components/sidebar';
-import { ITasks } from '@/interfaces';
+import { ITasks, IUser } from '@/interfaces';
 import api from 'services/api';
 
 import { parseCookies } from 'nookies';
 import { GetServerSideProps } from 'next';
-import { AuthContext } from 'contexts/AuthContext';
-import { useContext } from 'react';
 import Head from 'next/head';
 
 interface HomeProps {
@@ -18,7 +16,6 @@ interface HomeProps {
 }
 
 const App: React.FC<HomeProps> = ({ tasks }) => {
-  const { user } = useContext(AuthContext);
   const breadcrumb = [
     { label: 'Login', href: '/login' },
     { label: 'Meu progresso', href: '/' },
@@ -47,14 +44,23 @@ const App: React.FC<HomeProps> = ({ tasks }) => {
 
 export default App;
 
+// get initial tasks
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { 'canvance.token': token } = parseCookies(ctx);
 
   if (!token) return { redirect: { destination: '/login', permanent: false } };
 
-  const { data: tasks } = await api.get<ITasks[]>(
-    'https://jsonplaceholder.typicode.com/todos'
-  );
+  api.defaults.headers['Authorization'] = `Bearer ${token}`;
 
-  return { props: { tasks } };
+  try {
+    const { data: user } = await api.get<IUser>(`/user/profile`);
+
+    const { data: tasks } = await api.get<ITasks[]>(
+      `/tasks/category/${user?.category._id}`
+    );
+
+    return { props: { tasks } };
+  } catch (error: any) {
+    return { redirect: { statusCode: 303, destination: '/login' } };
+  }
 };

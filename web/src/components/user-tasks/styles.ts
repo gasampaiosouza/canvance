@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import { Check, Close } from '@styled-icons/material-rounded';
+import { darken } from 'polished';
 
 export const Container = styled.section`
   margin-top: 2rem;
@@ -15,6 +16,11 @@ export const Container = styled.section`
 export const Title = styled.h2`
   font-weight: 700;
   font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+
+  strong {
+    color: ${({ theme }) => theme.colors.primary};
+  }
 `;
 
 export const List = styled.section`
@@ -26,6 +32,7 @@ export const List = styled.section`
 `;
 
 export const ListItemContainer = styled.div`
+  cursor: pointer;
   display: flex;
   align-items: center;
   line-height: 1.6;
@@ -34,10 +41,15 @@ export const ListItemContainer = styled.div`
   font-weight: 400;
 
   background: ${({ theme }) => theme.colors.white};
-  /* box-shadow: 0 0 15px rgba(204, 204, 204, 0.6); */
   border: 1px solid ${({ theme }) => theme.colors.border};
 
   padding: 1rem;
+  transition: 0.2s ease-in-out;
+
+  :hover {
+    background: ${({ theme }) => darken(0.02, theme.colors.white)};
+    box-shadow: 2px 2px 8px rgba(204, 204, 204, 0.5);
+  }
 `;
 
 export const ListItemIcon = styled.div``;

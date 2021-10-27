@@ -2,17 +2,15 @@ import useSWR from 'swr';
 import api from 'services/api';
 
 function useFetch<DataType, ErrorType = unknown>(path: string, options?: any) {
-  const { data, error } = useSWR<DataType, ErrorType>(
-    path,
-    async (url) => {
-      const response = await api.get(url);
+  const fetcher = async (url: string) => {
+    const response = await api.get<DataType>(url);
 
-      return response.data;
-    },
-    options
-  );
+    return response.data;
+  };
 
-  return { data, error };
+  const response = useSWR<DataType, ErrorType>(path, fetcher, options);
+
+  return response;
 }
 
 export default useFetch;

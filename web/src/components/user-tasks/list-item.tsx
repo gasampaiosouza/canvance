@@ -1,4 +1,5 @@
 import { ITasks } from '@/interfaces';
+import { useCallback } from 'react';
 import {
   ListItemContainer,
   ListItemIcon,
@@ -12,13 +13,19 @@ interface ListItemProps {
 }
 
 const ListItem: React.FC<ListItemProps> = ({ task }) => {
+  const handleTaskClick = useCallback((taskId: string) => {
+    console.log(taskId);
+  }, []);
+
   return (
-    <ListItemContainer>
+    <ListItemContainer onClick={() => handleTaskClick(task._id)}>
       <ListItemIcon>
-        {task.completed ? <CompletedIcon /> : <UncompletedIcon />}
+        {task.status == 'done' ? <CompletedIcon /> : <UncompletedIcon />}
       </ListItemIcon>
 
       <ListItemText>{task.title}</ListItemText>
+
+      {/* {task.status == 'done' && <CompleteTaskButton></CompleteTaskButton>} */}
     </ListItemContainer>
   );
 };

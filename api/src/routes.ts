@@ -19,8 +19,9 @@ export default function (app: Express) {
   app.post('/auth/forgot_password', Auth.forgotPassword);
   app.post('/auth/reset_password', Auth.resetPassword);
 
-  // users
-  app.get('/users/token/:token', Users.getByToken);
+  // user
+  app.get('/user/profile', authMiddleware, Users.getByToken);
+  app.get('/user/tasks-done', authMiddleware, TasksDone.getByCategory);
 
   // categories
   app.get('/category', authMiddleware, Categories.find);
@@ -33,14 +34,13 @@ export default function (app: Express) {
   app.get('/tasks', authMiddleware, Tasks.find);
   app.post('/tasks', authMiddleware, Tasks.create);
   app.get('/tasks/:taskId', authMiddleware, Tasks.getById);
-  app.get('/tasks/category/:id', authMiddleware, Tasks.getByCategory);
+  app.get('/tasks/category/:categoryId', authMiddleware, Tasks.getByCategory);
   app.put('/tasks/:taskId', authMiddleware, Tasks.updateById);
   app.delete('/tasks/:taskId', authMiddleware, Tasks.deleteById);
 
   // completed tasks
   app.get('/tasks-done', authMiddleware, TasksDone.find);
   app.post('/tasks-done', authMiddleware, TasksDone.create);
-  app.get('/tasks-done/user/:id', authMiddleware, TasksDone.getByCategory);
   app.get('/tasks-done/:taskId', authMiddleware, TasksDone.getById);
   app.put('/tasks-done/:taskId', authMiddleware, TasksDone.updateById);
   app.delete('/tasks-done/:taskId', authMiddleware, TasksDone.deleteById);

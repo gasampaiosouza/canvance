@@ -1,3 +1,5 @@
+import { transparentize } from 'polished';
+
 const appTheme = {
   title: 'light',
 
@@ -7,6 +9,7 @@ const appTheme = {
 
     white: '#f8f8f8',
     text: '#202C39',
+    text_soft: transparentize(0.3, '#202C39'),
 
     primary: '#6E44FF',
 

@@ -1,16 +1,22 @@
 export interface IUser {
+  _id: string;
   name: string;
   email: string;
+  category: {
+    _id: string;
+    name: string;
+    description: string;
+    priority: string;
+  };
   permissionLevel: 1 | 2 | 3;
   createdAt: string;
 }
 
 export interface ITasks {
-  userId: number;
-  id: number;
+  _id: string;
   title: string;
-  completed: boolean;
-  // title: string;
-  // relevance: string;
-  // completed: boolean;
+  description: string;
+  relevance: number;
+  status: 'done' | 'ongoing' | null;
+  createdAt: string;
 }

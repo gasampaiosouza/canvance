@@ -18,7 +18,9 @@ export async function signInRequest(data: SignInRequestData) {
 }
 
 export async function recoverUserInformation(token: string) {
-  const response = await api.get<{ user: IUser }>(`/users/token/${token}`);
+  api.defaults.headers['Authorization'] = `Bearer ${token}`;
+
+  const response = await api.get<IUser>(`/user/profile`);
 
   return response.data;
 }

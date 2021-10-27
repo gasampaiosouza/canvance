@@ -1,8 +1,8 @@
 import mongoose, { ObjectId } from 'mongoose';
 
 export interface CompletedTaskDocument extends mongoose.Document {
-  taskId: ObjectId;
-  userId: ObjectId;
+  taskId: ObjectId | string;
+  userId: ObjectId | string;
   status: string;
 
   createdAt: Date | number;

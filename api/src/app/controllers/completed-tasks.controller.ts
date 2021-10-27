@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import DoneTask from 'models/completed-task.model';
-import { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 
 // req.userId
 
@@ -27,50 +27,52 @@ async function createDoneTasksController(req: Request, res: Response) {
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível criar uma tarefa completa' });
+    return res.status(400).send({ error: 'Não foi possível criar uma tarefa' });
   }
 }
 
-async function getDoneTaskByCategoryIdController(
-  req: Request<{ id?: ObjectId }>,
-  res: Response
-) {
+async function getDoneTaskByCategoryIdController(req: Request, res: Response) {
   try {
-    const userId = req.params.id;
-    const tasks = await DoneTask.find({ userId }).populate('task');
-
-    return (
-      res
-        .status(200)
-        // @ts-ignore
-        .send(tasks.sort((x, y) => y.task.relevance - x.task.relevance))
-    );
-  } catch (error) {
-    console.log(error);
-
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível listar a tarefa completa' });
-  }
-}
-
-async function getDoneTaskByIdController(req: Request, res: Response) {
-  try {
-    const tasks = (await DoneTask.findById(req.params.taskId)) || [];
+    // @ts-ignore
+    const tasks = await DoneTask.find({ userId: req.userId });
 
     return res.status(200).send(tasks);
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível listar a tarefa completa' });
+    return res.status(400).send({ error: 'Não foi possível listar a tarefa' });
   }
 }
 
-async function updateDoneTaskByIdController(req: Request, res: Response) {
+async function getDoneTaskByIdController(
+  req: Request<{ taskId: string }>,
+  res: Response
+) {
+  if (!mongoose.isValidObjectId(req.params.taskId || '')) {
+    res.status(400).send({ error: 'O ID da task não é válido' });
+    return;
+  }
+
+  try {
+    const tasks = await DoneTask.findById(req.params.taskId);
+
+    return res.status(200).send(tasks);
+  } catch (error) {
+    console.log(error);
+
+    return res.status(400).send({ error: 'Não foi possível listar a tarefa' });
+  }
+}
+
+async function updateDoneTaskByIdController(
+  req: Request<{ taskId: string }>,
+  res: Response
+) {
+  if (!mongoose.isValidObjectId(req.params.taskId || '')) {
+    res.status(400).send({ error: 'O ID da task não é válido' });
+    return;
+  }
+
   try {
     const task = await DoneTask.findByIdAndUpdate(req.params.taskId, req.body, {
       new: true,
@@ -82,21 +84,27 @@ async function updateDoneTaskByIdController(req: Request, res: Response) {
 
     return res
       .status(400)
-      .send({ error: 'Não foi possível atualizar a tarefa completa' });
+      .send({ error: 'Não foi possível atualizar a tarefa' });
   }
 }
 
-async function deleteDoneTaskByIdController(req: Request, res: Response) {
+async function deleteDoneTaskByIdController(
+  req: Request<{ taskId: string }>,
+  res: Response
+) {
+  if (!mongoose.isValidObjectId(req.params.taskId || '')) {
+    res.status(400).send({ error: 'O ID da task não é válido' });
+    return;
+  }
+
   try {
-    const tasks = await DoneTask.findByIdAndRemove(req.params.taskId);
+    await DoneTask.findByIdAndRemove(req.params.taskId);
 
     return res.status(202).send();
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível remover a tarefa completa' });
+    return res.status(400).send({ error: 'Não foi possível remover a tarefa' });
   }
 }
 

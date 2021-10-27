@@ -1,12 +1,10 @@
-import { recoverUserInformation, signInRequest } from 'services/auth';
-import { createContext } from 'react';
-
-import Router from 'next/router';
-
-import { setCookie, parseCookies } from 'nookies';
-import { useEffect, useState } from 'react';
 import { IUser } from '@/interfaces';
+import Router from 'next/router';
+import { destroyCookie, parseCookies, setCookie } from 'nookies';
+import { useCallback, useEffect, useState } from 'react';
 import api from 'services/api';
+import { recoverUserInformation, signInRequest } from 'services/auth';
+import { createContext } from 'use-context-selector';
 
 interface SignInData {
   email: string;
@@ -16,7 +14,8 @@ interface SignInData {
 interface AuthContextData {
   user: IUser | null;
   isAuthenticated: boolean;
-  signIn: (data: SignInData) => Promise<void>;
+  signIn: (data: SignInData) => Promise<{ error: unknown } | undefined>;
+  signOut: () => void;
 }
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -30,26 +29,40 @@ export const AuthProvider: React.FC = ({ children }) => {
 
     if (!token) return;
 
-    recoverUserInformation(token).then((response) => setUser(response.user));
+    recoverUserInformation(token).then((response) => setUser(response));
   }, []);
 
-  async function signIn(data: SignInData) {
+  const signIn = useCallback(async (data: SignInData) => {
     const { email, password } = data;
-    const { token, user } = await signInRequest({ email, password });
 
-    setCookie(undefined, 'canvance.token', token, {
-      maxAge: 60 * 60 * 48, // 48 hours - 2 days
-    });
+    try {
+      const { token, user } = await signInRequest({ email, password });
 
-    api.defaults.headers['Authorization'] = `Bearer ${token}`;
+      setCookie(undefined, 'canvance.token', token, {
+        maxAge: 60 * 60 * 24, // 24 hours - 1 day
+      });
 
-    setUser(user);
+      api.defaults.headers['Authorization'] = `Bearer ${token}`;
 
-    Router.push('/dashboard');
-  }
+      setUser(user);
+
+      Router.push('/');
+
+      return { error: null };
+    } catch (error) {
+      console.log('context', error);
+
+      return { error };
+    }
+  }, []);
+
+  const signOut = useCallback(() => {
+    destroyCookie(undefined, 'canvance.token');
+    Router.reload();
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, signIn }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

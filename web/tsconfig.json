@@ -26,6 +26,7 @@
       "components/*": ["./src/components/*"],
       "contexts/*": ["./src/contexts/*"],
       "hooks/*": ["./src/hooks/*"],
+      "helpers/*": ["./src/helpers/*"],
       "services/*": ["./src/services/*"],
       "styles/*": ["./src/styles/*"],
       "@/*": ["./src/*"],

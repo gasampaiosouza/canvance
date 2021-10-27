@@ -1,3 +1,4 @@
+import { handleMissingFields } from '@/utils/handle-missing-fields';
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
@@ -20,6 +21,16 @@ async function getAllTasksController(req: Request, res: Response) {
 }
 
 async function createTasksController(req: Request, res: Response) {
+  const { isMissingFields, fieldsMissing } = handleMissingFields(
+    ['title', 'description', 'relevance', 'category'],
+    req.body
+  );
+
+  if (isMissingFields) {
+    res.status(422).send({ error: 'fields.missing', fields: fieldsMissing });
+    return;
+  }
+
   try {
     const task = await Task.create(req.body);
 
@@ -31,12 +42,13 @@ async function createTasksController(req: Request, res: Response) {
   }
 }
 
-async function getTaskByCategoryIdController(
-  req: Request<{ id?: string }>,
+async function getTaskByCategoryController(
+  req: Request<{ categoryId?: string }>,
   res: Response
 ) {
-  if (!req.params.id) {
-    res.status(400).send({ error: 'Missing category id' });
+  if (!mongoose.isValidObjectId(req.params.categoryId || '')) {
+    res.status(400).send({ error: 'O ID da categoria não é válido' });
+    return;
   }
 
   try {
@@ -48,16 +60,26 @@ async function getTaskByCategoryIdController(
       {
         $lookup: {
           from: 'completed-tasks',
-          localField: '_id',
-          foreignField: 'taskId',
+          let: { id: '$_id' },
           as: taskMergedFieldName,
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$taskId', '$$id'] },
+                    {
+                      // @ts-ignore
+                      $eq: ['$userId', { $toObjectId: req.userId }],
+                    },
+                  ],
+                },
+              },
+            },
+          ],
         },
       },
-      {
-        $match: {
-          category: new mongoose.Types.ObjectId(req.params.id),
-        },
-      },
+
       {
         $replaceRoot: {
           newRoot: {
@@ -68,26 +90,19 @@ async function getTaskByCategoryIdController(
           },
         },
       },
+
       {
         $project: {
           _id: 1,
           title: 1,
-          // userId: 1,
           description: 1,
           relevance: 1,
           status: { $ifNull: ['$status', null] },
           createdAt: 1,
         },
       },
-      { $project: { fromItems: 0 } },
-      { $unset: [taskMergedFieldName, '__v'] },
       { $sort: { status: -1, relevance: -1 } },
     ]);
-
-    // const currentUserTasks = tasks.filter((task) => {
-    //   // @ts-ignore
-    //   return get(task, 'userId')?.toString() == req.userId;
-    // });
 
     return res.status(200).send(tasks);
   } catch (error) {
@@ -97,7 +112,15 @@ async function getTaskByCategoryIdController(
   }
 }
 
-async function getTaskByIdController(req: Request, res: Response) {
+async function getTaskByIdController(
+  req: Request<{ taskId: string }>,
+  res: Response
+) {
+  if (!mongoose.isValidObjectId(req.params.taskId || '')) {
+    res.status(400).send({ error: 'O ID da categoria não é válido' });
+    return;
+  }
+
   try {
     const tasks = (await Task.findById(req.params.taskId)) || [];
 
@@ -109,9 +132,29 @@ async function getTaskByIdController(req: Request, res: Response) {
   }
 }
 
-async function updateTaskByIdController(req: Request, res: Response) {
+async function updateTaskByIdController(
+  req: Request<{ taskId: string }>,
+  res: Response
+) {
+  if (!mongoose.isValidObjectId(req.params.taskId || '')) {
+    res.status(400).send({ error: 'O ID da categoria não é válido' });
+    return;
+  }
+
+  const { isMissingFields, fieldsMissing } = handleMissingFields(
+    ['title', 'description', 'relevance', 'category'],
+    req.body
+  );
+
+  if (isMissingFields) {
+    res.status(422).send({ error: 'fields.missing', fields: fieldsMissing });
+    return;
+  }
+
   try {
-    const task = await Task.findByIdAndUpdate(req.params.taskId, req.body);
+    const task = await Task.findByIdAndUpdate(req.params.taskId, req.body, {
+      new: true,
+    });
 
     return res.status(202).send(task);
   } catch (error) {
@@ -123,9 +166,17 @@ async function updateTaskByIdController(req: Request, res: Response) {
   }
 }
 
-async function deleteTaskByIdController(req: Request, res: Response) {
+async function deleteTaskByIdController(
+  req: Request<{ taskId: string }>,
+  res: Response
+) {
+  if (!mongoose.isValidObjectId(req.params.taskId || '')) {
+    res.status(400).send({ error: 'O ID da categoria não é válido' });
+    return;
+  }
+
   try {
-    const tasks = await Task.findByIdAndRemove(req.params.taskId);
+    await Task.findByIdAndRemove(req.params.taskId);
 
     return res.status(202).send();
   } catch (error) {
@@ -139,7 +190,7 @@ const exportData = {
   find: getAllTasksController,
   create: createTasksController,
   getById: getTaskByIdController,
-  getByCategory: getTaskByCategoryIdController,
+  getByCategory: getTaskByCategoryController,
   updateById: updateTaskByIdController,
   deleteById: deleteTaskByIdController,
 };

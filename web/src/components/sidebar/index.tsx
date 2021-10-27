@@ -3,28 +3,24 @@ import Link from 'next/link';
 import { Assignment, PermIdentity } from '@styled-icons/material-rounded';
 import SidebarItem from './sidebar-item';
 
-import { Container, SidebarLogo, SidebarItems } from './styles';
+import { Container, Logo, SidebarItems } from './styles';
 
 const Sidebar: React.FC = () => {
   return (
     <Container>
-      <SidebarLogo>
+      <Logo>
         <Link href="/">
           <a>Canvance</a>
         </Link>
-      </SidebarLogo>
+      </Logo>
 
       <SidebarItems>
-        <SidebarItem href="/dashboard">
+        <SidebarItem href="/">
           <Assignment /> Meu progresso
         </SidebarItem>
 
         <SidebarItem href="/account">
           <PermIdentity /> Minha conta
-        </SidebarItem>
-
-        <SidebarItem href="/another">
-          <Assignment /> Algum item a mais
         </SidebarItem>
       </SidebarItems>
     </Container>

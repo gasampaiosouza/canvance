@@ -11,7 +11,7 @@ export const Container = styled.aside`
   padding: 2.5rem 0 1rem;
 `;
 
-export const SidebarLogo = styled.div`
+export const Logo = styled.div`
   color: ${({ theme }) => theme.colors.white};
   font-size: 1.75rem;
   font-weight: 700;
