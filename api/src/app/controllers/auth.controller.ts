@@ -21,14 +21,12 @@ function generateToken(params: string | object | Buffer) {
 // register user handler
 async function registerUserController(req: Request, res: Response) {
   const { isMissingFields, fieldsMissing } = handleMissingFields(
-    ['name', 'email', 'password', 'category'],
+    ['name', 'email', 'password', 'category', 'permissionLevel'],
     req.body
   );
 
   if (isMissingFields) {
-    res
-      .status(422)
-      .send({ error_message: 'fields.missing', fields: fieldsMissing });
+    res.status(422).send({ error_message: 'fields.missing', fields: fieldsMissing });
     return;
   }
 
@@ -41,15 +39,13 @@ async function registerUserController(req: Request, res: Response) {
     }
 
     const user = await (await User.create(req.body)).populate('category');
-    const token = generateToken({ id: user.id });
+    const token = generateToken({ id: user.id, permissionLevel: user.permissionLevel });
 
     return res.send({ user: omit(user.toJSON(), 'password'), token });
   } catch (error: any) {
     console.error(error);
 
-    return res
-      .status(400)
-      .send({ error_message: 'Ocorreu um erro inesperado.' });
+    return res.status(400).send({ error_message: 'Ocorreu um erro inesperado.' });
   }
 }
 
@@ -61,56 +57,41 @@ async function loginUserController(req: Request, res: Response) {
   );
 
   if (isMissingFields) {
-    res
-      .status(422)
-      .send({ error_message: 'fields.missing', fields: fieldsMissing });
+    res.status(422).send({ error_message: 'fields.missing', fields: fieldsMissing });
     return;
   }
 
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email })
-      .select('+password')
-      .populate('category');
+    const user = await User.findOne({ email }).select('+password').populate('category');
 
     if (!user) {
-      res
-        .status(404)
-        .send({ error_message: 'Usuário não encontrado', type: 'email' });
+      res.status(404).send({ error_message: 'Usuário não encontrado', type: 'email' });
       return;
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      res
-        .status(400)
-        .send({ error_message: 'Senha inválida', type: 'password' });
+      res.status(400).send({ error_message: 'Senha inválida', type: 'password' });
       return;
     }
 
-    const token = generateToken({ id: user.id });
+    const token = generateToken({ id: user.id, permissionLevel: user.permissionLevel });
 
     return res.send({ user: omit(user.toJSON(), 'password'), token });
   } catch (error: any) {
     console.error(error);
 
-    return res
-      .status(400)
-      .send({ error_message: 'Ocorreu um erro inesperado.' });
+    return res.status(400).send({ error_message: 'Ocorreu um erro inesperado.' });
   }
 }
 
 async function forgotPasswordController(req: Request, res: Response) {
-  const { isMissingFields, fieldsMissing } = handleMissingFields(
-    ['email'],
-    req.body
-  );
+  const { isMissingFields, fieldsMissing } = handleMissingFields(['email'], req.body);
 
   if (isMissingFields) {
-    res
-      .status(422)
-      .send({ error_message: 'fields.missing', fields: fieldsMissing });
+    res.status(422).send({ error_message: 'fields.missing', fields: fieldsMissing });
     return;
   }
 
@@ -142,9 +123,7 @@ async function forgotPasswordController(req: Request, res: Response) {
   } catch (error: any) {
     console.error(error);
 
-    res
-      .status(400)
-      .send({ error_message: 'Ocorreu um erro - Esqueceu a senha' });
+    res.status(400).send({ error_message: 'Ocorreu um erro - Esqueceu a senha' });
   }
 }
 
@@ -155,9 +134,7 @@ async function resetPasswordController(req: Request, res: Response) {
   );
 
   if (isMissingFields) {
-    res
-      .status(422)
-      .send({ error_message: 'fields.missing', fields: fieldsMissing });
+    res.status(422).send({ error_message: 'fields.missing', fields: fieldsMissing });
     return;
   }
 
@@ -176,14 +153,14 @@ async function resetPasswordController(req: Request, res: Response) {
     const isTokenEqual = token === user.passwordResetToken;
 
     if (!isTokenEqual) {
-      res.status(400).send({ error_message: 'Token inválido' });
+      res.status(400).send({ error_message: 'token.invalid' });
       return;
     }
 
     const now = new Date();
 
     if (now > user.passwordResetExpires) {
-      res.status(400).send({ error_message: 'O token está expirado.' });
+      res.status(400).send({ error_message: 'token.expired' });
       return;
     }
 
@@ -195,9 +172,7 @@ async function resetPasswordController(req: Request, res: Response) {
   } catch (error: any) {
     console.error(error);
 
-    res
-      .status(400)
-      .send({ error_message: 'Ocorreu um erro - Redefinir a senha' });
+    res.status(400).send({ error_message: 'Ocorreu um erro - Redefinir a senha' });
   }
 }
 

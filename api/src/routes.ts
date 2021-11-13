@@ -1,6 +1,7 @@
 import { Express, Request, Response } from 'express';
 
-import authMiddleware from 'middlewares/auth.middleware';
+import MAuth from 'middlewares/auth.middleware';
+import MPermission from 'middlewares/permission.middleware';
 
 // controllers
 import Auth from 'controllers/auth.controller';
@@ -14,34 +15,36 @@ export default function (app: Express) {
   app.get('/healthcheck', (req: Request, res: Response) => res.status(200));
 
   // authentication
-  app.post('/auth/register', Auth.register);
+  app.post('/auth/register', [MAuth, MPermission], Auth.register);
   app.post('/auth/login', Auth.login);
   app.post('/auth/forgot_password', Auth.forgotPassword);
   app.post('/auth/reset_password', Auth.resetPassword);
 
   // user
-  app.get('/user/profile', authMiddleware, Users.getByToken);
-  app.get('/user/tasks-done', authMiddleware, TasksDone.getByCategory);
+  app.get('/user/profile', MAuth, Users.getByToken);
+  app.get('/user/tasks-done', MAuth, TasksDone.getByCategory);
+  // app.put('/user/profile/:userId', MAuth, Users.updateById);
+  app.delete('/user/profile/:userId', [MAuth, MPermission], Users.deleteById);
 
   // categories
-  app.get('/category', authMiddleware, Categories.find);
-  app.post('/category', authMiddleware, Categories.create);
-  app.get('/category/:categoryId', authMiddleware, Categories.getById);
-  app.put('/category/:categoryId', authMiddleware, Categories.updateById);
-  app.delete('/category/:categoryId', authMiddleware, Categories.deleteById);
+  app.get('/category', MAuth, Categories.find);
+  app.get('/category/:categoryId', MAuth, Categories.getById);
+  app.post('/category', [MAuth, MPermission], Categories.create);
+  app.put('/category/:categoryId', [MAuth, MPermission], Categories.updateById);
+  app.delete('/category/:categoryId', MAuth, Categories.deleteById);
 
   // tasks
-  app.get('/tasks', authMiddleware, Tasks.find);
-  app.post('/tasks', authMiddleware, Tasks.create);
-  app.get('/tasks/:taskId', authMiddleware, Tasks.getById);
-  app.get('/tasks/category/:categoryId', authMiddleware, Tasks.getByCategory);
-  app.put('/tasks/:taskId', authMiddleware, Tasks.updateById);
-  app.delete('/tasks/:taskId', authMiddleware, Tasks.deleteById);
+  app.get('/tasks', MAuth, Tasks.find);
+  app.get('/tasks/:taskId', MAuth, Tasks.getById);
+  app.get('/tasks/category/:categoryId', MAuth, Tasks.getByCategory);
+  app.post('/tasks', [MAuth, MPermission], Tasks.create);
+  app.put('/tasks/:taskId', [MAuth, MPermission], Tasks.updateById);
+  app.delete('/tasks/:taskId', [MAuth, MPermission], Tasks.deleteById);
 
   // completed tasks
-  app.get('/tasks-done', authMiddleware, TasksDone.find);
-  app.post('/tasks-done', authMiddleware, TasksDone.create);
-  app.get('/tasks-done/:taskId', authMiddleware, TasksDone.getById);
-  app.put('/tasks-done/:taskId', authMiddleware, TasksDone.updateById);
-  app.delete('/tasks-done/:taskId', authMiddleware, TasksDone.deleteById);
+  app.get('/tasks-done', MAuth, TasksDone.find);
+  app.get('/tasks-done/:taskId', MAuth, TasksDone.getById);
+  app.post('/tasks-done', MAuth, TasksDone.create);
+  app.put('/tasks-done/:taskId', MAuth, TasksDone.updateById);
+  app.delete('/tasks-done/:taskId', MAuth, TasksDone.deleteById);
 }

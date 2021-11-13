@@ -16,7 +16,13 @@ const appTheme = {
     border: '#e6e6e6',
 
     success: '#06d6a0',
+    warning: '#f39c12',
     error: '#ef476f',
+  },
+
+  media: {
+    mobile: 767,
+    tablet: 1024,
   },
 };
 

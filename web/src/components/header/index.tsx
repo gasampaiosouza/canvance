@@ -1,7 +1,7 @@
 import Avatar from './avatar';
 import { Container, Title } from './styles';
 import React from 'react';
-import Notifications from './notifications';
+// import Notifications from './notifications';
 import Breadcrumb from './breadcrumb';
 import { useAuth } from 'hooks/useAuth';
 
@@ -22,7 +22,8 @@ const Header: React.FC<IHeader> = ({ title, breadcrumb }) => {
       </div>
 
       <div className="right-side">
-        <Notifications />
+        {/* not available in this version */}
+        {/* <Notifications /> */}
         <Avatar name={user?.name || ''} />
       </div>
     </Container>

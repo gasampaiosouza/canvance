@@ -1,7 +1,11 @@
+import { handleMissingFields } from '@/utils/handle-missing-fields';
 import { Request, Response } from 'express';
 
-import DoneTask from 'models/completed-task.model';
 import mongoose from 'mongoose';
+
+import DoneTask from 'models/completed-task.model';
+import User from 'models/user.model';
+import Task from 'models/task.model';
 
 // req.userId
 
@@ -20,8 +24,48 @@ async function getAllDoneTasksController(req: Request, res: Response) {
 }
 
 async function createDoneTasksController(req: Request, res: Response) {
+  const isValidTaskId = mongoose.isValidObjectId(req.body.taskId || '');
+  const isValidUserId = mongoose.isValidObjectId(req.body.userId || '');
+
+  if (!isValidTaskId || !isValidUserId) {
+    res.status(400).send({ error: 'O ID não é válido' });
+    return;
+  }
+
+  const { isMissingFields, fieldsMissing } = handleMissingFields(
+    ['taskId', 'userId', 'status'],
+    req.body
+  );
+
+  if (isMissingFields) {
+    res.status(422).send({ error: 'fields.missing', fields: fieldsMissing });
+    return;
+  }
+
   try {
-    const task = await DoneTask.create(req.body);
+    const userExists = await User.findOne({ _id: req.body.userId });
+
+    if (!userExists) {
+      return res.status(400).send({ error: 'Usuário não encontrado' });
+    }
+
+    const taskExists = await Task.findOne({ _id: req.body.taskId });
+
+    if (!taskExists) {
+      return res.status(400).send({ error: 'Tarefa não encontrada' });
+    }
+
+    const completedTaskExists = await DoneTask.findOne({
+      userId: req.body.userId,
+      taskId: req.body.taskId,
+    });
+
+    if (completedTaskExists) {
+      res.status(400).send({ error_message: 'A tarefa já foi atribuída a este usuário' });
+      return;
+    }
+
+    const task = await (await DoneTask.create(req.body)).populate('taskId');
 
     return res.status(201).send(task);
   } catch (error) {
@@ -32,6 +76,11 @@ async function createDoneTasksController(req: Request, res: Response) {
 }
 
 async function getDoneTaskByCategoryIdController(req: Request, res: Response) {
+  if (!mongoose.isValidObjectId(req.params.userId || '')) {
+    res.status(400).send({ error: 'O ID do usuário não é válido' });
+    return;
+  }
+
   try {
     // @ts-ignore
     const tasks = await DoneTask.find({ userId: req.userId });
@@ -82,9 +131,7 @@ async function updateDoneTaskByIdController(
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível atualizar a tarefa' });
+    return res.status(400).send({ error: 'Não foi possível atualizar a tarefa' });
   }
 }
 
@@ -98,7 +145,7 @@ async function deleteDoneTaskByIdController(
   }
 
   try {
-    await DoneTask.findByIdAndRemove(req.params.taskId);
+    const response = await DoneTask.deleteOne({ taskId: req.params.taskId });
 
     return res.status(202).send();
   } catch (error) {

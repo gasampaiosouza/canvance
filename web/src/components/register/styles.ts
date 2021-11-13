@@ -127,3 +127,17 @@ export const SubmitButton = styled.button`
     filter: brightness(1.1);
   }
 `;
+
+export const RegisterLabel = styled.span`
+  font-size: 0.9rem;
+  margin-top: 2rem;
+
+  a {
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 600;
+
+    :hover {
+      text-decoration: underline;
+    }
+  }
+`;

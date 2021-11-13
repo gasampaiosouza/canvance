@@ -25,7 +25,7 @@ const UserTasks: React.FC<UserTasksProps> = ({ preFetchedTasks }) => {
 
       <List>
         {preFetchedTasks.map((task) => (
-          <ListItem key={task._id} task={task} />
+          <ListItem key={task._id} task={task} taskList={preFetchedTasks} />
         ))}
       </List>
     </Container>

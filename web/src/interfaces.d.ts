@@ -17,6 +17,14 @@ export interface ITasks {
   title: string;
   description: string;
   relevance: number;
-  status: 'done' | 'ongoing' | null;
+  status?: 'done' | 'ongoing' | null;
+  createdAt: string;
+}
+
+export interface ITaskDone {
+  _id: string;
+  taskId: ITasks;
+  userId: string;
+  status: string;
   createdAt: string;
 }

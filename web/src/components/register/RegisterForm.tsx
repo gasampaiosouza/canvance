@@ -2,20 +2,21 @@ import { Email, Lock } from '@styled-icons/material-rounded';
 import { ErrorMessage } from 'components/error-message';
 import { patterns } from 'helpers/patterns';
 import { useAuth } from 'hooks/useAuth';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form, Input, InputContainer, SubmitButton } from './styles';
 
-import { toast } from 'react-toastify';
-
 interface SubmitProps {
   email: string;
-  password: string;
+  username: string;
 }
 
-export const LoginForm: React.FC = () => {
-  const [customError, setCustomError] = useState<string[]>([]);
+/*
+  [] - nome
+  [] - email
+*/
 
+export const RegisterForm: React.FC = () => {
   const { signIn } = useAuth();
   const [submitText, setSubmitText] = useState('Fazer login');
   const { register, handleSubmit, formState, setError } = useForm<SubmitProps>({
@@ -24,37 +25,25 @@ export const LoginForm: React.FC = () => {
 
   const { errors, dirtyFields } = formState;
 
-  // useEffect(() => {
-  //   toast.info('Toast info');
-  //   toast.success('Toast success');
-  //   toast.warn('Toast warn');
-  //   toast.error('Toast error');
-  // }, []);
-
   async function handleSignIn(data: SubmitProps) {
     setSubmitText('Autenticando...');
 
-    try {
-      // @ts-ignore
-      const { error } = await signIn(data);
+    // @ts-ignore
+    const { error } = await signIn(data);
 
-      // everything ok
-      if (!error) {
-        return setSubmitText('Tudo certo!');
-      }
+    if (!error) {
+      setSubmitText('Tudo certo!');
+      return;
+    }
 
-      // and error occurred
-      const { error_message, type } = error.response.data;
+    const { error_message, type } = error.response.data;
 
-      if (type == 'email') {
-        setError('email', { type: 'value', message: error_message });
-      }
+    if (type == 'email') {
+      setError('email', { type: 'value', message: error_message });
+    }
 
-      if (type == 'password') {
-        setError('password', { type: 'value', message: error_message });
-      }
-    } catch (error) {
-      toast.error('Ocorreu um erro ao tentar fazer login');
+    if (type == 'password') {
+      setError('username', { type: 'value', message: error_message });
     }
 
     setSubmitText('Fazer login');
@@ -65,9 +54,9 @@ export const LoginForm: React.FC = () => {
     pattern: { value: patterns.email, message: 'Insira um email válido.' },
   };
 
-  const RPasswordOptions = {
-    required: 'A senha é obrigatória.',
-    minLength: { value: 5, message: 'A senha deve conter mais de 5 caracteres' },
+  const RUsernameOptions = {
+    required: 'O nome completo é obrigatório.',
+    minLength: { value: 4, message: 'O nome deve ser completo.' },
   };
 
   const handleClassValidation = (validation: unknown) => {
@@ -84,14 +73,13 @@ export const LoginForm: React.FC = () => {
         </div>
 
         <Input
-          type="email"
-          placeholder="Digite seu email"
-          {...register('email', REmailOptions)}
+          placeholder="Digite seu nome completo"
+          {...register('username', REmailOptions)}
         />
       </InputContainer>
       {errors?.email && <ErrorMessage message={errors.email.message || ''} />}
 
-      <InputContainer className={handleClassValidation(errors?.password)}>
+      <InputContainer className={handleClassValidation(errors?.username)}>
         <div className="icon">
           <Lock />
         </div>
@@ -99,10 +87,10 @@ export const LoginForm: React.FC = () => {
         <Input
           type="password"
           placeholder="Digite sua senha"
-          {...register('password', RPasswordOptions)}
+          {...register('username', RUsernameOptions)}
         />
       </InputContainer>
-      {errors?.password && <ErrorMessage message={errors.password.message || ''} />}
+      {errors?.username && <ErrorMessage message={errors.username.message || ''} />}
 
       <SubmitButton>{submitText}</SubmitButton>
     </Form>

@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema<UserDocument>({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, select: false, required: true },
-  permissionLevel: { type: Number, required: true, default: 1 },
+  permissionLevel: { type: Number, required: true },
 
   category: {
     type: mongoose.Schema.Types.ObjectId,

@@ -23,6 +23,9 @@ export default (req: Request, res: Response, next: NextFunction) => {
     // @ts-ignore
     req.userId = decoded.id;
 
+    // @ts-ignore
+    req.userPermissionLevel = decoded.permissionLevel;
+
     return next();
   });
 };
