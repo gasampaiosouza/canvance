@@ -1,17 +1,21 @@
 import { ITasks } from '@/interfaces';
 import Loading from 'components/loading';
 import { useAuth } from 'hooks/useAuth';
+import { useTaskList } from 'hooks/useTaskList';
 import ListItem from './list-item';
 import { Container, List, Title } from './styles';
 
 interface UserTasksProps {
-  preFetchedTasks: ITasks[];
+  // preFetchedTasks: ITasks[];
 }
 
-const UserTasks: React.FC<UserTasksProps> = ({ preFetchedTasks }) => {
+const UserTasks: React.FC<UserTasksProps> = ({}) => {
+  const { userTasks, addNewTask, removeTask } = useTaskList();
   const { user } = useAuth();
 
-  if (!preFetchedTasks) return <Loading />;
+  console.log({ userTasks, color: 'blue' });
+
+  // if (!preFetchedTasks) return <Loading />;
 
   return (
     <Container>
@@ -24,8 +28,13 @@ const UserTasks: React.FC<UserTasksProps> = ({ preFetchedTasks }) => {
       </div>
 
       <List>
-        {preFetchedTasks.map((task) => (
-          <ListItem key={task._id} task={task} taskList={preFetchedTasks} />
+        {userTasks.map((task) => (
+          <ListItem
+            key={task._id}
+            task={task}
+            addNewTask={addNewTask}
+            removeTask={removeTask}
+          />
         ))}
       </List>
     </Container>

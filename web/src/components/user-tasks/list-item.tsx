@@ -1,5 +1,6 @@
 import { ITaskDone, ITasks } from '@/interfaces';
 import { useAuth } from 'hooks/useAuth';
+import { useTaskList } from 'hooks/useTaskList';
 import { omit } from 'lodash';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -14,50 +15,70 @@ import {
 
 interface ListItemProps {
   task: ITasks;
+  addNewTask: (taskId: string) => void;
+  removeTask: (taskId: string) => void;
 }
 
-const ListItem: React.FC<ListItemProps> = ({ task }) => {
-  const [currentTask, setCurrentTask] = useState<ITasks>(task);
-  const { user } = useAuth();
+const ListItem: React.FC<ListItemProps> = ({ task, addNewTask, removeTask }) => {
+  // const { addNewTask, removeTask } = useTaskList();
 
   const handleTaskClick = async (taskId: string) => {
-    if (currentTask?.status === 'done') {
+    if (task?.status === 'done') {
       try {
-        const response = await api.delete(`/tasks-done/${taskId}`);
-
-        setCurrentTask(omit(currentTask, 'status'));
-
+        await removeTask(taskId);
         toast.success('Tarefa desfeita!');
-      } catch (error) {
-        toast.error('Ocorreu um erro ao tentar desfazer a tarefa');
-      }
 
-      return;
+        return;
+      } catch (error) {
+        console.log(error);
+        toast.error('Ocorreu um erro ao desfazer a tarefa!');
+      }
     }
 
     try {
-      const { data } = await api.post<ITaskDone>('/tasks-done', {
-        taskId,
-        userId: user?._id,
-        status: 'done',
-      });
-
-      setCurrentTask({ ...currentTask, status: 'done' });
-
+      await addNewTask(taskId);
       toast.success('Tarefa finalizada!');
     } catch (error) {
-      toast.error('Ocorreu um erro ao finalizar a tarefa.');
       console.log(error);
+      toast.error('Ocorreu um erro ao finalizar a tarefa.');
     }
+
+    //   try {
+    //     const response = await api.delete(`/tasks-done/${taskId}`);
+
+    //     setCurrentTask(omit(currentTask, 'status'));
+
+    //     toast.success('Tarefa desfeita!');
+    //   } catch (error) {
+    //     toast.error('Ocorreu um erro ao tentar desfazer a tarefa');
+    //   }
+
+    //   return;
+    // }
+
+    // try {
+    //   const { data } = await api.post<ITaskDone>('/tasks-done', {
+    //     taskId,
+    //     userId: user?._id,
+    //     status: 'done',
+    //   });
+
+    //   setCurrentTask({ ...currentTask, status: 'done' });
+
+    //   toast.success('Tarefa finalizada!');
+    // } catch (error) {
+    //   toast.error('Ocorreu um erro ao finalizar a tarefa.');
+    //   console.log(error);
+    // }
   };
 
   return (
-    <ListItemContainer onClick={() => handleTaskClick(currentTask._id)}>
+    <ListItemContainer onClick={() => handleTaskClick(task._id)}>
       <ListItemIcon>
-        {currentTask.status == 'done' ? <CompletedIcon /> : <UncompletedIcon />}
+        {task.status == 'done' ? <CompletedIcon /> : <UncompletedIcon />}
       </ListItemIcon>
 
-      <ListItemText>{currentTask.title}</ListItemText>
+      <ListItemText>{task.title}</ListItemText>
 
       {/* {task.status == 'done' && <CompleteTaskButton></CompleteTaskButton>} */}
     </ListItemContainer>

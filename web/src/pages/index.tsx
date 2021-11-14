@@ -5,6 +5,7 @@ import ListItem from 'components/user-tasks/list-item';
 
 import Header from 'components/header';
 import ProgressBar from 'components/progress-bar';
+import UserTasks from 'components/user-tasks';
 // import UserTasks from 'components/user-tasks';
 import Sidebar from 'components/sidebar';
 import { ITasks, IUser } from '@/interfaces';
@@ -37,10 +38,10 @@ const App: React.FC<HomeProps> = ({ tasks }) => {
         <Header title="Meu progresso" breadcrumb={breadcrumb} />
 
         <Content>
-          <ProgressBar />
+          <UserTasks />
 
           {/* <UserTasks preFetchedTasks={tasks} /> */}
-          <TasksContainer>
+          {/* <TasksContainer>
             <div className="indicators-top">
               <div className="indicators-top_title">
                 <Title>
@@ -54,7 +55,7 @@ const App: React.FC<HomeProps> = ({ tasks }) => {
                 <ListItem key={task._id} task={task} />
               ))}
             </List>
-          </TasksContainer>
+          </TasksContainer> */}
         </Content>
 
         <Sidebar />

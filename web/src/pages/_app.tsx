@@ -7,18 +7,21 @@ import GlobalStyle from '../styles/global';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { TasksProvider } from 'contexts/TaskContext';
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <AuthProvider>
-      <Theme theme={appTheme}>
-        <Component {...pageProps} />
-        <GlobalStyle />
+      <TasksProvider>
+        <Theme theme={appTheme}>
+          <Component {...pageProps} />
+          <GlobalStyle />
 
-        <ToastContainer position="top-right" autoClose={4500} />
+          <ToastContainer position="top-right" autoClose={4500} />
 
-        <Loading height={3} color={appTheme.colors.primary} />
-      </Theme>
+          <Loading height={3} color={appTheme.colors.primary} />
+        </Theme>
+      </TasksProvider>
     </AuthProvider>
   );
 };
