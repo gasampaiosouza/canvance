@@ -10,7 +10,7 @@ export const LoginPage: React.FC = () => {
       <Head>
         <title>Canvance | Login</title>
       </Head>
-      <Link href="/">
+      <Link href="/dashboard">
         <a>
           <Logo color="primary">Canvance</Logo>
         </a>

@@ -1,6 +1,5 @@
 import Avatar from './avatar';
 import { Container, Title } from './styles';
-import React from 'react';
 // import Notifications from './notifications';
 import Breadcrumb from './breadcrumb';
 import { useAuth } from 'hooks/useAuth';

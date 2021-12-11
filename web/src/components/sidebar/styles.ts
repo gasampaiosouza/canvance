@@ -1,4 +1,4 @@
-import { lighten } from 'polished';
+import { lighten, size } from 'polished';
 import styled from 'styled-components';
 
 export const Container = styled.aside`
@@ -41,9 +41,14 @@ export const SidebarItems = styled.div`
 
     transition: 0.2s ease-in-out;
 
+    :hover,
+    :focus {
+      background: ${({ theme }) => lighten(0.025, theme.colors.primary)};
+    }
+
     &.active {
       color: ${({ theme }) => theme.colors.primary};
-      background: ${({ theme }) => theme.colors.white};
+      background: ${({ theme }) => theme.colors.background};
       border-radius: 8px 0 0 8px;
 
       ::before,
@@ -53,19 +58,18 @@ export const SidebarItems = styled.div`
         width: 30px;
         height: 30px;
         border-radius: 50%;
-        /* background: red; */
       }
 
       ::before {
         top: -30px;
         right: 0;
-        box-shadow: 15px 15px 0 ${({ theme }) => theme.colors.white};
+        box-shadow: 15px 15px 0 ${({ theme }) => theme.colors.background};
       }
 
       ::after {
         bottom: -30px;
         right: 0;
-        box-shadow: 15px -15px 0 ${({ theme }) => theme.colors.white};
+        box-shadow: 15px -15px 0 ${({ theme }) => theme.colors.background};
       }
     }
   }
@@ -73,6 +77,54 @@ export const SidebarItems = styled.div`
   svg {
     width: 22px;
     margin-right: 1rem;
+  }
+`;
+
+export const SidebarSubItems = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  a {
+    position: relative;
+    transition: 0.2s ease-in-out;
+
+    margin-left: 1rem;
+    padding: 0.7rem 0 0.7rem 3rem;
+    font-size: 0.825rem;
+    font-weight: 300;
+
+    &.active {
+      font-weight: 700;
+
+      // ::before {
+      //  opacity: 1;
+      // }
+    }
+
+    //::before {
+    //  content: '';
+
+    //  position: absolute;
+
+    //  ${size(6)}
+
+    //  border-radius: 50%;
+    //  background: ${({ theme }) => theme.colors.background};
+    //  top: 50%;
+    //  left: 3rem;
+    //  transform: translateY(-50%);
+    //  opacity: 0;
+    //  transition: 0.2s ease-in-out;
+    //}
+
+    :first-child {
+      border-radius: 0 15px 0 0;
+    }
+
+    :hover,
+    :focus {
+      background: ${({ theme }) => lighten(0.025, theme.colors.primary)};
+    }
   }
 `;
 

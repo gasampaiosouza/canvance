@@ -63,14 +63,15 @@ export const UserInfo = styled.div<IAvatar>`
   /* defines width & height */
   ${size('45px')}
 
+  cursor: pointer;
+
   display: flex;
   justify-content: center;
   align-items: center;
 
   font-weight: 700;
 
-  color: ${({ theme, color = '' }) =>
-    readableColor(color, theme.colors.text, '#fff')};
+  color: ${({ theme, color = '' }) => readableColor(color, theme.colors.text, '#fff')};
   background: ${({ color = '#e6e6e6' }) => color};
   border-radius: 50%;
 `;

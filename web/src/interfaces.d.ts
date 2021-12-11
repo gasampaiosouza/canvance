@@ -1,29 +1,32 @@
+export interface ICategory {
+  _id: string;
+  name: string;
+  description: string;
+  priority: string;
+}
+
 export interface IUser {
   _id: string;
   name: string;
   email: string;
-  category: {
-    _id: string;
-    name: string;
-    description: string;
-    priority: string;
-  };
+  category: ICategory;
   permissionLevel: 1 | 2 | 3;
   createdAt: string;
 }
 
-export interface ITasks {
+export interface ITask {
   _id: string;
   title: string;
   description: string;
   relevance: number;
+  category: ICategory;
   status?: 'done' | 'ongoing' | null;
   createdAt: string;
 }
 
 export interface ITaskDone {
   _id: string;
-  taskId: ITasks;
+  taskId: ITask;
   userId: string;
   status: string;
   createdAt: string;

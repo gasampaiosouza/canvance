@@ -1,21 +1,22 @@
-import { ITasks } from '@/interfaces';
-import Loading from 'components/loading';
 import { useAuth } from 'hooks/useAuth';
 import { useTaskList } from 'hooks/useTaskList';
 import ListItem from './list-item';
 import { Container, List, Title } from './styles';
 
 interface UserTasksProps {
-  // preFetchedTasks: ITasks[];
+  //...
 }
 
 const UserTasks: React.FC<UserTasksProps> = ({}) => {
   const { userTasks, addNewTask, removeTask } = useTaskList();
   const { user } = useAuth();
 
-  console.log({ userTasks, color: 'blue' });
+  const sortedTasksByDone = [...userTasks].sort((a, b) => {
+    if (a.status === 'done' && b.status !== 'done') return -1;
+    if (a.status !== 'done' && b.status === 'done') return 1;
 
-  // if (!preFetchedTasks) return <Loading />;
+    return 0;
+  });
 
   return (
     <Container>
@@ -28,7 +29,7 @@ const UserTasks: React.FC<UserTasksProps> = ({}) => {
       </div>
 
       <List>
-        {userTasks.map((task) => (
+        {sortedTasksByDone.map((task) => (
           <ListItem
             key={task._id}
             task={task}

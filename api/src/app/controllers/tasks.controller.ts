@@ -8,7 +8,7 @@ import Task from '../models/task.model';
 
 async function getAllTasksController(req: Request, res: Response) {
   try {
-    const tasks = await Task.find();
+    const tasks = await Task.find().populate('category');
 
     return res.status(200).send(tasks);
   } catch (error) {
@@ -114,7 +114,7 @@ async function getTaskByIdController(req: Request<{ taskId: string }>, res: Resp
   }
 
   try {
-    const tasks = (await Task.findById(req.params.taskId)) || [];
+    const tasks = (await Task.findById(req.params.taskId).populate('category')) || [];
 
     return res.status(200).send(tasks);
   } catch (error) {

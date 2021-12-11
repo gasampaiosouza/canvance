@@ -2,11 +2,12 @@ import { Email, Lock } from '@styled-icons/material-rounded';
 import { ErrorMessage } from 'components/error-message';
 import { patterns } from 'helpers/patterns';
 import { useAuth } from 'hooks/useAuth';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form, Input, InputContainer, SubmitButton } from './styles';
 
 import { toast } from 'react-toastify';
+import { handleClassValidation } from 'helpers/handle-form_class';
 
 interface SubmitProps {
   email: string;
@@ -14,8 +15,6 @@ interface SubmitProps {
 }
 
 export const LoginForm: React.FC = () => {
-  const [customError, setCustomError] = useState<string[]>([]);
-
   const { signIn } = useAuth();
   const [submitText, setSubmitText] = useState('Fazer login');
   const { register, handleSubmit, formState, setError } = useForm<SubmitProps>({
@@ -70,15 +69,9 @@ export const LoginForm: React.FC = () => {
     minLength: { value: 5, message: 'A senha deve conter mais de 5 caracteres' },
   };
 
-  const handleClassValidation = (validation: unknown) => {
-    const hasChangedFields = Object.keys(dirtyFields).length;
-
-    return validation ? 'has-error' : hasChangedFields ? 'is-valid' : '';
-  };
-
   return (
     <Form onSubmit={handleSubmit(handleSignIn)}>
-      <InputContainer className={handleClassValidation(errors?.email)}>
+      <InputContainer className={handleClassValidation(errors?.email, dirtyFields)}>
         <div className="icon">
           <Email />
         </div>
@@ -91,7 +84,7 @@ export const LoginForm: React.FC = () => {
       </InputContainer>
       {errors?.email && <ErrorMessage message={errors.email.message || ''} />}
 
-      <InputContainer className={handleClassValidation(errors?.password)}>
+      <InputContainer className={handleClassValidation(errors?.password, dirtyFields)}>
         <div className="icon">
           <Lock />
         </div>

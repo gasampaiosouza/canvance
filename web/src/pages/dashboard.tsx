@@ -1,27 +1,27 @@
-import { Container, Content } from 'styles/dashboard-styles';
-
-import { Container as TasksContainer, List, Title } from 'components/user-tasks/styles';
-import ListItem from 'components/user-tasks/list-item';
+import { ITask, IUser } from '@/interfaces';
 
 import Header from 'components/header';
 import ProgressBar from 'components/progress-bar';
-import UserTasks from 'components/user-tasks';
-// import UserTasks from 'components/user-tasks';
 import Sidebar from 'components/sidebar';
-import { ITasks, IUser } from '@/interfaces';
-import api from 'services/api';
+import UserTasks from 'components/user-tasks';
 
-import { parseCookies } from 'nookies';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { useAuth } from 'hooks/useAuth';
+
+import { parseCookies } from 'nookies';
+
+import api from 'services/api';
+
+import { Container, Content } from 'styles/dashboard-styles';
+
+// import { useAuth } from 'hooks/useAuth';
 
 interface HomeProps {
-  tasks: ITasks[];
+  tasks: ITask[];
 }
 
 const App: React.FC<HomeProps> = ({ tasks }) => {
-  const { user } = useAuth();
+  // const { user } = useAuth();
 
   const breadcrumb = [
     { label: 'Login', href: '/login' },
@@ -38,24 +38,8 @@ const App: React.FC<HomeProps> = ({ tasks }) => {
         <Header title="Meu progresso" breadcrumb={breadcrumb} />
 
         <Content>
+          <ProgressBar />
           <UserTasks />
-
-          {/* <UserTasks preFetchedTasks={tasks} /> */}
-          {/* <TasksContainer>
-            <div className="indicators-top">
-              <div className="indicators-top_title">
-                <Title>
-                  Indicadores - <strong>{user?.category.name || '...'}</strong>
-                </Title>
-              </div>
-            </div>
-
-            <List>
-              {tasks.map((task) => (
-                <ListItem key={task._id} task={task} />
-              ))}
-            </List>
-          </TasksContainer> */}
         </Content>
 
         <Sidebar />
@@ -77,7 +61,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
     const { data: user } = await api.get<IUser>(`/user/profile`);
 
-    const { data: tasks } = await api.get<ITasks[]>(
+    const { data: tasks } = await api.get<ITask[]>(
       `/tasks/category/${user?.category._id}`
     );
 

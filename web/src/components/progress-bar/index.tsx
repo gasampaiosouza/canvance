@@ -4,8 +4,6 @@ import { Container, FilledBar, InnerBar } from './styles';
 const ProgressBar = () => {
   const { userTasks, finishedTasks } = useTaskList();
 
-  console.log({ userTasks, heart: true });
-
   let percentage = (finishedTasks.length * 100) / userTasks.length;
 
   // remove unnecessary width

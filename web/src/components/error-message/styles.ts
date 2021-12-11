@@ -5,4 +5,5 @@ export const Message = styled.span`
   font-size: 0.85rem;
   color: ${({ theme }) => theme.colors.error};
   user-select: none;
+  line-height: 1.5;
 `;

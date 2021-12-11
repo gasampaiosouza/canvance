@@ -1,22 +1,17 @@
-import { ITaskDone, ITasks } from '@/interfaces';
-import { useAuth } from 'hooks/useAuth';
-import { useTaskList } from 'hooks/useTaskList';
-import { omit } from 'lodash';
-import { useState } from 'react';
+import { ITask } from '@/interfaces';
 import { toast } from 'react-toastify';
-import api from 'services/api';
 import {
+  CompletedIcon,
   ListItemContainer,
   ListItemIcon,
   ListItemText,
-  CompletedIcon,
   UncompletedIcon,
 } from './styles';
 
 interface ListItemProps {
-  task: ITasks;
-  addNewTask: (taskId: string) => void;
-  removeTask: (taskId: string) => void;
+  task: ITask;
+  addNewTask: (taskId: string) => Promise<void>;
+  removeTask: (taskId: string) => Promise<void>;
 }
 
 const ListItem: React.FC<ListItemProps> = ({ task, addNewTask, removeTask }) => {
