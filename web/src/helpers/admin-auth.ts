@@ -1,9 +1,12 @@
 import { IUser } from '@/interfaces';
-import { GetServerSideProps } from 'next';
+import { GetServerSidePropsContext } from 'next';
 import { parseCookies } from 'nookies';
 import api from 'services/api';
 
-export const handleAdminAuthentication: GetServerSideProps = async (ctx) => {
+export const handleAdminAuthentication = async (
+  ctx: GetServerSidePropsContext,
+  props: Record<string, unknown> = {}
+) => {
   const { 'canvance.token': token } = parseCookies(ctx);
 
   if (!token) return { redirect: { destination: '/login', permanent: false } };
@@ -14,11 +17,11 @@ export const handleAdminAuthentication: GetServerSideProps = async (ctx) => {
     const { data: user } = await api.get<IUser>(`/user/profile`);
 
     if (user.permissionLevel != 1) {
-      return { redirect: { statusCode: 303, destination: '/' }, props: {} };
+      return { redirect: { statusCode: 303, destination: '/' }, props };
     }
 
-    return { props: {} };
+    return { props };
   } catch (error: any) {
-    return { redirect: { statusCode: 303, destination: '/' }, props: {} };
+    return { redirect: { statusCode: 303, destination: '/' }, props };
   }
 };

@@ -11,8 +11,8 @@ export function sortTasksByRelevance(tasks: ITask[]) {
       return -1;
     }
 
-    let k1 = Boolean(a?.status) ? 0 : 1;
-    let k2 = Boolean(b?.status) ? 0 : 2;
+    let k1 = Boolean(a.relevance) ? 0 : 1;
+    let k2 = Boolean(b.relevance) ? 0 : 2;
 
     return k1 - k2;
   });

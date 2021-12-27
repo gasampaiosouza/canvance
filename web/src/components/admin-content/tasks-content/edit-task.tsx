@@ -1,23 +1,24 @@
-import { ICategory, ITask } from '@/interfaces';
-import { ErrorMessage } from 'components/error-message';
-import { handleClassValidation } from 'helpers/handle-form_class';
-import router from 'next/router';
 import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
+import Select from 'react-select';
+
+import Link from 'next/link';
 import api from 'services/api';
-import { useTheme } from 'styled-components';
+import router from 'next/router';
+
+import { ICategory, ITask } from '@/interfaces';
+import { toast } from 'react-toastify';
 import {
   Container,
   Input,
   InputContainer,
-  EditTaskForm,
+  NewTaskForm,
   PageBottom,
   Textarea,
 } from './styles';
 
-import Select from 'react-select';
+import { useTheme } from 'styled-components';
 import { lighten } from 'polished';
+import { ErrorMessage } from 'components/error-message';
 
 interface IProps {
   taskId: string;
@@ -26,178 +27,209 @@ interface IProps {
 interface FormProps {
   title: string;
   description: string;
-  relevance: number;
+  relevance: string | number;
   category: string;
 }
 
 const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
   const defaultTheme = useTheme();
 
-  const [task, setTask] = React.useState<ITask>();
   const [categories, setCategories] = React.useState<ICategory[]>([]);
-  const { register, formState, handleSubmit, reset, control } = useForm<FormProps>();
-  const [trigger, setTrigger] = React.useState({
-    save: false,
-    cancel: false,
-  });
 
-  const { errors, dirtyFields } = formState;
-
-  const categoriesOptions = categories.map((category) => ({
-    value: category._id,
-    label: category.name,
-  }));
+  const [formErrors, setFormErrors] = React.useState({} as FormProps);
+  const [formData, setFormData] = React.useState({} as FormProps);
 
   React.useEffect(() => {
+    const getTask = async () => {
+      try {
+        const { data } = await api.get(`/tasks/${taskId}`);
+
+        setFormData({
+          title: data.title,
+          description: data.description,
+          relevance: data.relevance,
+          category: data.category._id,
+        });
+      } catch (err) {
+        console.log(err);
+
+        toast.error('Erro ao carregar tarefa');
+      }
+    };
+
     const getCategories = async () => {
       try {
         const response = await api.get('/category');
 
         setCategories(response.data);
       } catch (error) {
+        console.log(error);
+
         toast.error('Ocorreu um erro ao tentar carregar as categorias.');
-      }
-    };
-
-    const getTask = async () => {
-      try {
-        const response = await api.get(`/tasks/${taskId}`);
-
-        setTask(response.data);
-      } catch (error) {
-        toast.error('Ocorreu um erro ao carregar a tarefa');
-
-        router.push('/admin/tasks');
       }
     };
 
     getTask();
     getCategories();
-  }, [taskId]);
+  }, []);
 
-  const handleCancel = () => router.push('/admin/tasks');
-
-  const handleSaveTask = async (data: ITask) => {
+  const saveTask = async (data: FormProps) => {
     try {
-      await api.post('/tasks', data);
+      await api.put(`/tasks/${taskId}`, data);
 
-      toast.success('Tarefa criada com sucesso!');
-      router.push('/admin/tasks');
+      toast.success('Tarefa atualizada com sucesso!');
     } catch (err) {
-      toast.error('Ocorreu um erro ao tentar criar a tarefa.');
+      toast.error('Ocorreu um erro ao tentar atualizar a tarefa.');
     }
   };
 
-  const onSubmit = (data: ITask) => {
-    // do something in every case
+  const isFormValid = () => {
+    const { title, description, relevance, category } = formData;
 
-    if (trigger.save) return handleSaveTask(data);
+    let isValid = true;
 
-    if (trigger.cancel) return handleCancel();
+    // reset form errors
+    setFormErrors({ title: '', description: '', relevance: '', category: '' });
+
+    if (!title?.length) {
+      const message = 'O título é obrigatório';
+      setFormErrors((prev) => ({ ...prev, title: message }));
+
+      isValid = false;
+    }
+
+    if (!description?.length) {
+      const message = 'A descrição é obrigatória';
+      setFormErrors((prev) => ({ ...prev, description: message }));
+
+      isValid = false;
+    }
+
+    if (!category?.length) {
+      const message = 'A categoria é obrigatória';
+      setFormErrors((prev) => ({ ...prev, category: message }));
+
+      isValid = false;
+    }
+
+    if (!relevance || relevance < 1 || relevance > 100) {
+      const message = 'A relevância deve estar entre 1 e 100';
+      setFormErrors((prev) => ({ ...prev, relevance: message }));
+
+      isValid = false;
+    }
+
+    return isValid;
   };
 
-  console.log(task);
+  const handleSaveTask = async () => {
+    const isValid = isFormValid();
+
+    if (!isValid) return;
+
+    await saveTask(formData);
+
+    router.push('/admin/tasks');
+  };
+
+  const categoriesOptions = categories.map((category) => ({
+    value: category._id,
+    label: category.name,
+  }));
+
+  const selectValue = categories.find((category) => category._id === formData.category);
 
   return (
     <Container>
-      <EditTaskForm onSubmit={handleSubmit(onSubmit)}>
-        <InputContainer className={handleClassValidation(errors?.title, dirtyFields)}>
+      <NewTaskForm>
+        <InputContainer>
           <Input
-            defaultValue={task?.title}
             placeholder="Título da tarefa"
-            {...register('title', {
-              required: 'O título é obrigatório',
+            value={formData.title}
+            onChange={(ev) =>
+              setFormData((prev) => ({ ...prev, title: ev.target.value }))
+            }
+            // {...register('title', {
+            //   required: 'O título é obrigatório',
+            // })}
+          />
+
+          {formErrors?.title && <ErrorMessage message={formErrors.title || ''} />}
+        </InputContainer>
+
+        <InputContainer>
+          <Select
+            value={
+              selectValue ? { value: selectValue?._id, label: selectValue?.name } : null
+            }
+            // onChange={(val) => onChange(val?.value)}
+            placeholder="Categoria"
+            className="category-select"
+            classNamePrefix="category-select"
+            onChange={(val) =>
+              setFormData((prev) => ({ ...prev, category: val?.value || '' }))
+            }
+            options={categoriesOptions}
+            theme={(theme) => ({
+              ...theme,
+              borderRadius: 8,
+              colors: {
+                ...theme.colors,
+                text: defaultTheme.colors.text,
+                primary25: lighten(0.325, defaultTheme.colors.primary),
+                primary: defaultTheme.colors.primary,
+              },
             })}
           />
 
-          {errors?.title && <ErrorMessage message={errors.title.message || ''} />}
+          {formErrors?.category && <ErrorMessage message={formErrors.category || ''} />}
         </InputContainer>
 
-        <InputContainer className={handleClassValidation(errors?.category, dirtyFields)}>
-          <Controller
-            // @ts-ignore
-            control={control}
-            name="category"
-            rules={{
-              required: 'A categoria é obrigatória',
-            }}
-            render={({ field: { onChange, value, ref } }) => (
-              <Select
-                // @ts-ignore
-                inputRef={ref}
-                onChange={(val) => onChange(val?.value)}
-                value={categoriesOptions.filter(
-                  (option) => option.label === task?.category.name
-                )}
-                placeholder="Categoria"
-                className="category-select"
-                classNamePrefix="category-select"
-                options={categoriesOptions}
-                theme={(theme) => ({
-                  ...theme,
-                  borderRadius: 8,
-                  colors: {
-                    ...theme.colors,
-                    text: defaultTheme.colors.text,
-                    primary25: lighten(0.325, defaultTheme.colors.primary),
-                    primary: defaultTheme.colors.primary,
-                  },
-                })}
-              />
-            )}
-          />
-
-          {errors?.category && <ErrorMessage message={errors.category.message || ''} />}
-        </InputContainer>
-
-        <InputContainer className={handleClassValidation(errors?.relevance, dirtyFields)}>
+        <InputContainer>
           <Input
-            defaultValue={task?.relevance}
+            value={formData.relevance}
             type="number"
             placeholder="Relevância"
-            {...register('relevance', {
-              required: 'A relevância é obrigatória',
-              min: { value: 0, message: 'O valor deve ser entre 0 e 100.' },
-              max: { value: 100, message: 'O valor deve ser entre 0 e 100.' },
-            })}
+            onChange={(ev) =>
+              setFormData((prev) => ({ ...prev, relevance: Number(ev.target.value) }))
+            }
+            // {...register('relevance', {
+            //   required: 'A relevância é obrigatória',
+            //   min: { value: 0, message: 'O valor deve ser entre 0 e 100.' },
+            //   max: { value: 100, message: 'O valor deve ser entre 0 e 100.' },
+            // })}
           />
 
-          {errors?.relevance && <ErrorMessage message={errors.relevance.message || ''} />}
+          {formErrors?.relevance && <ErrorMessage message={formErrors.relevance || ''} />}
         </InputContainer>
 
-        <InputContainer
-          style={{ gridColumn: '1 / span 3' }}
-          className={handleClassValidation(errors?.description, dirtyFields)}
-        >
+        <InputContainer style={{ gridColumn: '1 / span 3' }}>
           <Textarea
-            defaultValue={task?.description}
+            value={formData.description}
             placeholder="Descrição da tarefa"
-            {...register('description', {
-              required: 'A descrição é obrigatória',
-            })}
+            onChange={(ev) =>
+              setFormData((prev) => ({ ...prev, description: ev.target.value }))
+            }
+            // {...register('description', {
+            //   required: 'A descrição é obrigatória',
+            // })}
           />
 
-          {errors?.description && (
-            <ErrorMessage message={errors.description.message || ''} />
+          {formErrors?.description && (
+            <ErrorMessage message={formErrors.description || ''} />
           )}
         </InputContainer>
+      </NewTaskForm>
 
-        <PageBottom>
-          <button
-            className="create-task"
-            onClick={() => setTrigger({ cancel: false, save: true })}
-          >
-            Salvar
-          </button>
+      <PageBottom>
+        <button className="create-task" onClick={handleSaveTask}>
+          Salvar
+        </button>
 
-          <button
-            className="create-task_cancel"
-            onClick={() => setTrigger({ cancel: true, save: false })}
-          >
-            Cancelar
-          </button>
-        </PageBottom>
-      </EditTaskForm>
+        <Link href="/admin/tasks">
+          <a className="create-task_cancel">Cancelar</a>
+        </Link>
+      </PageBottom>
     </Container>
   );
 };

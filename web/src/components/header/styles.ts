@@ -31,7 +31,7 @@ export const Container = styled.header`
 
 export const Title = styled.h1`
   font-size: 2rem;
-  font-weight: 900;
+  font-weight: 700;
 `;
 
 export const ArrowIcon = styled(KeyboardArrowRight)`

@@ -33,7 +33,15 @@ const globalStyles = createGlobalStyle`
   input,
   textarea,
   button {
-    font: 400 1rem 'Inter', sans-serif;
+    font: 400 1rem 'Rubik', sans-serif;
+  }
+
+  p {
+    line-height: 1.4;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
   }
 
   button {

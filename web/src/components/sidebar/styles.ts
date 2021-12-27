@@ -36,6 +36,8 @@ export const SidebarItems = styled.div`
     padding: 0.8rem 0.75rem;
     margin-left: 1rem;
 
+    border-radius: 8px 0 0 8px;
+
     font-size: 0.9rem;
     font-weight: 500;
 
@@ -95,27 +97,7 @@ export const SidebarSubItems = styled.div`
 
     &.active {
       font-weight: 700;
-
-      // ::before {
-      //  opacity: 1;
-      // }
     }
-
-    //::before {
-    //  content: '';
-
-    //  position: absolute;
-
-    //  ${size(6)}
-
-    //  border-radius: 50%;
-    //  background: ${({ theme }) => theme.colors.background};
-    //  top: 50%;
-    //  left: 3rem;
-    //  transform: translateY(-50%);
-    //  opacity: 0;
-    //  transition: 0.2s ease-in-out;
-    //}
 
     :first-child {
       border-radius: 0 15px 0 0;

@@ -26,7 +26,7 @@ export const Box = styled.a`
 
   background: ${({ theme }) => theme.colors.background};
   box-shadow: 2px 2px 5px rgba(204, 204, 204, 0.5);
-  padding: 1rem 3rem 1rem 1rem;
+  padding: 1rem;
   border-radius: 5px;
 
   text-align: left;
@@ -48,7 +48,7 @@ export const Box = styled.a`
     position: absolute;
     top: 0;
     right: 0;
-    border-radius: 0 5px 0 5px;
+    border-radius: 0 3px 0 5px;
     font-weight: 700;
     transition: 0.2s ease-in-out;
 
@@ -59,11 +59,35 @@ export const Box = styled.a`
 
   .task-title {
     font-size: 1.1rem;
+    max-width: 90%;
   }
 
   .task-description {
     margin-top: 0.5rem;
     font-size: 0.75rem;
+  }
+
+  .task-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    .task-delete {
+      color: ${({ theme }) => theme.colors.error};
+      border: 1px solid ${({ theme }) => theme.colors.error};
+      padding: 0.25rem;
+      border-radius: 50px;
+      transition: 0.2s ease-in-out;
+
+      &:hover {
+        background: ${({ theme }) => theme.colors.error};
+        color: ${({ theme }) => theme.colors.background};
+      }
+
+      svg {
+        width: 18px;
+      }
+    }
   }
 
   .task-category {
@@ -77,11 +101,11 @@ export const Box = styled.a`
   }
 
   :hover {
-    background: ${({ theme }) => theme.colors.primary};
+    border: 1px solid ${({ theme }) => theme.colors.primary};
 
-    * {
+    /* * {
       color: ${({ theme }) => theme.colors.background};
-    }
+    } */
 
     .task-relevance {
       filter: brightness(1.15);
@@ -117,7 +141,7 @@ export const PageHeader = styled.div`
 `;
 
 // new task
-export const NewTaskForm = styled.form`
+export const NewTaskForm = styled.section`
   max-width: 50%;
   margin: 0 auto;
 
@@ -160,7 +184,8 @@ export const PageBottom = styled.div`
   padding: 1.56rem;
   border-top: 1px solid ${({ theme }) => theme.colors.border};
 
-  button {
+  button,
+  a {
     cursor: pointer;
 
     color: ${({ theme }) => theme.colors.background};

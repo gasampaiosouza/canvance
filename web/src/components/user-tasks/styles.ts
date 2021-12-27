@@ -40,14 +40,15 @@ export const ListItemContainer = styled.div`
   border-radius: 2.5px;
   font-weight: 400;
 
-  background: ${({ theme }) => theme.colors.white};
+  background: ${({ theme }) => theme.colors.background};
   border: 1px solid ${({ theme }) => theme.colors.border};
 
   padding: 1rem;
   transition: 0.2s ease-in-out;
 
   :hover {
-    background: ${({ theme }) => darken(0.02, theme.colors.white)};
+    border-color: ${({ theme }) => darken(0.1, theme.colors.primary)};
+    /* background: ${({ theme }) => darken(0.02, theme.colors.white)}; */
     box-shadow: 2px 2px 8px rgba(204, 204, 204, 0.5);
   }
 `;

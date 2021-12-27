@@ -6,6 +6,8 @@ import { sortTasksByRelevance } from 'helpers/sort-tasks-by-relevance';
 import { toast } from 'react-toastify';
 import { Box, BoxesContainer, Container, PageHeader } from './styles';
 
+import { DeleteOutline as DeleteIcon } from '@styled-icons/material-rounded';
+
 import api from 'services/api';
 
 const ManageTasksContent = () => {
@@ -27,7 +29,20 @@ const ManageTasksContent = () => {
     getTasks();
   }, []);
 
-  console.log(tasks);
+  // console.log(tasks);
+
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await api.delete(`/tasks/${taskId}`);
+
+      toast.success('Tarefa apagada com sucesso');
+
+      setTasks((tasks) => tasks.filter((task) => task._id !== taskId));
+    } catch (error) {
+      console.log(error);
+      toast.error('Erro ao apagar a tarefa');
+    }
+  };
 
   return (
     <Container>
@@ -48,7 +63,26 @@ const ManageTasksContent = () => {
               <h3 className="task-title">{task.title}</h3>
               <p className="task-description">{task.description}</p>
 
-              <span className="task-category">{task.category.name}</span>
+              <div className="task-bottom">
+                <span className="task-category">{task.category.name}</span>
+                <span
+                  className="task-delete"
+                  onClick={(ev) => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+
+                    const confirmTaskDeletion = window.confirm(
+                      'Quer mesmo apagar a tarefa?'
+                    );
+
+                    if (!confirmTaskDeletion) return;
+
+                    handleDeleteTask(task._id);
+                  }}
+                >
+                  <DeleteIcon />
+                </span>
+              </div>
             </Box>
           </Link>
         ))}

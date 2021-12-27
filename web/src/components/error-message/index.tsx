@@ -1,7 +1,7 @@
 import { Message } from './styles';
 
 interface ErrorMessageProps {
-  message: string;
+  message: string | number;
 }
 
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message = '' }) => {

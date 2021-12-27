@@ -37,34 +37,6 @@ const ListItem: React.FC<ListItemProps> = ({ task, addNewTask, removeTask }) => 
       console.log(error);
       toast.error('Ocorreu um erro ao finalizar a tarefa.');
     }
-
-    //   try {
-    //     const response = await api.delete(`/tasks-done/${taskId}`);
-
-    //     setCurrentTask(omit(currentTask, 'status'));
-
-    //     toast.success('Tarefa desfeita!');
-    //   } catch (error) {
-    //     toast.error('Ocorreu um erro ao tentar desfazer a tarefa');
-    //   }
-
-    //   return;
-    // }
-
-    // try {
-    //   const { data } = await api.post<ITaskDone>('/tasks-done', {
-    //     taskId,
-    //     userId: user?._id,
-    //     status: 'done',
-    //   });
-
-    //   setCurrentTask({ ...currentTask, status: 'done' });
-
-    //   toast.success('Tarefa finalizada!');
-    // } catch (error) {
-    //   toast.error('Ocorreu um erro ao finalizar a tarefa.');
-    //   console.log(error);
-    // }
   };
 
   return (
