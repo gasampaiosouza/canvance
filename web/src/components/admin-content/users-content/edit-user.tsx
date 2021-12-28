@@ -20,6 +20,11 @@ import { useTheme } from 'styled-components';
 import { lighten } from 'polished';
 import { ErrorMessage } from 'components/error-message';
 import { useTaskList } from 'hooks/useTaskList';
+import { pick } from 'lodash';
+
+interface IProps {
+  taskId: string;
+}
 
 interface FormProps {
   title: string;
@@ -28,8 +33,9 @@ interface FormProps {
   category: string;
 }
 
-const ManageNewTask = () => {
+const ManageEditUser: React.FC<IProps> = ({ taskId }) => {
   const { allTasks, mutateTasks } = useTaskList();
+  const currentTask = allTasks.find((task) => task._id === taskId);
 
   const defaultTheme = useTheme();
 
@@ -39,6 +45,12 @@ const ManageNewTask = () => {
   const [formData, setFormData] = React.useState({} as FormProps);
 
   React.useEffect(() => {
+    if (!currentTask) return;
+
+    const formDataPick = pick(currentTask, ['title', 'description', 'relevance']);
+
+    setFormData({ ...formDataPick, category: currentTask?.category?._id });
+
     const getCategories = async () => {
       try {
         const response = await api.get('/category');
@@ -46,27 +58,24 @@ const ManageNewTask = () => {
         setCategories(response.data);
       } catch (error) {
         console.log(error);
+
         toast.error('Ocorreu um erro ao tentar carregar as categorias.');
       }
     };
 
     getCategories();
-  }, []);
+  }, [currentTask]);
 
   const saveTask = async (data: FormProps) => {
     try {
-      const response = await api.post('/tasks', data);
+      const response = await api.put(`/tasks/${taskId}`, data);
 
-      toast.success('Tarefa criada com sucesso!');
+      toast.success('Tarefa atualizada com sucesso!');
 
       return response.data;
     } catch (err) {
-      toast.error('Ocorreu um erro ao tentar criar a tarefa.');
+      toast.error('Ocorreu um erro ao tentar atualizar a tarefa.');
     }
-  };
-
-  const resetForm = () => {
-    setFormData({ title: '', description: '', relevance: '', category: '' });
   };
 
   const isFormValid = () => {
@@ -91,7 +100,7 @@ const ManageNewTask = () => {
       isValid = false;
     }
 
-    if (!category?.length) {
+    if (!category.length) {
       const message = 'A categoria é obrigatória';
       setFormErrors((prev) => ({ ...prev, category: message }));
 
@@ -113,21 +122,13 @@ const ManageNewTask = () => {
 
     if (!isValid) return;
 
-    const newTask = await saveTask(formData);
+    const updatedTask = await saveTask(formData);
 
     router.push('/admin/tasks').then(() => {
-      mutateTasks([...allTasks, newTask], true);
+      const filteredTasks = allTasks.filter((task) => task._id !== taskId);
+
+      mutateTasks([...filteredTasks, updatedTask], false);
     });
-  };
-
-  const handleSaveTaskAndNew = () => {
-    const isValid = isFormValid();
-
-    if (!isValid) return;
-
-    saveTask(formData);
-
-    resetForm();
   };
 
   const categoriesOptions = categories.map((category) => ({
@@ -135,7 +136,7 @@ const ManageNewTask = () => {
     label: category.name,
   }));
 
-  const selectValue = categories.find((category) => category._id === formData.category);
+  const selectValue = categories.find((category) => category._id === formData?.category);
 
   return (
     <Container>
@@ -143,10 +144,8 @@ const ManageNewTask = () => {
         <InputContainer>
           <Input
             placeholder="Título da tarefa"
-            value={formData.title}
-            onChange={(ev) =>
-              setFormData((prev) => ({ ...prev, title: ev.target.value }))
-            }
+            defaultValue={currentTask?.title || ''}
+            onBlur={(ev) => setFormData((prev) => ({ ...prev, title: ev.target.value }))}
             // {...register('title', {
             //   required: 'O título é obrigatório',
             // })}
@@ -185,10 +184,10 @@ const ManageNewTask = () => {
 
         <InputContainer>
           <Input
-            value={formData.relevance}
+            defaultValue={currentTask?.relevance || ''}
             type="number"
             placeholder="Relevância"
-            onChange={(ev) =>
+            onBlur={(ev) =>
               setFormData((prev) => ({ ...prev, relevance: Number(ev.target.value) }))
             }
             // {...register('relevance', {
@@ -203,9 +202,9 @@ const ManageNewTask = () => {
 
         <InputContainer style={{ gridColumn: '1 / span 3' }}>
           <Textarea
-            value={formData.description}
+            defaultValue={currentTask?.description || ''}
             placeholder="Descrição da tarefa"
-            onChange={(ev) =>
+            onBlur={(ev) =>
               setFormData((prev) => ({ ...prev, description: ev.target.value }))
             }
             // {...register('description', {
@@ -224,10 +223,6 @@ const ManageNewTask = () => {
           Salvar
         </button>
 
-        <button className="create-task_new" onClick={handleSaveTaskAndNew}>
-          Salvar e novo
-        </button>
-
         <Link href="/admin/tasks">
           <a className="create-task_cancel">Cancelar</a>
         </Link>
@@ -236,4 +231,4 @@ const ManageNewTask = () => {
   );
 };
 
-export default ManageNewTask;
+export default ManageEditUser;

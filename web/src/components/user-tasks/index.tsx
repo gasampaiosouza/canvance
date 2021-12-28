@@ -8,12 +8,23 @@ interface UserTasksProps {
 }
 
 const UserTasks: React.FC<UserTasksProps> = ({}) => {
-  const { userTasks, addNewTask, removeTask } = useTaskList();
   const { user } = useAuth();
+  const { userTasks, addNewTask } = useTaskList();
 
-  const sortedTasksByDone = [...userTasks].sort((a, b) => {
-    if (a.status === 'done' && b.status !== 'done') return -1;
-    if (a.status !== 'done' && b.status === 'done') return 1;
+  if (!userTasks) return <div>Carregando...</div>;
+
+  const sortedTasks = userTasks.sort((a, b) => {
+    if (a.createdAt < b.createdAt) {
+      if (a.status === 'done') return -1;
+
+      return 1;
+    }
+
+    if (a.createdAt > b.createdAt) {
+      if (b.status === 'done') return 1;
+
+      return -1;
+    }
 
     return 0;
   });
@@ -29,13 +40,8 @@ const UserTasks: React.FC<UserTasksProps> = ({}) => {
       </div>
 
       <List>
-        {sortedTasksByDone.map((task) => (
-          <ListItem
-            key={task._id}
-            task={task}
-            addNewTask={addNewTask}
-            removeTask={removeTask}
-          />
+        {sortedTasks.map((task) => (
+          <ListItem key={task._id} task={task} />
         ))}
       </List>
     </Container>

@@ -2,7 +2,8 @@ import { useTaskList } from 'hooks/useTaskList';
 import { Container, FilledBar, InnerBar } from './styles';
 
 const ProgressBar = () => {
-  const { userTasks, finishedTasks } = useTaskList();
+  const { userTasks } = useTaskList();
+  const finishedTasks = userTasks.filter((task) => task.status === 'done');
 
   let percentage = (finishedTasks.length * 100) / userTasks.length;
 

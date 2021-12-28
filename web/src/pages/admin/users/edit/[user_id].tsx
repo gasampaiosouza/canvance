@@ -9,29 +9,29 @@ import { GetServerSideProps } from 'next';
 import { handleAdminAuthentication } from 'helpers/admin-auth';
 import { useRouter } from 'next/router';
 
-import ManageEditTask from 'components/admin-content/tasks-content/edit-task';
+import ManageEditUser from 'components/admin-content/users-content/edit-user';
 
-const EditTask = () => {
+const EditUser = () => {
   const router = useRouter();
-  const { task_id } = router.query;
+  const { user_id } = router.query;
 
   const breadcrumb = [
     { label: 'Painel de administração', href: '/admin' },
-    { label: 'Gerenciar tarefas', href: '/admin/tasks' },
-    { label: 'Editar tarefa', href: `/admin/tasks/edit/${task_id}` },
+    { label: 'Gerenciar usuários', href: '/admin/users' },
+    { label: 'Editar Usuário', href: `/admin/users/edit/${user_id}` },
   ];
 
   return (
     <>
       <Head>
-        <title>Canvance - Editar tarefa</title>
+        <title>Canvance - Editar Usuário</title>
       </Head>
 
       <Container>
-        <Header title="Editar tarefa" breadcrumb={breadcrumb} />
+        <Header title="Editar Usuário" breadcrumb={breadcrumb} />
 
         <Content>
-          <ManageEditTask taskId={task_id as string} />
+          <ManageEditUser taskId={user_id as string} />
         </Content>
 
         <Sidebar />
@@ -44,4 +44,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return await handleAdminAuthentication(ctx);
 };
 
-export default EditTask;
+export default EditUser;

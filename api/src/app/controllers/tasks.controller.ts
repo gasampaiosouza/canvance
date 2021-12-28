@@ -58,14 +58,15 @@ async function getTaskByCategoryController(
       {
         $lookup: {
           from: 'completed-tasks',
-          let: { id: '$_id' },
+          let: { id: '$_id', categoryId: '$category' },
           as: taskMergedFieldName,
           pipeline: [
             {
               $match: {
                 $expr: {
                   $and: [
-                    { $eq: ['$taskId', '$$id'] },
+                    { $eq: ['$$categoryId', { $toObjectId: req.params.categoryId }] },
+                    { $eq: ['$newTask', '$$id'] },
                     {
                       // @ts-ignore
                       $eq: ['$userId', { $toObjectId: req.userId }],
@@ -86,20 +87,28 @@ async function getTaskByCategoryController(
         },
       },
 
+      // { $sort: { createdAt: -1 } },
+
       {
         $project: {
           _id: 1,
           title: 1,
           description: 1,
           relevance: 1,
+          category: 1,
           status: { $ifNull: ['$status', null] },
           createdAt: 1,
         },
       },
-      { $sort: { status: -1, relevance: -1 } },
     ]);
 
-    return res.status(200).send(tasks);
+    Task.populate(tasks, { path: 'category' }, (err, tasks) => {
+      if (err) {
+        return res.status(400).send({ error: 'Não foi possível listar as tarefas' });
+      }
+
+      return res.status(200).send(tasks);
+    });
   } catch (error) {
     console.log(error);
 
@@ -143,7 +152,7 @@ async function updateTaskByIdController(req: Request<{ taskId: string }>, res: R
   try {
     const task = await Task.findByIdAndUpdate(req.params.taskId, req.body, {
       new: true,
-    });
+    }).populate('category');
 
     return res.status(200).send(task);
   } catch (error) {

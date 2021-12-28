@@ -11,6 +11,7 @@ import Task from 'models/task.model';
 
 async function getAllDoneTasksController(req: Request, res: Response) {
   try {
+    // sort by createdAt and status as done
     const tasks = await DoneTask.find();
 
     return res.status(200).send(tasks);
@@ -24,7 +25,7 @@ async function getAllDoneTasksController(req: Request, res: Response) {
 }
 
 async function createDoneTasksController(req: Request, res: Response) {
-  const isValidTaskId = mongoose.isValidObjectId(req.body.taskId || '');
+  const isValidTaskId = mongoose.isValidObjectId(req.body.newTask || '');
   const isValidUserId = mongoose.isValidObjectId(req.body.userId || '');
 
   if (!isValidTaskId || !isValidUserId) {
@@ -33,7 +34,7 @@ async function createDoneTasksController(req: Request, res: Response) {
   }
 
   const { isMissingFields, fieldsMissing } = handleMissingFields(
-    ['taskId', 'userId', 'status'],
+    ['newTask', 'userId', 'status'],
     req.body
   );
 
@@ -49,7 +50,7 @@ async function createDoneTasksController(req: Request, res: Response) {
       return res.status(400).send({ error: 'Usuário não encontrado' });
     }
 
-    const taskExists = await Task.findOne({ _id: req.body.taskId });
+    const taskExists = await Task.findOne({ _id: req.body.newTask });
 
     if (!taskExists) {
       return res.status(400).send({ error: 'Tarefa não encontrada' });
@@ -57,7 +58,7 @@ async function createDoneTasksController(req: Request, res: Response) {
 
     const completedTaskExists = await DoneTask.findOne({
       userId: req.body.userId,
-      taskId: req.body.taskId,
+      newTask: req.body.newTask,
     });
 
     if (completedTaskExists) {
@@ -65,9 +66,12 @@ async function createDoneTasksController(req: Request, res: Response) {
       return;
     }
 
-    const task = await (await DoneTask.create(req.body)).populate('taskId');
+    const task = await DoneTask.create(req.body);
+    const populatedTask = await task.populate([
+      { path: 'newTask', populate: { path: 'category' } },
+    ]);
 
-    return res.status(201).send(task);
+    return res.status(201).send(populatedTask);
   } catch (error) {
     console.log(error);
 
@@ -83,7 +87,7 @@ async function getDoneTaskByCategoryIdController(req: Request, res: Response) {
 
   try {
     // @ts-ignore
-    const tasks = await DoneTask.find({ userId: req.userId });
+    const tasks = await DoneTask.find({ userId: req.userId }).sort({ createdAt: -1 });
 
     return res.status(200).send(tasks);
   } catch (error) {
@@ -145,7 +149,7 @@ async function deleteDoneTaskByIdController(
   }
 
   try {
-    const response = await DoneTask.deleteOne({ taskId: req.params.taskId });
+    const response = await DoneTask.deleteOne({ newTask: req.params.taskId });
 
     return res.status(202).send();
   } catch (error) {

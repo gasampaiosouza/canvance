@@ -28,7 +28,7 @@ interface FormProps {
   category: string;
 }
 
-const ManageNewTask = () => {
+const ManageNewUser = () => {
   const { allTasks, mutateTasks } = useTaskList();
 
   const defaultTheme = useTheme();
@@ -236,4 +236,4 @@ const ManageNewTask = () => {
   );
 };
 
-export default ManageNewTask;
+export default ManageNewUser;

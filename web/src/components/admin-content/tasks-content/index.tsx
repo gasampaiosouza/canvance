@@ -9,38 +9,22 @@ import { Box, BoxesContainer, Container, PageHeader } from './styles';
 import { DeleteOutline as DeleteIcon } from '@styled-icons/material-rounded';
 
 import api from 'services/api';
+import { useTaskList } from 'hooks/useTaskList';
 
 const ManageTasksContent = () => {
-  const [tasks, setTasks] = React.useState<ITask[]>([]);
-
-  React.useEffect(() => {
-    // get tasks with async axios
-    const getTasks = async () => {
-      try {
-        const response = await api.get<ITask[]>(`/tasks`);
-
-        setTasks(response.data);
-      } catch (error) {
-        console.log(error);
-        toast.error('Erro ao carregar as tarefas');
-      }
-    };
-
-    getTasks();
-  }, []);
-
-  // console.log(tasks);
+  const { allTasks, mutateTasks } = useTaskList();
 
   const handleDeleteTask = async (taskId: string) => {
     try {
       await api.delete(`/tasks/${taskId}`);
 
-      toast.success('Tarefa apagada com sucesso');
+      toast.success('Tarefa removida com sucesso');
 
-      setTasks((tasks) => tasks.filter((task) => task._id !== taskId));
+      const currentTasks = allTasks.filter((task: ITask) => task._id !== taskId);
+      mutateTasks(currentTasks);
     } catch (error) {
       console.log(error);
-      toast.error('Erro ao apagar a tarefa');
+      toast.error('Erro ao remover a tarefa');
     }
   };
 
@@ -55,16 +39,16 @@ const ManageTasksContent = () => {
       </PageHeader>
 
       <BoxesContainer>
-        {sortTasksByRelevance(tasks).map((task) => (
-          <Link href={`/admin/tasks/edit/${task._id}`} key={task._id}>
+        {sortTasksByRelevance(allTasks).map((task) => (
+          <Link href={`/admin/tasks/edit/${task?._id}`} key={task?._id}>
             <Box>
-              <span className="task-relevance">{task.relevance}</span>
+              <span className="task-relevance">{task?.relevance}</span>
 
-              <h3 className="task-title">{task.title}</h3>
-              <p className="task-description">{task.description}</p>
+              <h3 className="task-title">{task?.title}</h3>
+              <p className="task-description">{task?.description}</p>
 
               <div className="task-bottom">
-                <span className="task-category">{task.category.name}</span>
+                <span className="task-category">{task?.category?.name}</span>
                 <span
                   className="task-delete"
                   onClick={(ev) => {
@@ -72,12 +56,12 @@ const ManageTasksContent = () => {
                     ev.stopPropagation();
 
                     const confirmTaskDeletion = window.confirm(
-                      'Quer mesmo apagar a tarefa?'
+                      'Quer mesmo remover a tarefa?'
                     );
 
                     if (!confirmTaskDeletion) return;
 
-                    handleDeleteTask(task._id);
+                    handleDeleteTask(task?._id);
                   }}
                 >
                   <DeleteIcon />

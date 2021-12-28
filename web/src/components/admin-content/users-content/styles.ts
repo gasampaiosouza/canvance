@@ -44,7 +44,7 @@ export const Box = styled.a`
   display: grid;
   grid-template-rows: 0.5fr 1fr 1fr;
 
-  .task-relevance {
+  .user-relevance {
     position: absolute;
     top: 0;
     right: 0;
@@ -57,23 +57,23 @@ export const Box = styled.a`
     padding: 0.5rem;
   }
 
-  .task-title {
+  .user-title {
     font-size: 1.1rem;
     max-width: 90%;
     line-height: 1.4;
   }
 
-  .task-description {
+  .user-description {
     margin-top: 0.5rem;
     font-size: 0.75rem;
   }
 
-  .task-bottom {
+  .user-bottom {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
 
-    .task-delete {
+    .user-delete {
       color: ${({ theme }) => theme.colors.error};
       border: 1px solid ${({ theme }) => theme.colors.error};
       padding: 0.25rem;
@@ -91,7 +91,7 @@ export const Box = styled.a`
     }
   }
 
-  .task-category {
+  .user-category {
     display: block;
     margin-top: 1rem;
     font-size: 0.75rem;
@@ -108,7 +108,7 @@ export const Box = styled.a`
       color: ${({ theme }) => theme.colors.background};
     } */
 
-    .task-relevance {
+    .user-relevance {
       filter: brightness(1.15);
     }
   }

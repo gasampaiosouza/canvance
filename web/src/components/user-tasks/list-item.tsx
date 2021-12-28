@@ -1,5 +1,5 @@
 import { ITask } from '@/interfaces';
-import { toast } from 'react-toastify';
+import { useTaskList } from 'hooks/useTaskList';
 import {
   CompletedIcon,
   ListItemContainer,
@@ -10,33 +10,18 @@ import {
 
 interface ListItemProps {
   task: ITask;
-  addNewTask: (taskId: string) => Promise<void>;
-  removeTask: (taskId: string) => Promise<void>;
 }
 
-const ListItem: React.FC<ListItemProps> = ({ task, addNewTask, removeTask }) => {
-  // const { addNewTask, removeTask } = useTaskList();
+const ListItem: React.FC<ListItemProps> = ({ task }) => {
+  const { addNewTask, removeTask } = useTaskList();
 
   const handleTaskClick = async (taskId: string) => {
     if (task?.status === 'done') {
-      try {
-        await removeTask(taskId);
-        toast.success('Tarefa desfeita!');
-
-        return;
-      } catch (error) {
-        console.log(error);
-        toast.error('Ocorreu um erro ao desfazer a tarefa!');
-      }
+      removeTask(taskId);
+      return;
     }
 
-    try {
-      await addNewTask(taskId);
-      toast.success('Tarefa finalizada!');
-    } catch (error) {
-      console.log(error);
-      toast.error('Ocorreu um erro ao finalizar a tarefa.');
-    }
+    addNewTask(taskId);
   };
 
   return (

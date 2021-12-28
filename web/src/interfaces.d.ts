@@ -26,7 +26,7 @@ export interface ITask {
 
 export interface ITaskDone {
   _id: string;
-  taskId: ITask;
+  newTask: ITask;
   userId: string;
   status: string;
   createdAt: string;

@@ -1,91 +1,90 @@
 import { ITaskDone, ITask } from '@/interfaces';
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import api from 'services/api';
 import { useAuth } from 'hooks/useAuth';
 import { createContext } from 'use-context-selector';
 import { omit } from 'lodash';
 import { sortTasksByRelevance } from 'helpers/sort-tasks-by-relevance';
 import { toast } from 'react-toastify';
+import { useFetch } from 'hooks/useFetch';
+import { KeyedMutator } from 'swr';
+// import { useTasks } from 'hooks/useTasks';
 
 interface TasksContextData {
+  allTasks: ITask[];
   userTasks: ITask[];
-  finishedTasks: ITask[];
-  addNewTask: (taskId: string) => Promise<void>;
-  removeTask: (taskId: string) => Promise<void>;
+  addNewTask: (taskId: string) => void;
+  removeTask: (taskId: string) => void;
+
+  mutateTasks: KeyedMutator<ITask[]>;
 }
 
 export const TasksContext = createContext({} as TasksContextData);
 
 export const TasksProvider: React.FC = ({ children }) => {
-  const [userTasks, setUserTasks] = useState<ITask[]>([]);
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
-  // console.log(userTasks);
+  const tasksUrl = `/tasks/category/${user?.category._id}`;
+  const { data: tasks, mutate: mutateTasks } = useFetch<ITask[]>(tasksUrl);
 
-  const finishedTasks = userTasks.filter((task) => task.status == 'done');
+  const addNewTask = useCallback(
+    async (taskId: string) => {
+      try {
+        const newTask = { newTask: taskId, userId: user?._id, status: 'done' };
+        const { data } = await api.post<ITaskDone>('/tasks-done', newTask);
 
-  async function addNewTask(taskId: string) {
-    try {
-      const { data } = await api.post<ITaskDone>('/tasks-done', {
-        taskId,
-        userId: user?._id,
-        status: 'done',
-      });
+        const filteredTasks = tasks?.filter((task) => task._id !== taskId);
+        const mutatedTasks = [
+          { ...data.newTask, status: 'done' },
+          ...(filteredTasks || []),
+        ];
 
-      // console.log({ newTask: { ...data.taskId, status: 'done' } });
+        mutateTasks(mutatedTasks as ITask[], false);
 
-      setUserTasks((tasks) => [
-        ...tasks.filter((task) => task._id !== taskId),
-        { ...data.taskId, status: 'done' },
-      ]);
-    } catch (error: any) {
-      console.log(error);
-    }
-  }
+        toast.success('Tarefa finalizada!');
+      } catch (error: any) {
+        console.log(error);
+        toast.error('Ocorreu um erro ao finalizar a tarefa.');
+      }
+    },
+    [tasks, mutateTasks, user]
+  );
 
   async function removeTask(taskId: string) {
     try {
       await api.delete(`/tasks-done/${taskId}`);
 
-      setUserTasks((tasks) => {
-        const deletedTask = tasks.find((task) => task._id === taskId);
+      const deletedTask = tasks?.find((task) => task._id === taskId);
+      const mutatedTasks = [
+        omit(deletedTask, 'status'),
+        ...(tasks?.filter((task) => task._id !== taskId) || []),
+      ];
 
-        return [
-          omit(deletedTask, 'status'),
-          ...tasks.filter((task) => task._id !== taskId),
-        ];
-      });
+      mutateTasks(mutatedTasks, false);
+
+      toast.success('Tarefa desfeita!');
     } catch (error) {
       console.log(error);
+      toast.error('Ocorreu um erro ao desfazer a tarefa!');
     }
 
     return;
   }
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    async function getTasks() {
-      try {
-        const response = await api.get<ITask[]>(`/tasks/category/${user?.category._id}`);
-
-        setUserTasks(response.data || []);
-      } catch (error) {
-        console.log(error);
-        toast.error('Erro ao carregar tarefas');
-      }
-    }
-
-    getTasks();
-  }, [isAuthenticated]);
-
-  // status e relevance
-  // TODO: sort tasks by relevance and status == done
-  const sortedUserTasks = sortTasksByRelevance(userTasks);
+  // filter by user category
+  const userTasks = sortTasksByRelevance(tasks || []).filter(
+    (task) => task.category._id === user?.category._id
+  );
 
   return (
     <TasksContext.Provider
-      value={{ userTasks: sortedUserTasks, finishedTasks, addNewTask, removeTask }}
+      value={{
+        allTasks: tasks || [],
+        userTasks,
+        mutateTasks,
+        addNewTask,
+        removeTask,
+      }}
     >
       {children}
     </TasksContext.Provider>

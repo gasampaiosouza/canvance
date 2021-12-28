@@ -5,7 +5,7 @@ import Link from 'next/link';
 import api from 'services/api';
 import router from 'next/router';
 
-import { ICategory, ITask } from '@/interfaces';
+import { ICategory } from '@/interfaces';
 import { toast } from 'react-toastify';
 import {
   Container,
@@ -19,6 +19,8 @@ import {
 import { useTheme } from 'styled-components';
 import { lighten } from 'polished';
 import { ErrorMessage } from 'components/error-message';
+import { useTaskList } from 'hooks/useTaskList';
+import { pick } from 'lodash';
 
 interface IProps {
   taskId: string;
@@ -32,6 +34,9 @@ interface FormProps {
 }
 
 const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
+  const { allTasks, mutateTasks } = useTaskList();
+  const currentTask = allTasks.find((task) => task._id === taskId);
+
   const defaultTheme = useTheme();
 
   const [categories, setCategories] = React.useState<ICategory[]>([]);
@@ -40,22 +45,11 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
   const [formData, setFormData] = React.useState({} as FormProps);
 
   React.useEffect(() => {
-    const getTask = async () => {
-      try {
-        const { data } = await api.get(`/tasks/${taskId}`);
+    if (!currentTask) return;
 
-        setFormData({
-          title: data.title,
-          description: data.description,
-          relevance: data.relevance,
-          category: data.category._id,
-        });
-      } catch (err) {
-        console.log(err);
+    const formDataPick = pick(currentTask, ['title', 'description', 'relevance']);
 
-        toast.error('Erro ao carregar tarefa');
-      }
-    };
+    setFormData({ ...formDataPick, category: currentTask?.category?._id });
 
     const getCategories = async () => {
       try {
@@ -69,15 +63,16 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
       }
     };
 
-    getTask();
     getCategories();
-  }, []);
+  }, [currentTask]);
 
   const saveTask = async (data: FormProps) => {
     try {
-      await api.put(`/tasks/${taskId}`, data);
+      const response = await api.put(`/tasks/${taskId}`, data);
 
       toast.success('Tarefa atualizada com sucesso!');
+
+      return response.data;
     } catch (err) {
       toast.error('Ocorreu um erro ao tentar atualizar a tarefa.');
     }
@@ -105,7 +100,7 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
       isValid = false;
     }
 
-    if (!category?.length) {
+    if (!category.length) {
       const message = 'A categoria é obrigatória';
       setFormErrors((prev) => ({ ...prev, category: message }));
 
@@ -127,9 +122,13 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
 
     if (!isValid) return;
 
-    await saveTask(formData);
+    const updatedTask = await saveTask(formData);
 
-    router.push('/admin/tasks');
+    router.push('/admin/tasks').then(() => {
+      const filteredTasks = allTasks.filter((task) => task._id !== taskId);
+
+      mutateTasks([...filteredTasks, updatedTask], false);
+    });
   };
 
   const categoriesOptions = categories.map((category) => ({
@@ -137,7 +136,7 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
     label: category.name,
   }));
 
-  const selectValue = categories.find((category) => category._id === formData.category);
+  const selectValue = categories.find((category) => category._id === formData?.category);
 
   return (
     <Container>
@@ -145,10 +144,8 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
         <InputContainer>
           <Input
             placeholder="Título da tarefa"
-            value={formData.title}
-            onChange={(ev) =>
-              setFormData((prev) => ({ ...prev, title: ev.target.value }))
-            }
+            defaultValue={currentTask?.title || ''}
+            onBlur={(ev) => setFormData((prev) => ({ ...prev, title: ev.target.value }))}
             // {...register('title', {
             //   required: 'O título é obrigatório',
             // })}
@@ -187,10 +184,10 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
 
         <InputContainer>
           <Input
-            value={formData.relevance}
+            defaultValue={currentTask?.relevance || ''}
             type="number"
             placeholder="Relevância"
-            onChange={(ev) =>
+            onBlur={(ev) =>
               setFormData((prev) => ({ ...prev, relevance: Number(ev.target.value) }))
             }
             // {...register('relevance', {
@@ -205,9 +202,9 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
 
         <InputContainer style={{ gridColumn: '1 / span 3' }}>
           <Textarea
-            value={formData.description}
+            defaultValue={currentTask?.description || ''}
             placeholder="Descrição da tarefa"
-            onChange={(ev) =>
+            onBlur={(ev) =>
               setFormData((prev) => ({ ...prev, description: ev.target.value }))
             }
             // {...register('description', {

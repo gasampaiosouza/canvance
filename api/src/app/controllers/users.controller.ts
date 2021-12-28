@@ -69,7 +69,20 @@ async function deleteUserByIdController(req: Request, res: Response) {
   }
 }
 
+async function getAllUsersController(req: Request, res: Response) {
+  try {
+    const users = await User.find().populate('category');
+
+    return res.status(200).send(users);
+  } catch (error) {
+    console.log(error);
+
+    return res.status(400).send({ error: 'Não foi possível listar os usuários' });
+  }
+}
+
 const exportData = {
+  find: getAllUsersController,
   getByToken: getUserByTokenController,
   // updateById: updateUserByIdController,
   deleteById: deleteUserByIdController,
