@@ -1,7 +1,21 @@
-import { transparentize } from 'polished';
+import { lighten, transparentize } from 'polished';
+import { Theme } from 'react-select';
 
 const appTheme = {
   title: 'light',
+
+  select_default: function (theme: Theme) {
+    return {
+      ...theme,
+      borderRadius: 8,
+      colors: {
+        ...theme.colors,
+        text: appTheme.colors.text,
+        primary25: lighten(0.325, appTheme.colors.primary),
+        primary: appTheme.colors.primary,
+      },
+    };
+  },
 
   colors: {
     background: '#fff',

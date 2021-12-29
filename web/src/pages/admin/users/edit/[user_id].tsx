@@ -18,17 +18,17 @@ const EditUser = () => {
   const breadcrumb = [
     { label: 'Painel de administração', href: '/admin' },
     { label: 'Gerenciar usuários', href: '/admin/users' },
-    { label: 'Editar Usuário', href: `/admin/users/edit/${user_id}` },
+    { label: 'Editar usuário', href: `/admin/users/edit/${user_id}` },
   ];
 
   return (
     <>
       <Head>
-        <title>Canvance - Editar Usuário</title>
+        <title>Canvance - Editar usuário</title>
       </Head>
 
       <Container>
-        <Header title="Editar Usuário" breadcrumb={breadcrumb} />
+        <Header title="Editar usuário" breadcrumb={breadcrumb} />
 
         <Content>
           <ManageEditUser userId={user_id as string} />

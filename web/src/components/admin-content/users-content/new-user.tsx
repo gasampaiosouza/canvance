@@ -175,16 +175,7 @@ const ManageNewUser = () => {
               setFormData((prev) => ({ ...prev, category: val?.value || '' }))
             }
             options={categoriesOptions}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 8,
-              colors: {
-                ...theme.colors,
-                text: defaultTheme.colors.text,
-                primary25: lighten(0.325, defaultTheme.colors.primary),
-                primary: defaultTheme.colors.primary,
-              },
-            })}
+            theme={defaultTheme.select_default}
           />
 
           {formErrors?.category && <ErrorMessage message={formErrors.category || ''} />}

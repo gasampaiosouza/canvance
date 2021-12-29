@@ -10,7 +10,6 @@ import { Container, NewCategoryForm } from './styles';
 import { Input, InputContainer, PageBottom, Textarea } from '../styles';
 
 import { useTheme } from 'styled-components';
-import { lighten } from 'polished';
 import { ErrorMessage } from 'components/error-message';
 import { useCategoryList } from 'hooks/useCategoryList';
 
@@ -52,23 +51,23 @@ const ManageNewCategory = () => {
     // reset form errors
     setFormErrors({ name: '', description: '', priority: '' });
 
-    if (!name?.length) {
+    if (!name) {
       const message = 'O título é obrigatório';
       setFormErrors((prev) => ({ ...prev, title: message }));
 
       isValid = false;
     }
 
-    if (!description?.length) {
+    if (!description) {
       const message = 'A descrição é obrigatória';
       setFormErrors((prev) => ({ ...prev, description: message }));
 
       isValid = false;
     }
 
-    if (!priority?.length) {
+    if (!priority) {
       const message = 'A categoria é obrigatória';
-      setFormErrors((prev) => ({ ...prev, category: message }));
+      setFormErrors((prev) => ({ ...prev, priority: message }));
 
       isValid = false;
     }
@@ -113,8 +112,7 @@ const ManageNewCategory = () => {
       <NewCategoryForm>
         <InputContainer label="Nome da categoria">
           <Input
-            // placeholder="Nome"
-            value={formData.name}
+            value={formData.name || ''}
             onChange={(ev) => setFormData((prev) => ({ ...prev, name: ev.target.value }))}
           />
 
@@ -131,16 +129,7 @@ const ManageNewCategory = () => {
               setFormData((prev) => ({ ...prev, priority: val?.value || '' }))
             }
             options={priorityOptions}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 8,
-              colors: {
-                ...theme.colors,
-                text: defaultTheme.colors.text,
-                primary25: lighten(0.325, defaultTheme.colors.primary),
-                primary: defaultTheme.colors.primary,
-              },
-            })}
+            theme={defaultTheme.select_default}
           />
 
           {formErrors?.priority && <ErrorMessage message={formErrors.priority || ''} />}

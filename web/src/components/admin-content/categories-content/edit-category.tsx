@@ -6,31 +6,27 @@ import api from 'services/api';
 import router from 'next/router';
 
 import { toast } from 'react-toastify';
-import { Container, EditUserForm } from './styles';
-import { Input, InputContainer, PageBottom } from '../styles';
+import { Container, EditCategoryForm } from './styles';
+import { Input, InputContainer, PageBottom, Textarea } from '../styles';
 
 import { useTheme } from 'styled-components';
-import { lighten } from 'polished';
 import { ErrorMessage } from 'components/error-message';
 import { pick } from 'lodash';
-import { useUserList } from 'hooks/useUserList';
 import { useCategoryList } from 'hooks/useCategoryList';
 
 interface IProps {
-  userId: string;
+  category_id: string;
 }
 
 interface FormProps {
   name: string;
-  email: string;
-  category: string;
-  permissionLevel: number | string;
+  description: string;
+  priority: string;
 }
 
-const ManageEditUser: React.FC<IProps> = ({ userId }) => {
-  const { allCategories } = useCategoryList();
-  const { allUsers, mutateUsers } = useUserList();
-  const selectedUser = allUsers.find((user) => user._id === userId);
+const ManageEditCategory: React.FC<IProps> = ({ category_id }) => {
+  const { allCategories, mutateCategories } = useCategoryList();
+  const selectedCategory = allCategories.find((user) => user._id === category_id);
 
   const defaultTheme = useTheme();
 
@@ -38,32 +34,32 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
   const [formData, setFormData] = React.useState({} as FormProps);
 
   React.useEffect(() => {
-    if (!selectedUser) return;
+    if (!selectedCategory) return;
 
-    const formDataPick = pick(selectedUser, ['name', 'email', 'permissionLevel']);
+    const formDataPick = pick(selectedCategory, ['name', 'description', 'priority']);
 
-    setFormData({ ...formDataPick, category: selectedUser.category._id });
-  }, [selectedUser]);
+    setFormData({ ...formDataPick });
+  }, [selectedCategory]);
 
-  const saveUser = async (data: FormProps) => {
+  const saveCategory = async (data: FormProps) => {
     try {
-      const response = await api.put(`/user/profile/${userId}`, data);
+      const response = await api.put(`/category/${category_id}`, data);
 
-      toast.success('Usuário atualizado com sucesso!');
+      toast.success('Categoria atualizada com sucesso!');
 
       return response.data;
     } catch (err) {
-      toast.error('Ocorreu um erro ao tentar atualizar o usuário.');
+      toast.error('Ocorreu um erro ao tentar atualizar a categoria.');
     }
   };
 
   const isFormValid = () => {
-    const { name, email, permissionLevel, category } = formData;
+    const { name, description, priority } = formData;
 
     let isValid = true;
 
     // reset form errors
-    setFormErrors({ name: '', email: '', permissionLevel: '', category: '' });
+    setFormErrors({ name: '', description: '', priority: '' });
 
     if (!name) {
       const message = 'O nome é obrigatório';
@@ -72,30 +68,16 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
       isValid = false;
     }
 
-    if (!email) {
+    if (!description) {
       const message = 'O email é obrigatório';
       setFormErrors((prev) => ({ ...prev, description: message }));
 
       isValid = false;
     }
 
-    if (!category) {
+    if (!priority) {
       const message = 'A categoria é obrigatória';
-      setFormErrors((prev) => ({ ...prev, category: message }));
-
-      isValid = false;
-    }
-
-    if (!permissionLevel) {
-      const message = 'O nível de permissão é obrigatório';
-      setFormErrors((prev) => ({ ...prev, permissionLevel: message }));
-
-      isValid = false;
-    }
-
-    if (permissionLevel < 1 || permissionLevel > 3) {
-      const message = 'O nível de permissão deve estar entre 1 e 3';
-      setFormErrors((prev) => ({ ...prev, permissionLevel: message }));
+      setFormErrors((prev) => ({ ...prev, priority: message }));
 
       isValid = false;
     }
@@ -103,100 +85,77 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
     return isValid;
   };
 
-  const handleSaveUser = async () => {
+  const handleSaveCategory = async () => {
     const isValid = isFormValid();
 
     if (!isValid) return;
 
-    const updatedUser = await saveUser(formData);
+    const updatedCategory = await saveCategory(formData);
 
-    router.push('/admin/users').then(() => {
-      const filteredUsers = allUsers.filter((user) => user._id !== userId);
+    router.push('/admin/categories').then(() => {
+      const filteredCategories = allCategories.filter((user) => user._id !== category_id);
 
-      mutateUsers([...filteredUsers, updatedUser], false);
+      mutateCategories([...filteredCategories, updatedCategory], false);
     });
   };
 
-  const categoriesOptions = allCategories.map((category) => ({
-    value: category._id,
-    label: category.name,
-  }));
+  const priorityOptions = [
+    { value: 'high', label: 'Prioridade alta' },
+    { value: 'medium', label: 'Prioridade média' },
+    { value: 'low', label: 'Prioridade baixa' },
+  ];
 
-  const selectValue = allCategories.find(
-    (category) => category._id === formData?.category
+  const selectValue = priorityOptions.find(
+    (priority) => priority.value === selectedCategory?.priority
   );
 
   return (
     <Container>
-      <EditUserForm>
-        <InputContainer label="Nome do usuário">
+      <EditCategoryForm>
+        <InputContainer label="Nome da categoria">
           <Input
-            placeholder="Nome do usuário"
-            defaultValue={selectedUser?.name || ''}
+            defaultValue={selectedCategory?.name || ''}
             onBlur={(ev) => setFormData((prev) => ({ ...prev, name: ev.target.value }))}
           />
 
           {formErrors?.name && <ErrorMessage message={formErrors.name || ''} />}
         </InputContainer>
 
-        <InputContainer label="Email do usuário">
-          <Input
-            placeholder="Email do usuário"
-            defaultValue={selectedUser?.email || ''}
-            onBlur={(ev) => setFormData((prev) => ({ ...prev, email: ev.target.value }))}
-          />
-
-          {formErrors?.email && <ErrorMessage message={formErrors.email || ''} />}
-        </InputContainer>
-
-        <InputContainer label="Categoria do usuário">
+        <InputContainer label="Prioridade da categoria">
           <Select
-            value={
-              selectValue ? { value: selectValue?._id, label: selectValue?.name } : null
-            }
-            placeholder="Categoria"
+            defaultValue={selectValue}
+            placeholder=""
             className="category-select"
             classNamePrefix="category-select"
             onChange={(val) =>
-              setFormData((prev) => ({ ...prev, category: val?.value || '' }))
+              setFormData((prev) => ({ ...prev, priority: val?.value || '' }))
             }
-            options={categoriesOptions}
-            theme={(theme) => ({
-              ...theme,
-              borderRadius: 8,
-              colors: {
-                ...theme.colors,
-                text: defaultTheme.colors.text,
-                primary25: lighten(0.325, defaultTheme.colors.primary),
-                primary: defaultTheme.colors.primary,
-              },
-            })}
+            options={priorityOptions}
+            theme={defaultTheme.select_default}
           />
 
-          {formErrors?.category && <ErrorMessage message={formErrors.category || ''} />}
+          {formErrors?.priority && <ErrorMessage message={formErrors.priority || ''} />}
         </InputContainer>
 
-        <InputContainer label="Nível de permissão">
-          <Input
-            defaultValue={selectedUser?.permissionLevel || ''}
-            type="number"
-            placeholder="Nível de permissão"
-            onBlur={(ev) =>
-              setFormData((prev) => ({
-                ...prev,
-                permissionLevel: Number(ev.target.value),
-              }))
+        <InputContainer
+          label="Descrição da categoria"
+          style={{ gridColumn: '1 / span 3' }}
+        >
+          <Textarea
+            defaultValue={selectedCategory?.description || ''}
+            onChange={(ev) =>
+              setFormData((prev) => ({ ...prev, description: ev.target.value }))
             }
           />
 
-          {formErrors?.permissionLevel && (
-            <ErrorMessage message={formErrors.permissionLevel || ''} />
+          {formErrors?.description && (
+            <ErrorMessage message={formErrors.description || ''} />
           )}
         </InputContainer>
-      </EditUserForm>
+      </EditCategoryForm>
 
       <PageBottom>
-        <button className="create-entity" onClick={handleSaveUser}>
+        <button className="create-entity" onClick={handleSaveCategory}>
           Salvar
         </button>
 
@@ -208,4 +167,4 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
   );
 };
 
-export default ManageEditUser;
+export default ManageEditCategory;

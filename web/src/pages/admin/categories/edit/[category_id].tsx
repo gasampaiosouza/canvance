@@ -9,16 +9,16 @@ import { GetServerSideProps } from 'next';
 import { handleAdminAuthentication } from 'helpers/admin-auth';
 import { useRouter } from 'next/router';
 
-import ManageEditUser from 'components/admin-content/users-content/edit-user';
+import ManageEditCategory from 'components/admin-content/categories-content/edit-category';
 
-const EditUser = () => {
+const EditCategory = () => {
   const router = useRouter();
-  const { user_id } = router.query;
+  const { category_id } = router.query;
 
   const breadcrumb = [
     { label: 'Painel de administração', href: '/admin' },
-    { label: 'Gerenciar usuários', href: '/admin/users' },
-    { label: 'Editar Usuário', href: `/admin/users/edit/${user_id}` },
+    { label: 'Gerenciar categorias', href: '/admin/categories' },
+    { label: 'Editar categoria', href: `/admin/categories/edit/${category_id}` },
   ];
 
   return (
@@ -28,10 +28,10 @@ const EditUser = () => {
       </Head>
 
       <Container>
-        <Header title="Editar Usuário" breadcrumb={breadcrumb} />
+        <Header title="Editar categoria" breadcrumb={breadcrumb} />
 
         <Content>
-          <ManageEditUser userId={user_id as string} />
+          <ManageEditCategory category_id={category_id as string} />
         </Content>
 
         <Sidebar />
@@ -44,4 +44,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return await handleAdminAuthentication(ctx);
 };
 
-export default EditUser;
+export default EditCategory;
