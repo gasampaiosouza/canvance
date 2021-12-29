@@ -7,31 +7,26 @@ import { Container, Content } from 'styles/dashboard-styles';
 
 import { GetServerSideProps } from 'next';
 import { handleAdminAuthentication } from 'helpers/admin-auth';
-import { useRouter } from 'next/router';
+import ManageNewCategory from 'components/admin-content/categories-content/new-category';
 
-import ManageEditUser from 'components/admin-content/users-content/edit-user';
-
-const EditUser = () => {
-  const router = useRouter();
-  const { user_id } = router.query;
-
+const CreateNewCategory = () => {
   const breadcrumb = [
     { label: 'Painel de administração', href: '/admin' },
-    { label: 'Gerenciar usuários', href: '/admin/users' },
-    { label: 'Editar Usuário', href: `/admin/users/edit/${user_id}` },
+    { label: 'Gerenciar categorias', href: '/admin/categories' },
+    { label: 'Nova categoria', href: '/admin/categories/new' },
   ];
 
   return (
     <>
       <Head>
-        <title>Canvance - Editar Usuário</title>
+        <title>Canvance - Criar nova categoria</title>
       </Head>
 
       <Container>
-        <Header title="Editar Usuário" breadcrumb={breadcrumb} />
+        <Header title="Criar nova categoria" breadcrumb={breadcrumb} />
 
         <Content>
-          <ManageEditUser userId={user_id as string} />
+          <ManageNewCategory />
         </Content>
 
         <Sidebar />
@@ -44,4 +39,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return await handleAdminAuthentication(ctx);
 };
 
-export default EditUser;
+export default CreateNewCategory;

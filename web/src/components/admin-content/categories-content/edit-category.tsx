@@ -6,17 +6,19 @@ import api from 'services/api';
 import router from 'next/router';
 
 import { toast } from 'react-toastify';
-import { Container, NewUserForm } from './styles';
+import { Container, EditUserForm } from './styles';
 import { Input, InputContainer, PageBottom } from '../styles';
-
-import { patterns } from 'helpers/patterns';
 
 import { useTheme } from 'styled-components';
 import { lighten } from 'polished';
 import { ErrorMessage } from 'components/error-message';
-import { useCategoryList } from 'hooks/useCategoryList';
+import { pick } from 'lodash';
 import { useUserList } from 'hooks/useUserList';
-import { PermissionDescription } from './permission-description';
+import { useCategoryList } from 'hooks/useCategoryList';
+
+interface IProps {
+  userId: string;
+}
 
 interface FormProps {
   name: string;
@@ -25,34 +27,34 @@ interface FormProps {
   permissionLevel: number | string;
 }
 
-const ManageNewUser = () => {
+const ManageEditUser: React.FC<IProps> = ({ userId }) => {
   const { allCategories } = useCategoryList();
   const { allUsers, mutateUsers } = useUserList();
+  const selectedUser = allUsers.find((user) => user._id === userId);
 
   const defaultTheme = useTheme();
 
   const [formErrors, setFormErrors] = React.useState({} as FormProps);
   const [formData, setFormData] = React.useState({} as FormProps);
 
+  React.useEffect(() => {
+    if (!selectedUser) return;
+
+    const formDataPick = pick(selectedUser, ['name', 'email', 'permissionLevel']);
+
+    setFormData({ ...formDataPick, category: selectedUser.category._id });
+  }, [selectedUser]);
+
   const saveUser = async (data: FormProps) => {
     try {
-      const response = await api.post('/auth/register', {
-        ...data,
+      const response = await api.put(`/user/profile/${userId}`, data);
 
-        // default password
-        password: '123456789',
-      });
-
-      toast.success('Usuário criado com sucesso!');
+      toast.success('Usuário atualizado com sucesso!');
 
       return response.data;
     } catch (err) {
-      toast.error('Ocorreu um erro ao tentar criar o usuário.');
+      toast.error('Ocorreu um erro ao tentar atualizar o usuário.');
     }
-  };
-
-  const resetForm = () => {
-    setFormData({ name: '', email: '', permissionLevel: '', category: '' });
   };
 
   const isFormValid = () => {
@@ -63,28 +65,21 @@ const ManageNewUser = () => {
     // reset form errors
     setFormErrors({ name: '', email: '', permissionLevel: '', category: '' });
 
-    if (!name?.length) {
-      const message = 'O título é obrigatório';
+    if (!name) {
+      const message = 'O nome é obrigatório';
       setFormErrors((prev) => ({ ...prev, title: message }));
 
       isValid = false;
     }
 
-    if (!email?.length) {
-      const message = 'A descrição é obrigatória';
+    if (!email) {
+      const message = 'O email é obrigatório';
       setFormErrors((prev) => ({ ...prev, description: message }));
 
       isValid = false;
     }
 
-    if (!patterns.email.test(email)) {
-      const message = 'Email inválido';
-      setFormErrors((prev) => ({ ...prev, email: message }));
-
-      isValid = false;
-    }
-
-    if (!category?.length) {
+    if (!category) {
       const message = 'A categoria é obrigatória';
       setFormErrors((prev) => ({ ...prev, category: message }));
 
@@ -113,21 +108,13 @@ const ManageNewUser = () => {
 
     if (!isValid) return;
 
-    const newUser = await saveUser(formData);
+    const updatedUser = await saveUser(formData);
 
     router.push('/admin/users').then(() => {
-      mutateUsers([...allUsers, newUser], true);
+      const filteredUsers = allUsers.filter((user) => user._id !== userId);
+
+      mutateUsers([...filteredUsers, updatedUser], false);
     });
-  };
-
-  const handleSaveUserAndNew = () => {
-    const isValid = isFormValid();
-
-    if (!isValid) return;
-
-    saveUser(formData);
-
-    resetForm();
   };
 
   const categoriesOptions = allCategories.map((category) => ({
@@ -136,17 +123,17 @@ const ManageNewUser = () => {
   }));
 
   const selectValue = allCategories.find(
-    (category) => category._id === formData.category
+    (category) => category._id === formData?.category
   );
 
   return (
     <Container>
-      <NewUserForm>
+      <EditUserForm>
         <InputContainer label="Nome do usuário">
           <Input
             placeholder="Nome do usuário"
-            value={formData.name}
-            onChange={(ev) => setFormData((prev) => ({ ...prev, name: ev.target.value }))}
+            defaultValue={selectedUser?.name || ''}
+            onBlur={(ev) => setFormData((prev) => ({ ...prev, name: ev.target.value }))}
           />
 
           {formErrors?.name && <ErrorMessage message={formErrors.name || ''} />}
@@ -154,10 +141,9 @@ const ManageNewUser = () => {
 
         <InputContainer label="Email do usuário">
           <Input
-            value={formData.email}
-            onChange={(ev) =>
-              setFormData((prev) => ({ ...prev, email: ev.target.value }))
-            }
+            placeholder="Email do usuário"
+            defaultValue={selectedUser?.email || ''}
+            onBlur={(ev) => setFormData((prev) => ({ ...prev, email: ev.target.value }))}
           />
 
           {formErrors?.email && <ErrorMessage message={formErrors.email || ''} />}
@@ -168,7 +154,7 @@ const ManageNewUser = () => {
             value={
               selectValue ? { value: selectValue?._id, label: selectValue?.name } : null
             }
-            placeholder=""
+            placeholder="Categoria"
             className="category-select"
             classNamePrefix="category-select"
             onChange={(val) =>
@@ -192,9 +178,10 @@ const ManageNewUser = () => {
 
         <InputContainer label="Nível de permissão">
           <Input
-            value={formData.permissionLevel}
+            defaultValue={selectedUser?.permissionLevel || ''}
             type="number"
-            onChange={(ev) =>
+            placeholder="Nível de permissão"
+            onBlur={(ev) =>
               setFormData((prev) => ({
                 ...prev,
                 permissionLevel: Number(ev.target.value),
@@ -206,17 +193,11 @@ const ManageNewUser = () => {
             <ErrorMessage message={formErrors.permissionLevel || ''} />
           )}
         </InputContainer>
-      </NewUserForm>
-
-      <PermissionDescription />
+      </EditUserForm>
 
       <PageBottom>
         <button className="create-entity" onClick={handleSaveUser}>
           Salvar
-        </button>
-
-        <button className="create-entity_new" onClick={handleSaveUserAndNew}>
-          Salvar e novo
         </button>
 
         <Link href="/admin/users">
@@ -227,4 +208,4 @@ const ManageNewUser = () => {
   );
 };
 
-export default ManageNewUser;
+export default ManageEditUser;

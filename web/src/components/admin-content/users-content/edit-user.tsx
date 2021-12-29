@@ -5,111 +5,98 @@ import Link from 'next/link';
 import api from 'services/api';
 import router from 'next/router';
 
-import { ICategory } from '@/interfaces';
 import { toast } from 'react-toastify';
-import {
-  Container,
-  Input,
-  InputContainer,
-  NewTaskForm,
-  PageBottom,
-  Textarea,
-} from './styles';
+import { Container, EditUserForm } from './styles';
+import { Input, InputContainer, PageBottom } from '../styles';
 
 import { useTheme } from 'styled-components';
 import { lighten } from 'polished';
 import { ErrorMessage } from 'components/error-message';
-import { useTaskList } from 'hooks/useTaskList';
 import { pick } from 'lodash';
+import { useUserList } from 'hooks/useUserList';
+import { useCategoryList } from 'hooks/useCategoryList';
+import { PermissionDescription } from './permission-description';
 
 interface IProps {
-  taskId: string;
+  userId: string;
 }
 
 interface FormProps {
-  title: string;
-  description: string;
-  relevance: string | number;
+  name: string;
+  email: string;
   category: string;
+  permissionLevel: number | string;
 }
 
-const ManageEditUser: React.FC<IProps> = ({ taskId }) => {
-  const { allTasks, mutateTasks } = useTaskList();
-  const currentTask = allTasks.find((task) => task._id === taskId);
+const ManageEditUser: React.FC<IProps> = ({ userId }) => {
+  const { allCategories } = useCategoryList();
+  const { allUsers, mutateUsers } = useUserList();
+  const selectedUser = allUsers.find((user) => user._id === userId);
 
   const defaultTheme = useTheme();
-
-  const [categories, setCategories] = React.useState<ICategory[]>([]);
 
   const [formErrors, setFormErrors] = React.useState({} as FormProps);
   const [formData, setFormData] = React.useState({} as FormProps);
 
   React.useEffect(() => {
-    if (!currentTask) return;
+    if (!selectedUser) return;
 
-    const formDataPick = pick(currentTask, ['title', 'description', 'relevance']);
+    const formDataPick = pick(selectedUser, ['name', 'email', 'permissionLevel']);
 
-    setFormData({ ...formDataPick, category: currentTask?.category?._id });
+    setFormData({ ...formDataPick, category: selectedUser.category._id });
+  }, [selectedUser]);
 
-    const getCategories = async () => {
-      try {
-        const response = await api.get('/category');
-
-        setCategories(response.data);
-      } catch (error) {
-        console.log(error);
-
-        toast.error('Ocorreu um erro ao tentar carregar as categorias.');
-      }
-    };
-
-    getCategories();
-  }, [currentTask]);
-
-  const saveTask = async (data: FormProps) => {
+  const saveUser = async (data: FormProps) => {
     try {
-      const response = await api.put(`/tasks/${taskId}`, data);
+      const response = await api.put(`/user/profile/${userId}`, data);
 
-      toast.success('Tarefa atualizada com sucesso!');
+      toast.success('Usuário atualizado com sucesso!');
 
       return response.data;
     } catch (err) {
-      toast.error('Ocorreu um erro ao tentar atualizar a tarefa.');
+      toast.error('Ocorreu um erro ao tentar atualizar o usuário.');
     }
   };
 
   const isFormValid = () => {
-    const { title, description, relevance, category } = formData;
+    const { name, email, permissionLevel, category } = formData;
 
     let isValid = true;
 
     // reset form errors
-    setFormErrors({ title: '', description: '', relevance: '', category: '' });
+    setFormErrors({ name: '', email: '', permissionLevel: '', category: '' });
 
-    if (!title?.length) {
-      const message = 'O título é obrigatório';
+    if (!name) {
+      const message = 'O nome é obrigatório';
       setFormErrors((prev) => ({ ...prev, title: message }));
 
       isValid = false;
     }
 
-    if (!description?.length) {
-      const message = 'A descrição é obrigatória';
+    if (!email) {
+      const message = 'O email é obrigatório';
       setFormErrors((prev) => ({ ...prev, description: message }));
 
       isValid = false;
     }
 
-    if (!category.length) {
+    if (!category) {
       const message = 'A categoria é obrigatória';
       setFormErrors((prev) => ({ ...prev, category: message }));
 
       isValid = false;
     }
 
-    if (!relevance || relevance < 1 || relevance > 100) {
-      const message = 'A relevância deve estar entre 1 e 100';
-      setFormErrors((prev) => ({ ...prev, relevance: message }));
+    if (!permissionLevel) {
+      const message = 'O nível de permissão é obrigatório';
+      setFormErrors((prev) => ({ ...prev, permissionLevel: message }));
+
+      isValid = false;
+    }
+
+    if (permissionLevel < 1 || permissionLevel > 3) {
+      const message = 'O nível de permissão deve estar entre 1 e 3';
+      setFormErrors((prev) => ({ ...prev, permissionLevel: message }));
 
       isValid = false;
     }
@@ -117,49 +104,57 @@ const ManageEditUser: React.FC<IProps> = ({ taskId }) => {
     return isValid;
   };
 
-  const handleSaveTask = async () => {
+  const handleSaveUser = async () => {
     const isValid = isFormValid();
 
     if (!isValid) return;
 
-    const updatedTask = await saveTask(formData);
+    const updatedUser = await saveUser(formData);
 
-    router.push('/admin/tasks').then(() => {
-      const filteredTasks = allTasks.filter((task) => task._id !== taskId);
+    router.push('/admin/users').then(() => {
+      const filteredUsers = allUsers.filter((user) => user._id !== userId);
 
-      mutateTasks([...filteredTasks, updatedTask], false);
+      mutateUsers([...filteredUsers, updatedUser], false);
     });
   };
 
-  const categoriesOptions = categories.map((category) => ({
+  const categoriesOptions = allCategories.map((category) => ({
     value: category._id,
     label: category.name,
   }));
 
-  const selectValue = categories.find((category) => category._id === formData?.category);
+  const selectValue = allCategories.find(
+    (category) => category._id === formData?.category
+  );
 
   return (
     <Container>
-      <NewTaskForm>
-        <InputContainer>
+      <EditUserForm>
+        <InputContainer label="Nome do usuário">
           <Input
-            placeholder="Título da tarefa"
-            defaultValue={currentTask?.title || ''}
-            onBlur={(ev) => setFormData((prev) => ({ ...prev, title: ev.target.value }))}
-            // {...register('title', {
-            //   required: 'O título é obrigatório',
-            // })}
+            placeholder="Nome do usuário"
+            defaultValue={selectedUser?.name || ''}
+            onBlur={(ev) => setFormData((prev) => ({ ...prev, name: ev.target.value }))}
           />
 
-          {formErrors?.title && <ErrorMessage message={formErrors.title || ''} />}
+          {formErrors?.name && <ErrorMessage message={formErrors.name || ''} />}
         </InputContainer>
 
-        <InputContainer>
+        <InputContainer label="Email do usuário">
+          <Input
+            placeholder="Email do usuário"
+            defaultValue={selectedUser?.email || ''}
+            onBlur={(ev) => setFormData((prev) => ({ ...prev, email: ev.target.value }))}
+          />
+
+          {formErrors?.email && <ErrorMessage message={formErrors.email || ''} />}
+        </InputContainer>
+
+        <InputContainer label="Categoria do usuário">
           <Select
             value={
               selectValue ? { value: selectValue?._id, label: selectValue?.name } : null
             }
-            // onChange={(val) => onChange(val?.value)}
             placeholder="Categoria"
             className="category-select"
             classNamePrefix="category-select"
@@ -182,49 +177,34 @@ const ManageEditUser: React.FC<IProps> = ({ taskId }) => {
           {formErrors?.category && <ErrorMessage message={formErrors.category || ''} />}
         </InputContainer>
 
-        <InputContainer>
+        <InputContainer label="Nível de permissão">
           <Input
-            defaultValue={currentTask?.relevance || ''}
+            defaultValue={selectedUser?.permissionLevel || ''}
             type="number"
-            placeholder="Relevância"
+            placeholder="Nível de permissão"
             onBlur={(ev) =>
-              setFormData((prev) => ({ ...prev, relevance: Number(ev.target.value) }))
+              setFormData((prev) => ({
+                ...prev,
+                permissionLevel: Number(ev.target.value),
+              }))
             }
-            // {...register('relevance', {
-            //   required: 'A relevância é obrigatória',
-            //   min: { value: 0, message: 'O valor deve ser entre 0 e 100.' },
-            //   max: { value: 100, message: 'O valor deve ser entre 0 e 100.' },
-            // })}
           />
 
-          {formErrors?.relevance && <ErrorMessage message={formErrors.relevance || ''} />}
-        </InputContainer>
-
-        <InputContainer style={{ gridColumn: '1 / span 3' }}>
-          <Textarea
-            defaultValue={currentTask?.description || ''}
-            placeholder="Descrição da tarefa"
-            onBlur={(ev) =>
-              setFormData((prev) => ({ ...prev, description: ev.target.value }))
-            }
-            // {...register('description', {
-            //   required: 'A descrição é obrigatória',
-            // })}
-          />
-
-          {formErrors?.description && (
-            <ErrorMessage message={formErrors.description || ''} />
+          {formErrors?.permissionLevel && (
+            <ErrorMessage message={formErrors.permissionLevel || ''} />
           )}
         </InputContainer>
-      </NewTaskForm>
+      </EditUserForm>
+
+      <PermissionDescription />
 
       <PageBottom>
-        <button className="create-task" onClick={handleSaveTask}>
+        <button className="create-entity" onClick={handleSaveUser}>
           Salvar
         </button>
 
-        <Link href="/admin/tasks">
-          <a className="create-task_cancel">Cancelar</a>
+        <Link href="/admin/users">
+          <a className="create-entity_cancel">Cancelar</a>
         </Link>
       </PageBottom>
     </Container>

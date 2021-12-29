@@ -63,6 +63,28 @@ const globalStyles = createGlobalStyle`
     color: ${(props) => props.theme.colors.text};
     transition: 0.3s ease-in-out;
   }
+
+  // react select
+  .category-select__control {
+    height: 100% !important;
+    min-height: 45px !important;
+    text-align: left !important;
+    border-color: ${({ theme }) => theme.colors.border} !important;
+
+    :hover {
+      border-color: ${({ theme }) => theme.colors.border} !important;
+    }
+  }
+
+  .category-select__placeholder,
+  .category-select__single-value,
+  .category-select__option {
+    font-size: 0.9rem !important;
+  }
+
+  .category-select__value-container {
+    padding-left: 16px !important;
+  }
 `;
 
 export default globalStyles;

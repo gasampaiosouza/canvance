@@ -2,7 +2,7 @@ export interface ICategory {
   _id: string;
   name: string;
   description: string;
-  priority: string;
+  priority: 'high' | 'medium' | 'low';
 }
 
 export interface IUser {

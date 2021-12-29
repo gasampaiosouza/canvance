@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 
 export const Container = styled.section`
-  /* height: 100%; */
+  height: 100%;
 
   > h2 {
     text-transform: uppercase;
   }
 
-  .task-relevance {
+  .category-priority {
     position: absolute;
     top: 0;
     right: 0;
@@ -20,23 +20,23 @@ export const Container = styled.section`
     padding: 0.5rem;
   }
 
-  .task-title {
+  .category-name {
     font-size: 1.1rem;
-    max-width: 90%;
+    max-width: 70%;
     line-height: 1.4;
   }
 
-  .task-description {
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
+  .category-description {
+    margin-top: 0.25rem;
+    font-size: 0.7rem;
   }
 
-  .task-bottom {
+  .category-bottom {
     display: flex;
-    justify-content: space-between;
     align-items: flex-end;
+    justify-content: flex-end;
 
-    .task-delete {
+    .category-delete {
       color: ${({ theme }) => theme.colors.error};
       border: 1px solid ${({ theme }) => theme.colors.error};
       padding: 0.25rem;
@@ -54,30 +54,52 @@ export const Container = styled.section`
     }
   }
 
-  .task-category {
-    display: block;
-    margin-top: 1rem;
-    font-size: 0.75rem;
-    color: ${({ theme }) => theme.colors.primary};
-    font-weight: 700;
-
-    align-self: flex-end;
+  .category-relevance {
+    filter: brightness(1.15);
   }
 `;
 
-// new task
-export const NewTaskForm = styled.section`
+// new category
+export const NewCategoryForm = styled.section`
   max-width: 50%;
   margin: 0 auto;
 
   display: grid;
-  grid-template-columns: 1fr 0.5fr 110px;
+  grid-template-columns: 1fr 1fr;
+
   gap: 1rem;
 
   padding-bottom: 82px;
 `;
 
-// edit task
-export const EditTaskForm = styled(NewTaskForm)`
+// edit category
+export const EditCategoryForm = styled(NewCategoryForm)`
   //...
+`;
+
+export const PermissionLevelDescription = styled.div`
+  max-width: 50%;
+  margin: 0 auto;
+
+  text-align: left;
+
+  > h4 {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  ul {
+    color: ${({ theme }) => theme.colors.text_soft};
+    list-style: none;
+    font-size: 0.9rem;
+
+    li {
+      margin-bottom: 0.75rem;
+
+      strong {
+        color: ${({ theme }) => theme.colors.primary};
+        font-weight: 500;
+      }
+    }
+  }
 `;

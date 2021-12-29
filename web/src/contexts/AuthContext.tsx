@@ -56,10 +56,10 @@ export const AuthProvider: React.FC = ({ children }) => {
     }
   }, []);
 
-  const signOut = useCallback(() => {
+  const signOut = () => {
     destroyCookie(undefined, 'canvance.token');
-    Router.reload();
-  }, []);
+    Router.push('/login');
+  };
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut }}>

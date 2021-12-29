@@ -14,7 +14,7 @@ export const Container = styled.section`
 `;
 
 export const Content = styled.section`
-  overflow-y: auto;
+  /* overflow-y: auto; */
   padding: 1rem 2rem;
   grid-area: dashboard_content;
   background: ${({ theme }) => theme.colors.background};

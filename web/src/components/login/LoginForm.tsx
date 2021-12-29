@@ -17,11 +17,9 @@ interface SubmitProps {
 export const LoginForm: React.FC = () => {
   const { signIn } = useAuth();
   const [submitText, setSubmitText] = useState('Fazer login');
-  const { register, handleSubmit, formState, setError } = useForm<SubmitProps>({
-    // reValidateMode: 'onBlur',
-  });
+  const { register, handleSubmit, formState, setError } = useForm<SubmitProps>();
 
-  const { errors, dirtyFields } = formState;
+  const { errors } = formState;
 
   // useEffect(() => {
   //   toast.info('Toast info');
@@ -71,7 +69,7 @@ export const LoginForm: React.FC = () => {
 
   return (
     <Form onSubmit={handleSubmit(handleSignIn)}>
-      <InputContainer className={handleClassValidation(errors?.email, dirtyFields)}>
+      <InputContainer className={handleClassValidation(errors?.email)}>
         <div className="icon">
           <Email />
         </div>
@@ -84,7 +82,7 @@ export const LoginForm: React.FC = () => {
       </InputContainer>
       {errors?.email && <ErrorMessage message={errors.email.message || ''} />}
 
-      <InputContainer className={handleClassValidation(errors?.password, dirtyFields)}>
+      <InputContainer className={handleClassValidation(errors?.password)}>
         <div className="icon">
           <Lock />
         </div>

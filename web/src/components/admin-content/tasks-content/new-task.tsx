@@ -7,14 +7,8 @@ import router from 'next/router';
 
 import { ICategory } from '@/interfaces';
 import { toast } from 'react-toastify';
-import {
-  Container,
-  Input,
-  InputContainer,
-  NewTaskForm,
-  PageBottom,
-  Textarea,
-} from './styles';
+import { Container, NewTaskForm } from './styles';
+import { Input, InputContainer, PageBottom, Textarea } from '../styles';
 
 import { useTheme } from 'styled-components';
 import { lighten } from 'polished';
@@ -147,9 +141,6 @@ const ManageNewTask = () => {
             onChange={(ev) =>
               setFormData((prev) => ({ ...prev, title: ev.target.value }))
             }
-            // {...register('title', {
-            //   required: 'O título é obrigatório',
-            // })}
           />
 
           {formErrors?.title && <ErrorMessage message={formErrors.title || ''} />}
@@ -160,7 +151,6 @@ const ManageNewTask = () => {
             value={
               selectValue ? { value: selectValue?._id, label: selectValue?.name } : null
             }
-            // onChange={(val) => onChange(val?.value)}
             placeholder="Categoria"
             className="category-select"
             classNamePrefix="category-select"
@@ -191,11 +181,6 @@ const ManageNewTask = () => {
             onChange={(ev) =>
               setFormData((prev) => ({ ...prev, relevance: Number(ev.target.value) }))
             }
-            // {...register('relevance', {
-            //   required: 'A relevância é obrigatória',
-            //   min: { value: 0, message: 'O valor deve ser entre 0 e 100.' },
-            //   max: { value: 100, message: 'O valor deve ser entre 0 e 100.' },
-            // })}
           />
 
           {formErrors?.relevance && <ErrorMessage message={formErrors.relevance || ''} />}
@@ -208,9 +193,6 @@ const ManageNewTask = () => {
             onChange={(ev) =>
               setFormData((prev) => ({ ...prev, description: ev.target.value }))
             }
-            // {...register('description', {
-            //   required: 'A descrição é obrigatória',
-            // })}
           />
 
           {formErrors?.description && (

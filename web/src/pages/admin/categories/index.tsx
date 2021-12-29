@@ -7,31 +7,25 @@ import { Container, Content } from 'styles/dashboard-styles';
 
 import { GetServerSideProps } from 'next';
 import { handleAdminAuthentication } from 'helpers/admin-auth';
-import { useRouter } from 'next/router';
+import ManageCategoriesContent from 'components/admin-content/categories-content';
 
-import ManageEditUser from 'components/admin-content/users-content/edit-user';
-
-const EditUser = () => {
-  const router = useRouter();
-  const { user_id } = router.query;
-
+const ManageCategories = () => {
   const breadcrumb = [
     { label: 'Painel de administração', href: '/admin' },
-    { label: 'Gerenciar usuários', href: '/admin/users' },
-    { label: 'Editar Usuário', href: `/admin/users/edit/${user_id}` },
+    { label: 'Gerenciar categorias', href: '/admin/categories' },
   ];
 
   return (
     <>
       <Head>
-        <title>Canvance - Editar Usuário</title>
+        <title>Canvance - Gerenciar categorias</title>
       </Head>
 
       <Container>
-        <Header title="Editar Usuário" breadcrumb={breadcrumb} />
+        <Header title="Gerenciar categorias" breadcrumb={breadcrumb} />
 
         <Content>
-          <ManageEditUser userId={user_id as string} />
+          <ManageCategoriesContent />
         </Content>
 
         <Sidebar />
@@ -44,4 +38,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return await handleAdminAuthentication(ctx);
 };
 
-export default EditUser;
+export default ManageCategories;

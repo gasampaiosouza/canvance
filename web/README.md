@@ -16,3 +16,9 @@ const cases: casesType = {
   undone: () => setListToShow(notDoneTasks),
 };
 ```
+
+## Todo
+
+- Trocar as categorias na edição e criação de tasks pro hook
+- Colocar label /\
+- resumo de tarefas finalizadas na página de minha conta

@@ -7,14 +7,8 @@ import router from 'next/router';
 
 import { ICategory } from '@/interfaces';
 import { toast } from 'react-toastify';
-import {
-  Container,
-  Input,
-  InputContainer,
-  NewTaskForm,
-  PageBottom,
-  Textarea,
-} from './styles';
+import { Container, EditTaskForm } from './styles';
+import { Input, InputContainer, PageBottom, Textarea } from '../styles';
 
 import { useTheme } from 'styled-components';
 import { lighten } from 'polished';
@@ -140,7 +134,7 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
 
   return (
     <Container>
-      <NewTaskForm>
+      <EditTaskForm>
         <InputContainer>
           <Input
             placeholder="Título da tarefa"
@@ -216,7 +210,7 @@ const ManageEditTask: React.FC<IProps> = ({ taskId }) => {
             <ErrorMessage message={formErrors.description || ''} />
           )}
         </InputContainer>
-      </NewTaskForm>
+      </EditTaskForm>
 
       <PageBottom>
         <button className="create-task" onClick={handleSaveTask}>

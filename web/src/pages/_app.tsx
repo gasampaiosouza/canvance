@@ -8,20 +8,30 @@ import GlobalStyle from '../styles/global';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { TasksProvider } from 'contexts/TaskContext';
+import { UsersProvider } from 'contexts/UserContext';
+import { CategoriesProvider } from 'contexts/CategoryContext';
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <AuthProvider>
-      <TasksProvider>
-        <Theme theme={appTheme}>
-          <Component {...pageProps} />
-          <GlobalStyle />
+      <UsersProvider>
+        <CategoriesProvider>
+          <TasksProvider>
+            <Theme theme={appTheme}>
+              <Component {...pageProps} />
+              <GlobalStyle />
 
-          <ToastContainer position="top-right" autoClose={4500} />
+              <ToastContainer position="top-right" autoClose={4500} />
 
-          <Loading height={3} color={appTheme.colors.primary} />
-        </Theme>
-      </TasksProvider>
+              <Loading
+                height={3}
+                color={appTheme.colors.primary}
+                options={{ showSpinner: false }}
+              />
+            </Theme>
+          </TasksProvider>
+        </CategoriesProvider>
+      </UsersProvider>
     </AuthProvider>
   );
 };

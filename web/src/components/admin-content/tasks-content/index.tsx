@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { ITask } from '@/interfaces';
 import { sortTasksByRelevance } from 'helpers/sort-tasks-by-relevance';
 import { toast } from 'react-toastify';
-import { Box, BoxesContainer, Container, PageHeader } from './styles';
+import { Container } from './styles';
 
 import { DeleteOutline as DeleteIcon } from '@styled-icons/material-rounded';
 
 import api from 'services/api';
 import { useTaskList } from 'hooks/useTaskList';
+import { Box, BoxesContainer, PageHeader } from '../styles';
 
 const ManageTasksContent = () => {
   const { allTasks, mutateTasks } = useTaskList();
@@ -34,7 +35,7 @@ const ManageTasksContent = () => {
         <h2>Todas as Tarefas</h2>
 
         <Link href="/admin/tasks/new">
-          <a className="new-task_button">Nova tarefa</a>
+          <a className="new-button">Nova tarefa</a>
         </Link>
       </PageHeader>
 

@@ -90,5 +90,3 @@ export const TasksProvider: React.FC = ({ children }) => {
     </TasksContext.Provider>
   );
 };
-
-export function useTaskList() {}
