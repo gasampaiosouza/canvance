@@ -15,7 +15,7 @@ export const Container = styled.section`
 
 export const Content = styled.section`
   /* overflow-y: auto; */
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem;
   grid-area: dashboard_content;
   background: ${({ theme }) => theme.colors.background};
 `;

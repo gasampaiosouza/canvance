@@ -64,6 +64,27 @@ const globalStyles = createGlobalStyle`
     transition: 0.3s ease-in-out;
   }
 
+  .default-button {
+    display: inline-block;
+    color: ${({ theme }) => theme.colors.background};
+    background: ${({ theme }) => theme.colors.primary};
+
+    border: 0;
+    border-radius: 5px;
+
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    transition: 0.2s ease-in-out;
+    padding: 0.5rem 2rem;
+
+    margin-top: 1.5rem;
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+
   // react select
   .category-select__control {
     height: 100% !important;

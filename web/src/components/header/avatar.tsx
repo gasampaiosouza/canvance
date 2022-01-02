@@ -21,7 +21,7 @@ const Avatar: React.FC<IAvatar> = ({ name }) => {
   const random_number = Math.floor(Math.random() * avatar_colors.length);
 
   return (
-    <Link href="/">
+    <Link href="/account">
       <UserInfo color={avatar_colors[random_number]}>{getNameInitials(name)}</UserInfo>
     </Link>
   );

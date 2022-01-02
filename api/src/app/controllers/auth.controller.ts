@@ -43,7 +43,7 @@ async function registerUserController(req: Request, res: Response) {
 
     return res.send({ user: omit(user.toJSON(), 'password'), token });
   } catch (error: any) {
-    console.error(error);
+    console.log(error);
 
     return res.status(400).send({ error_message: 'Ocorreu um erro inesperado.' });
   }
@@ -81,7 +81,7 @@ async function loginUserController(req: Request, res: Response) {
 
     return res.send({ user: omit(user.toJSON(), 'password'), token });
   } catch (error: any) {
-    console.error(error);
+    console.log(error);
 
     return res.status(400).send({ error_message: 'Ocorreu um erro inesperado.' });
   }
@@ -99,7 +99,7 @@ async function forgotPasswordController(req: Request, res: Response) {
     const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
-      res.status(404).send({ error_message: 'Usuário não encontrado' });
+      res.status(404).send({ success: false, message: 'Usuário não encontrado' });
       return;
     }
 
@@ -112,16 +112,29 @@ async function forgotPasswordController(req: Request, res: Response) {
       $set: { passwordResetToken: token, passwordResetExpires: now },
     });
 
-    transport.sendMail({
-      to: req.body.email,
-      from: 'gabriel.sampaio@econverse.com.br',
-      subject: 'Esqueceu sua senha? - Canvance',
-      html: `<p>Esqueceu sua senha? Sem problemas! Use esse token: ${token}</p>`,
-    });
+    transport.sendMail(
+      {
+        from: 'Canvance 👻 <canvance@econverse.com.br>',
+        to: req.body.email,
+        subject: 'Canvance - Esqueceu sua senha?',
+        // text: `Acesse esse link para alterar a sua senha`,
+        html: `Clique <a href="http://localhost:3000/account/change-password/${token}">aqui</a> para alterar a sua senha`,
+      },
+      (err, info) => {
+        if (err) {
+          console.log(err);
+          return res
+            .status(400)
+            .send({ success: false, message: 'Ocorreu um erro inesperado.' });
+        }
 
-    return res.status(200).send();
+        return res
+          .status(200)
+          .send({ success: true, message: 'Email enviado com sucesso!' });
+      }
+    );
   } catch (error: any) {
-    console.error(error);
+    console.log(error);
 
     res.status(400).send({ error_message: 'Ocorreu um erro - Esqueceu a senha' });
   }
@@ -170,7 +183,7 @@ async function resetPasswordController(req: Request, res: Response) {
 
     return res.status(200).send();
   } catch (error: any) {
-    console.error(error);
+    console.log(error);
 
     res.status(400).send({ error_message: 'Ocorreu um erro - Redefinir a senha' });
   }

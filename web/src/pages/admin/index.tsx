@@ -11,7 +11,7 @@ import { handleAdminAuthentication } from 'helpers/admin-auth';
 
 const AdminPanel = () => {
   const breadcrumb = [
-    { label: 'Meu progresso', href: '/' },
+    { label: 'Meu progresso', href: '/dashboard' },
     { label: 'Painel de administração', href: '/admin' },
   ];
 

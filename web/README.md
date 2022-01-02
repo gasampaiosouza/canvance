@@ -19,6 +19,8 @@ const cases: casesType = {
 
 ## Todo
 
-- Trocar as categorias na edição e criação de tasks pro hook
-- Colocar label /\
-- resumo de tarefas finalizadas na página de minha conta
+[x] Trocar as categorias na edição e criação de tasks pro hook
+[x] Colocar label /\
+[x] resetar a senha
+[] resumo de tarefas finalizadas na página de minha conta
+[] formulário de perguntas
