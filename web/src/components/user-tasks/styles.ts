@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import { Check, Close } from '@styled-icons/material-rounded';
-import { darken } from 'polished';
+import { darken, size } from 'polished';
 
 export const Container = styled.section`
   margin-top: 2rem;
@@ -31,7 +31,7 @@ export const List = styled.section`
   margin-top: 2rem;
 `;
 
-export const ListItemContainer = styled.div`
+export const ListItemContainer = styled.a`
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -77,4 +77,131 @@ export const UncompletedIcon = styled(Close)`
   ${defaultIconStyles}
 
   background: ${({ theme }) => theme.colors.error};
+`;
+
+// task modal
+interface ModalProps {
+  isOpen: boolean;
+}
+
+export const TaskModalContainer = styled.div<ModalProps>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  visibility: ${({ isOpen }) => (isOpen ? 'visible' : 'hidden')};
+  transition: 0.2s ease-in-out;
+`;
+
+export const TaskModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: ${({ theme }) => theme.colors.text};
+  opacity: 0.5;
+`;
+
+interface TaskStatusProps {
+  completed: boolean;
+}
+
+export const TaskCompletedStatus = styled.div<TaskStatusProps>`
+  display: flex;
+  align-items: center;
+
+  ::before {
+    content: '';
+
+    ${size(8)};
+
+    margin-right: 0.5rem;
+
+    background: ${({ completed, theme }) =>
+      completed ? theme.colors.success : theme.colors.error};
+    border-radius: 50%;
+  }
+`;
+
+export const TaskModalContent = styled.div`
+  position: absolute;
+  background: ${({ theme }) => theme.colors.background};
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  min-width: 50%;
+  min-height: 200px;
+  border-radius: 5px;
+`;
+
+export const TaskContentContainer = styled.div`
+  margin: 0 auto;
+
+  .modal-close {
+    position: absolute;
+    cursor: pointer;
+
+    top: 0.75rem;
+    right: 0.65rem;
+
+    width: 1.5rem;
+  }
+
+  .modal-information {
+    display: flex;
+    align-items: center;
+
+    gap: 0.75rem;
+
+    padding: 1rem 2rem 0;
+    font-size: 0.8rem;
+
+    .modal-date {
+      color: ${({ theme }) => theme.colors.text_soft};
+    }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    padding: 0 3rem 0 2rem;
+
+    font-size: 0.9rem;
+
+    .task-title {
+      max-width: 80%;
+      line-height: 1.3;
+      font-weight: 500;
+    }
+
+    .task-finish {
+      background: none;
+      border: 1px solid ${({ theme }) => theme.colors.primary};
+      color: ${({ theme }) => theme.colors.primary};
+      margin-top: 0;
+
+      align-self: flex-start;
+
+      padding: 0.5rem 1rem;
+
+      :hover {
+        background: ${({ theme }) => theme.colors.primary};
+        color: ${({ theme }) => theme.colors.background};
+      }
+    }
+  }
+
+  .task-description {
+    padding: 1rem 2rem;
+    line-height: 1.5;
+    color: ${({ theme }) => darken(0.2, theme.colors.text_soft)};
+  }
 `;

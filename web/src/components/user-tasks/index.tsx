@@ -1,17 +1,22 @@
 import { useAuth } from 'hooks/useAuth';
 import { useTaskList } from 'hooks/useTaskList';
+import { useRouter } from 'next/router';
 import ListItem from './list-item';
 import { Container, List, Title } from './styles';
+import TaskModal from './task-modal';
 
 interface UserTasksProps {
   //...
 }
 
 const UserTasks: React.FC<UserTasksProps> = ({}) => {
+  const { query } = useRouter();
   const { user } = useAuth();
-  const { userTasks, addNewTask } = useTaskList();
+  const { userTasks } = useTaskList();
 
   if (!userTasks) return <div>Carregando...</div>;
+
+  const selectedTask = userTasks.find((task) => task._id === query.selectedTask);
 
   const sortedTasks = userTasks.sort((a, b) => {
     if (a.createdAt < b.createdAt) {
@@ -43,6 +48,8 @@ const UserTasks: React.FC<UserTasksProps> = ({}) => {
         {sortedTasks.map((task) => (
           <ListItem key={task._id} task={task} />
         ))}
+
+        <TaskModal isOpen={!!query.selectedTask} task={selectedTask} />
       </List>
     </Container>
   );

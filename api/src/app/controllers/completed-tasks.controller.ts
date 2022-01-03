@@ -12,7 +12,7 @@ import Task from 'models/task.model';
 async function getAllDoneTasksController(req: Request, res: Response) {
   try {
     // sort by createdAt and status as done
-    const tasks = await DoneTask.find();
+    const tasks = await DoneTask.find().populate('newTask');
 
     return res.status(200).send(tasks);
   } catch (error) {
@@ -80,7 +80,7 @@ async function createDoneTasksController(req: Request, res: Response) {
 }
 
 async function getDoneTaskByCategoryIdController(req: Request, res: Response) {
-  if (!mongoose.isValidObjectId(req.params.userId || '')) {
+  if (!mongoose.isValidObjectId(req.body.userId || '')) {
     res.status(400).send({ error: 'O ID do usuário não é válido' });
     return;
   }
