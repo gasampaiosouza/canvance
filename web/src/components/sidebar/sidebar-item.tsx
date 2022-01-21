@@ -6,14 +6,11 @@ interface SidebarItemProps extends React.HTMLProps<HTMLAnchorElement> {
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ href, children, ...rest }) => {
-  const router = useRouter();
+  const { asPath: path } = useRouter();
 
   return (
     <Link href={href}>
-      <a
-        className={`sidebar-item ${router.asPath.includes(href) ? 'active' : ''}`}
-        {...rest}
-      >
+      <a className={`sidebar-item ${path.includes(href) ? 'active' : ''}`} {...rest}>
         {children}
       </a>
     </Link>

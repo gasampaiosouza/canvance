@@ -9,7 +9,7 @@ export interface IUser {
   _id: string;
   name: string;
   email: string;
-  category: ICategory;
+  category: ICategory[];
   permissionLevel: 1 | 2 | 3;
   createdAt: string;
 }

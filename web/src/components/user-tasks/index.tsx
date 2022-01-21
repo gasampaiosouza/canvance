@@ -11,7 +11,6 @@ interface UserTasksProps {
 
 const UserTasks: React.FC<UserTasksProps> = ({}) => {
   const { query } = useRouter();
-  const { user } = useAuth();
   const { userTasks } = useTaskList();
 
   if (!userTasks) return <div>Carregando...</div>;
@@ -36,13 +35,15 @@ const UserTasks: React.FC<UserTasksProps> = ({}) => {
 
   return (
     <Container>
-      <div className="indicators-top">
-        <div className="indicators-top_title">
-          <Title>
-            Indicadores - <strong>{user?.category.name || '...'}</strong>
-          </Title>
+      {/*
+        <div className="indicators-top">
+          <div className="indicators-top_title">
+              <Title>
+                Indicadores - <strong>{user?.category.name || '...'}</strong>
+              </Title>
+          </div>
         </div>
-      </div>
+      */}
 
       <List>
         {sortedTasks.map((task) => (

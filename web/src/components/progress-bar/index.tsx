@@ -5,12 +5,18 @@ const ProgressBar = () => {
   const { userTasks } = useTaskList();
   const finishedTasks = userTasks.filter((task) => task.status === 'done');
 
-  let percentage = (finishedTasks.length * 100) / userTasks.length;
+  const relevanceTotal = userTasks.reduce((acc, task) => acc + task.relevance, 0);
+  const completedTasksRelevance = finishedTasks.reduce(
+    (acc, task) => acc + task.relevance,
+    0
+  );
+
+  let percentage = (completedTasksRelevance * 100) / relevanceTotal;
 
   // remove unnecessary width
   if (percentage > 100) percentage = 100;
 
-  const title_data = `${finishedTasks.length}/${userTasks.length}`;
+  const title_data = `${completedTasksRelevance}/${relevanceTotal}`;
 
   return (
     <Container>

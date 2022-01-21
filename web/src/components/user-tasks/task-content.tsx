@@ -17,7 +17,7 @@ interface TaskContentProps {
 }
 
 const TaskContent: React.FC<TaskContentProps> = ({ task }) => {
-  const { data: tasksDone } = useFetch<ITaskDone[]>(`/tasks-done`);
+  const { data: tasksDone } = useFetch<ITaskDone[]>('/tasks-done');
   const doneTask = tasksDone?.find((taskDone) => taskDone.newTask?._id === task?._id);
   const { addNewTask, removeTask } = useTaskList();
 

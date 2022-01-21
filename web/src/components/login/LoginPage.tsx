@@ -10,14 +10,15 @@ export const LoginPage: React.FC = () => {
       <Head>
         <title>Canvance | Login</title>
       </Head>
+
       <Link href="/dashboard">
         <a>
           <Logo color="primary">Canvance</Logo>
         </a>
       </Link>
+
       <div className="content">
         <Title>Bem vindo de volta</Title>
-
         <Description>Digite seus dados de login para acessar sua conta</Description>
 
         <LoginForm />

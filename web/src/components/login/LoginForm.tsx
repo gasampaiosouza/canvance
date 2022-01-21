@@ -21,13 +21,6 @@ export const LoginForm: React.FC = () => {
 
   const { errors } = formState;
 
-  // useEffect(() => {
-  //   toast.info('Toast info');
-  //   toast.success('Toast success');
-  //   toast.warn('Toast warn');
-  //   toast.error('Toast error');
-  // }, []);
-
   async function handleSignIn(data: SubmitProps) {
     setSubmitText('Autenticando...');
 

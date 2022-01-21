@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import User from 'models/user.model';
 import DoneTask from 'models/completed-task.model';
 import { omit } from 'lodash';
+import Task from '../models/task.model';
 
 // req.userId
 
@@ -84,11 +85,104 @@ async function getAllUsersController(req: Request, res: Response) {
   }
 }
 
+async function getUserTasksController(req: Request, res: Response) {
+  const isSomeCategoryIdInvalid = req.params.categoryId
+    ?.split(',')
+    .some((categoryId) => !mongoose.isValidObjectId(categoryId || ''));
+
+  if (isSomeCategoryIdInvalid) {
+    res.status(400).send({ error: 'O ID da categoria não é válido' });
+    return;
+  }
+
+  try {
+    // @ts-ignore
+    const user = await User.findById(req.userId);
+
+    const taskMergedFieldName = 'task_info';
+
+    // basically, gets taskId from table 'tasks-done'
+    // and merges it into the tasks table
+    const tasks = await Task.aggregate([
+      {
+        $lookup: {
+          from: 'completed-tasks',
+          let: { id: '$_id', categoryId: '$category' },
+          as: taskMergedFieldName,
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    // @ts-ignore
+                    // { $eq: ['$$categoryId', { $toObjectId: user.category }] },
+                    { $eq: ['$newTask', '$$id'] },
+                    {
+                      // @ts-ignore
+                      $eq: ['$userId', { $toObjectId: req.userId }],
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+
+      {
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [{ $arrayElemAt: [`$${taskMergedFieldName}`, 0] }, '$$ROOT'],
+          },
+        },
+      },
+
+      // { $sort: { createdAt: -1 } },
+
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          relevance: 1,
+          category: 1,
+          status: { $ifNull: ['$status', null] },
+          createdAt: 1,
+        },
+      },
+    ]);
+
+    Task.populate(tasks, { path: 'category' }, (err, tasks) => {
+      const filteredTasks = tasks.filter((task) => {
+        console.log('TASK CATEGORY', task.category);
+        console.log('USER CATEGORY', user?.category);
+
+        return (
+          user?.category
+            // @ts-ignore
+            .some((category) => task.category._id.toString() === category.toString())
+        );
+      });
+
+      if (err) {
+        return res.status(400).send({ error: 'Não foi possível listar as tarefas' });
+      }
+
+      return res.status(200).send(filteredTasks);
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(400).send({ error: 'Não foi possível listar a tarefa' });
+  }
+}
+
 const exportData = {
   find: getAllUsersController,
   getByToken: getUserByTokenController,
   updateById: updateUserByIdController,
   deleteById: deleteUserByIdController,
+  getUserTasks: getUserTasksController,
 };
 
 export default exportData;

@@ -7,7 +7,7 @@ import { omit } from 'lodash';
 import { sortTasksByRelevance } from 'helpers/sort-tasks-by-relevance';
 import { toast } from 'react-toastify';
 import { useFetch } from 'hooks/useFetch';
-import { KeyedMutator } from 'swr';
+import { KeyedMutator, useSWRConfig } from 'swr';
 // import { useTasks } from 'hooks/useTasks';
 
 interface TasksContextData {
@@ -22,10 +22,14 @@ interface TasksContextData {
 export const TasksContext = createContext({} as TasksContextData);
 
 export const TasksProvider: React.FC = ({ children }) => {
+  const { mutate } = useSWRConfig();
   const { user } = useAuth();
 
-  const tasksUrl = `/tasks/category/${user?.category._id}`;
-  const { data: tasks, mutate: mutateTasks } = useFetch<ITask[]>(tasksUrl);
+  // const userCategories = user?.category.map((category) => category._id).join(',');
+  const { data: tasks, mutate: mutateTasks } = useFetch<ITask[]>('/tasks', {
+    revalidateOnMount: true,
+  });
+  const { data: userTasks } = useFetch<ITask[]>('/user/tasks');
 
   const addNewTask = useCallback(
     async (taskId: string) => {
@@ -40,6 +44,7 @@ export const TasksProvider: React.FC = ({ children }) => {
         ];
 
         mutateTasks(mutatedTasks as ITask[], false);
+        mutate('/user/tasks');
 
         toast.success('Tarefa finalizada!');
       } catch (error: any) {
@@ -60,7 +65,8 @@ export const TasksProvider: React.FC = ({ children }) => {
         ...(tasks?.filter((task) => task._id !== taskId) || []),
       ];
 
-      mutateTasks(mutatedTasks, false);
+      mutateTasks(mutatedTasks, true);
+      mutate('/user/tasks');
 
       toast.success('Tarefa desfeita!');
     } catch (error) {
@@ -71,16 +77,11 @@ export const TasksProvider: React.FC = ({ children }) => {
     return;
   }
 
-  // filter by user category
-  const userTasks = sortTasksByRelevance(tasks || []).filter(
-    (task) => task.category._id === user?.category._id
-  );
-
   return (
     <TasksContext.Provider
       value={{
         allTasks: tasks || [],
-        userTasks,
+        userTasks: sortTasksByRelevance(userTasks || []),
         mutateTasks,
         addNewTask,
         removeTask,

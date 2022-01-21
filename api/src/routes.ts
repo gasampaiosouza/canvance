@@ -23,7 +23,7 @@ export default function (app: Express) {
   // user
   app.get('/users', [MAuth, MPermission], Users.find);
   app.get('/user/profile', MAuth, Users.getByToken);
-  app.get('/user/tasks-done', MAuth, TasksDone.getByCategory);
+  app.get('/user/tasks', MAuth, Users.getUserTasks);
   app.put('/user/profile/:userId', MAuth, Users.updateById);
   app.delete('/user/:userId', [MAuth, MPermission], Users.deleteById);
 

@@ -44,75 +44,31 @@ async function getTaskByCategoryController(
   req: Request<{ categoryId?: string }>,
   res: Response
 ) {
-  if (!mongoose.isValidObjectId(req.params.categoryId || '')) {
+  const isSomeCategoryIdInvalid = req.params.categoryId
+    ?.split(',')
+    .some((categoryId) => !mongoose.isValidObjectId(categoryId || ''));
+
+  if (isSomeCategoryIdInvalid) {
     res.status(400).send({ error: 'O ID da categoria não é válido' });
     return;
   }
 
   try {
-    const taskMergedFieldName = 'task_info';
+    // we may have more than one category separated by comma
+    const categories = req.params.categoryId?.split(',');
 
-    // basically, gets taskId from table 'tasks-done'
-    // and merges it into the tasks table
-    const tasks = await Task.aggregate([
-      {
-        $lookup: {
-          from: 'completed-tasks',
-          let: { id: '$_id', categoryId: '$category' },
-          as: taskMergedFieldName,
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ['$$categoryId', { $toObjectId: req.params.categoryId }] },
-                    { $eq: ['$newTask', '$$id'] },
-                    {
-                      // @ts-ignore
-                      $eq: ['$userId', { $toObjectId: req.userId }],
-                    },
-                  ],
-                },
-              },
-            },
-          ],
-        },
-      },
+    const tasks = await Task.find().populate('category');
 
-      {
-        $replaceRoot: {
-          newRoot: {
-            $mergeObjects: [{ $arrayElemAt: [`$${taskMergedFieldName}`, 0] }, '$$ROOT'],
-          },
-        },
-      },
-
-      // { $sort: { createdAt: -1 } },
-
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          description: 1,
-          relevance: 1,
-          category: 1,
-          status: { $ifNull: ['$status', null] },
-          createdAt: 1,
-        },
-      },
-    ]);
-
-    Task.populate(tasks, { path: 'category' }, (err, tasks) => {
-      if (err) {
-        return res.status(400).send({ error: 'Não foi possível listar as tarefas' });
-      }
-
-      return res.status(200).send(tasks);
+    const filteredTasks = tasks.filter((task) => {
+      // @ts-ignore
+      return categories?.includes(task.category?._id.toString());
     });
+
+    return res.status(200).send(filteredTasks);
   } catch (error) {
     console.log(error);
 
-    return res.status(400).send({ error: 'Não foi possível listar a tarefa' });
+    return res.status(400).send({ error: 'Não foi possível listar as tarefas' });
   }
 }
 

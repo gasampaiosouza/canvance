@@ -6,11 +6,13 @@ export interface UserDocument extends mongoose.Document {
   name: string;
   password: string;
 
-  category: ObjectId;
+  category: ObjectId[];
 
   permissionLevel: number;
   passwordResetToken: string;
   passwordResetExpires: Date;
+
+  active: boolean;
 
   createdAt: Date | number;
 }
@@ -21,11 +23,15 @@ const UserSchema = new mongoose.Schema<UserDocument>({
   password: { type: String, select: false, required: true },
   permissionLevel: { type: Number, required: true },
 
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true,
-  },
+  active: { type: Boolean, default: true },
+
+  category: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+    },
+  ],
 
   passwordResetToken: { type: String, select: false },
   passwordResetExpires: { type: Date, select: false },

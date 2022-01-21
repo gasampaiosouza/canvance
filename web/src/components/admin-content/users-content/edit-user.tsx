@@ -10,7 +10,6 @@ import { Container, EditUserForm } from './styles';
 import { Input, InputContainer, PageBottom } from '../styles';
 
 import { useTheme } from 'styled-components';
-import { lighten } from 'polished';
 import { ErrorMessage } from 'components/error-message';
 import { pick } from 'lodash';
 import { useUserList } from 'hooks/useUserList';
@@ -24,6 +23,13 @@ interface IProps {
 interface FormProps {
   name: string;
   email: string;
+  category: string[] | '';
+  permissionLevel: number | string;
+}
+
+interface ErrorProps {
+  name: string;
+  email: string;
   category: string;
   permissionLevel: number | string;
 }
@@ -35,7 +41,7 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
 
   const defaultTheme = useTheme();
 
-  const [formErrors, setFormErrors] = React.useState({} as FormProps);
+  const [formErrors, setFormErrors] = React.useState({} as ErrorProps);
   const [formData, setFormData] = React.useState({} as FormProps);
 
   React.useEffect(() => {
@@ -43,7 +49,9 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
 
     const formDataPick = pick(selectedUser, ['name', 'email', 'permissionLevel']);
 
-    setFormData({ ...formDataPick, category: selectedUser.category._id });
+    const userCategories = selectedUser.category.map((category) => category._id);
+
+    setFormData({ ...formDataPick, category: userCategories });
   }, [selectedUser]);
 
   const saveUser = async (data: FormProps) => {
@@ -123,8 +131,8 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
     label: category.name,
   }));
 
-  const selectValue = allCategories.find(
-    (category) => category._id === formData?.category
+  const selectValue = categoriesOptions.filter((category) =>
+    formData?.category?.includes(category.value)
   );
 
   return (
@@ -152,15 +160,15 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
 
         <InputContainer label="Categoria do usuário">
           <Select
-            value={
-              selectValue ? { value: selectValue?._id, label: selectValue?.name } : null
-            }
+            isMulti
+            value={selectValue || null}
             placeholder="Categoria"
             className="category-select"
             classNamePrefix="category-select"
-            onChange={(val) =>
-              setFormData((prev) => ({ ...prev, category: val?.value || '' }))
-            }
+            onChange={(val) => {
+              const categories = val.map((c) => c.value);
+              setFormData((prev) => ({ ...prev, category: categories || [] }));
+            }}
             options={categoriesOptions}
             theme={defaultTheme.select_default}
           />
