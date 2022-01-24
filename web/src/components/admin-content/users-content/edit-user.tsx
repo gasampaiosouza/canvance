@@ -1,5 +1,4 @@
 import React from 'react';
-import Select from 'react-select';
 
 import Link from 'next/link';
 import api from 'services/api';
@@ -7,54 +6,37 @@ import router from 'next/router';
 
 import { toast } from 'react-toastify';
 import { Container, EditUserForm } from './styles';
-import { Input, InputContainer, PageBottom } from '../styles';
+import { PageBottom } from '../styles';
 
-import { useTheme } from 'styled-components';
-import { ErrorMessage } from 'components/error-message';
 import { pick } from 'lodash';
 import { useUserList } from 'hooks/useUserList';
-import { useCategoryList } from 'hooks/useCategoryList';
-import { PermissionDescription } from './permission-description';
+import { PermissionDescription } from './components/permission-description';
+import UserFormContent from './components/form-content';
+import handleFormValidation from './components/handleFormValidation';
 
 interface IProps {
   userId: string;
 }
 
-interface FormProps {
-  name: string;
-  email: string;
-  category: string[] | '';
-  permissionLevel: number | string;
-}
-
-interface ErrorProps {
-  name: string;
-  email: string;
-  category: string;
-  permissionLevel: number | string;
-}
-
 const ManageEditUser: React.FC<IProps> = ({ userId }) => {
-  const { allCategories } = useCategoryList();
   const { allUsers, mutateUsers } = useUserList();
   const selectedUser = allUsers.find((user) => user._id === userId);
 
-  const defaultTheme = useTheme();
-
-  const [formErrors, setFormErrors] = React.useState({} as ErrorProps);
-  const [formData, setFormData] = React.useState({} as FormProps);
+  const [formData, setFormData] = React.useState({} as UserFormProps);
 
   React.useEffect(() => {
     if (!selectedUser) return;
 
     const formDataPick = pick(selectedUser, ['name', 'email', 'permissionLevel']);
 
-    const userCategories = selectedUser.category.map((category) => category._id);
+    const userCategories = selectedUser.category
+      .map((category) => category._id)
+      .join(',');
 
     setFormData({ ...formDataPick, category: userCategories });
   }, [selectedUser]);
 
-  const saveUser = async (data: FormProps) => {
+  const saveUser = async (data: UserFormProps) => {
     try {
       const response = await api.put(`/user/profile/${userId}`, data);
 
@@ -66,56 +48,13 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
     }
   };
 
-  const isFormValid = () => {
-    const { name, email, permissionLevel, category } = formData;
+  const handleSaveUser = async (userData: UserFormProps) => {
+    const { isValid, formErrors } = handleFormValidation(userData);
 
-    let isValid = true;
-
-    // reset form errors
-    setFormErrors({ name: '', email: '', permissionLevel: '', category: '' });
-
-    if (!name) {
-      const message = 'O nome é obrigatório';
-      setFormErrors((prev) => ({ ...prev, title: message }));
-
-      isValid = false;
+    if (!isValid) {
+      Object.values(formErrors).map((message) => toast.error(message));
+      return;
     }
-
-    if (!email) {
-      const message = 'O email é obrigatório';
-      setFormErrors((prev) => ({ ...prev, description: message }));
-
-      isValid = false;
-    }
-
-    if (!category) {
-      const message = 'A categoria é obrigatória';
-      setFormErrors((prev) => ({ ...prev, category: message }));
-
-      isValid = false;
-    }
-
-    if (!permissionLevel) {
-      const message = 'O nível de permissão é obrigatório';
-      setFormErrors((prev) => ({ ...prev, permissionLevel: message }));
-
-      isValid = false;
-    }
-
-    if (permissionLevel < 1 || permissionLevel > 3) {
-      const message = 'O nível de permissão deve estar entre 1 e 3';
-      setFormErrors((prev) => ({ ...prev, permissionLevel: message }));
-
-      isValid = false;
-    }
-
-    return isValid;
-  };
-
-  const handleSaveUser = async () => {
-    const isValid = isFormValid();
-
-    if (!isValid) return;
 
     const updatedUser = await saveUser(formData);
 
@@ -126,79 +65,16 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
     });
   };
 
-  const categoriesOptions = allCategories.map((category) => ({
-    value: category._id,
-    label: category.name,
-  }));
-
-  const selectValue = categoriesOptions.filter((category) =>
-    formData?.category?.includes(category.value)
-  );
-
   return (
     <Container>
       <EditUserForm>
-        <InputContainer label="Nome do usuário">
-          <Input
-            placeholder="Nome do usuário"
-            defaultValue={selectedUser?.name || ''}
-            onBlur={(ev) => setFormData((prev) => ({ ...prev, name: ev.target.value }))}
-          />
-
-          {formErrors?.name && <ErrorMessage message={formErrors.name || ''} />}
-        </InputContainer>
-
-        <InputContainer label="Email do usuário">
-          <Input
-            placeholder="Email do usuário"
-            defaultValue={selectedUser?.email || ''}
-            onBlur={(ev) => setFormData((prev) => ({ ...prev, email: ev.target.value }))}
-          />
-
-          {formErrors?.email && <ErrorMessage message={formErrors.email || ''} />}
-        </InputContainer>
-
-        <InputContainer label="Categoria do usuário">
-          <Select
-            isMulti
-            value={selectValue || null}
-            placeholder="Categoria"
-            className="category-select"
-            classNamePrefix="category-select"
-            onChange={(val) => {
-              const categories = val.map((c) => c.value);
-              setFormData((prev) => ({ ...prev, category: categories || [] }));
-            }}
-            options={categoriesOptions}
-            theme={defaultTheme.select_default}
-          />
-
-          {formErrors?.category && <ErrorMessage message={formErrors.category || ''} />}
-        </InputContainer>
-
-        <InputContainer label="Nível de permissão">
-          <Input
-            defaultValue={selectedUser?.permissionLevel || ''}
-            type="number"
-            placeholder="Nível de permissão"
-            onBlur={(ev) =>
-              setFormData((prev) => ({
-                ...prev,
-                permissionLevel: Number(ev.target.value),
-              }))
-            }
-          />
-
-          {formErrors?.permissionLevel && (
-            <ErrorMessage message={formErrors.permissionLevel || ''} />
-          )}
-        </InputContainer>
+        <UserFormContent setFormData={setFormData} formData={formData} />
       </EditUserForm>
 
       <PermissionDescription />
 
       <PageBottom>
-        <button className="create-entity" onClick={handleSaveUser}>
+        <button className="create-entity" onClick={() => handleSaveUser(formData)}>
           Salvar
         </button>
 

@@ -106,6 +106,10 @@ async function updateTaskByIdController(req: Request<{ taskId: string }>, res: R
   }
 
   try {
+    if (typeof req.body.category == 'string') {
+      req.body.category = req.body.category.split(',');
+    }
+
     const task = await Task.findByIdAndUpdate(req.params.taskId, req.body, {
       new: true,
     }).populate('category');

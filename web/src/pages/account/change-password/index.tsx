@@ -17,6 +17,7 @@ const ChangePasswordPage = () => {
     MailProps,
     'message'
   > | null>(null);
+
   const { user } = useAuth();
 
   React.useEffect(() => {
@@ -62,7 +63,6 @@ const ChangePasswordPage = () => {
       </Container>
     </>
   );
-  return;
 };
 
 export default ChangePasswordPage;

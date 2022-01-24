@@ -1,9 +1,8 @@
-import { useAuth } from 'hooks/useAuth';
-import { useState } from 'react';
 import AccountMenu from './menu';
 
-import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useAuth } from 'hooks/useAuth';
+import { useState } from 'react';
 
 import { Container, SelectedPageContainer } from './styles';
 
@@ -15,12 +14,14 @@ const AccountContent = () => {
   const { user } = useAuth();
 
   function handleChangePassword() {
-    const passwordConfirmation = window.confirm('Quer mesmo alterar a sua senha?');
+    const passwordConfirmation = window.confirm('Deseja mesmo alterar a sua senha?');
 
     if (!passwordConfirmation) return;
 
     router.push('/account/change-password');
   }
+
+  console.log(user);
 
   return (
     <Container>
@@ -46,8 +47,15 @@ const AccountContent = () => {
 
                 <tr>
                   <td>Categoria</td>
-                  <td>{user?.category.name}</td>
+                  <td>{user?.category.map((cat) => cat.name).join(', ')}</td>
                 </tr>
+
+                {user?.manager?.name && (
+                  <tr>
+                    <td>Gerente</td>
+                    <td>{user?.manager?.name}</td>
+                  </tr>
+                )}
               </tbody>
             </table>
 

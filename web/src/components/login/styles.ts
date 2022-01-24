@@ -19,6 +19,19 @@ export const Container = styled.main`
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(204, 204, 204, 0.75);
   }
+
+  .change-password {
+    font-size: 0.8rem;
+    color: ${({ theme }) => theme.colors.text_soft};
+    text-align: center;
+    display: block;
+    margin-top: 1.2rem;
+    transition: 0.2s ease-in-out;
+
+    :hover {
+      color: ${({ theme }) => theme.colors.primary};
+    }
+  }
 `;
 
 export const Logo = styled.h3`

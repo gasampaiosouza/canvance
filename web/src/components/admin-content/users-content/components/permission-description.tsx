@@ -1,4 +1,4 @@
-import { PermissionLevelDescription } from './styles';
+import { PermissionLevelDescription } from '../styles';
 
 export const PermissionDescription = () => {
   return (

@@ -1,8 +1,9 @@
-import { useAuth } from 'hooks/useAuth';
+import { useEffect } from 'react';
 import { useTaskList } from 'hooks/useTaskList';
 import { useRouter } from 'next/router';
+import { useSWRConfig } from 'swr';
 import ListItem from './list-item';
-import { Container, List, Title } from './styles';
+import { Container, List } from './styles';
 import TaskModal from './task-modal';
 
 interface UserTasksProps {
@@ -12,10 +13,15 @@ interface UserTasksProps {
 const UserTasks: React.FC<UserTasksProps> = ({}) => {
   const { query } = useRouter();
   const { userTasks } = useTaskList();
+  const { mutate } = useSWRConfig();
 
   if (!userTasks) return <div>Carregando...</div>;
 
   const selectedTask = userTasks.find((task) => task._id === query.selectedTask);
+
+  useEffect(() => {
+    mutate('/user/tasks');
+  }, []);
 
   const sortedTasks = userTasks.sort((a, b) => {
     if (a.createdAt < b.createdAt) {

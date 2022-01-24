@@ -59,7 +59,9 @@ const ManageUsersContent = () => {
               <p className="user-email">{user?.email}</p>
 
               <div className="user-bottom">
-                <span className="user-category">{user?.category?.name}</span>
+                <span className="user-category">
+                  {user?.category?.map((cat) => cat.name).join(' | ')}
+                </span>
                 <span
                   className="user-delete"
                   onClick={(ev) => {

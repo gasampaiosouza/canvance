@@ -22,6 +22,7 @@ const ManageTasksContent = () => {
       toast.success('Tarefa removida com sucesso');
 
       const currentTasks = allTasks.filter((task: ITask) => task._id !== taskId);
+
       mutateTasks(currentTasks);
     } catch (error) {
       console.log(error);
@@ -40,37 +41,43 @@ const ManageTasksContent = () => {
       </PageHeader>
 
       <BoxesContainer>
-        {sortTasksByRelevance(allTasks).map((task) => (
-          <Link href={`/admin/tasks/edit/${task?._id}`} key={task?._id}>
-            <Box>
-              <span className="task-relevance">{task?.relevance}</span>
+        {sortTasksByRelevance(allTasks).map((task) => {
+          const categoriesList = task?.category
+            ?.map((category) => category.name)
+            .join(', ');
 
-              <h3 className="task-title">{task?.title}</h3>
-              <p className="task-description">{task?.description}</p>
+          return (
+            <Link href={`/admin/tasks/edit/${task?._id}`} key={task?._id}>
+              <Box>
+                <span className="task-relevance">{task?.relevance}</span>
 
-              <div className="task-bottom">
-                <span className="task-category">{task?.category?.name}</span>
-                <span
-                  className="task-delete"
-                  onClick={(ev) => {
-                    ev.preventDefault();
-                    ev.stopPropagation();
+                <h3 className="task-title">{task?.title}</h3>
+                <p className="task-description">{task?.description}</p>
 
-                    const confirmTaskDeletion = window.confirm(
-                      'Quer mesmo remover a tarefa?'
-                    );
+                <div className="task-bottom">
+                  <span className="task-category">{categoriesList}</span>
+                  <span
+                    className="task-delete"
+                    onClick={(ev) => {
+                      ev.preventDefault();
+                      ev.stopPropagation();
 
-                    if (!confirmTaskDeletion) return;
+                      const confirmTaskDeletion = window.confirm(
+                        'Quer mesmo remover a tarefa?'
+                      );
 
-                    handleDeleteTask(task?._id);
-                  }}
-                >
-                  <DeleteIcon />
-                </span>
-              </div>
-            </Box>
-          </Link>
-        ))}
+                      if (!confirmTaskDeletion) return;
+
+                      handleDeleteTask(task?._id);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </span>
+                </div>
+              </Box>
+            </Link>
+          );
+        })}
       </BoxesContainer>
     </Container>
   );

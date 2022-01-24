@@ -20,7 +20,7 @@ const ProgressBar = () => {
 
   return (
     <Container>
-      <InnerBar title={`${title_data} tarefas concluídas`}>
+      <InnerBar title={title_data}>
         <FilledBar width={`${percentage || 0}%`} />
       </InnerBar>
     </Container>

@@ -12,6 +12,7 @@ export interface IUser {
   category: ICategory[];
   permissionLevel: 1 | 2 | 3;
   createdAt: string;
+  manager?: IUser;
 }
 
 export interface ITask {
@@ -19,7 +20,7 @@ export interface ITask {
   title: string;
   description: string;
   relevance: number;
-  category: ICategory;
+  category: ICategory[];
   status?: 'done' | 'ongoing' | null;
   createdAt: string;
 }

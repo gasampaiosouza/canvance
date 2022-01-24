@@ -9,6 +9,8 @@ import { Form, Input, InputContainer, SubmitButton } from './styles';
 import { toast } from 'react-toastify';
 import { handleClassValidation } from 'helpers/handle-form_class';
 
+import Link from 'next/link';
+
 interface SubmitProps {
   email: string;
   password: string;
@@ -89,6 +91,10 @@ export const LoginForm: React.FC = () => {
       {errors?.password && <ErrorMessage message={errors.password.message || ''} />}
 
       <SubmitButton>{submitText}</SubmitButton>
+
+      <Link href="/account/change-password">
+        <a className="change-password">Esqueceu sua senha?</a>
+      </Link>
     </Form>
   );
 };

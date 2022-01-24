@@ -9,7 +9,7 @@ import { DeleteOutline as DeleteIcon } from '@styled-icons/material-rounded';
 import api from 'services/api';
 import { Box, BoxesContainer, PageHeader } from '../styles';
 import { useCategoryList } from 'hooks/useCategoryList';
-import { ITask } from '@/interfaces';
+import { ITask, IUser } from '@/interfaces';
 
 const ManageCategoriesContent = () => {
   const { allCategories, mutateCategories } = useCategoryList();
@@ -27,15 +27,20 @@ const ManageCategoriesContent = () => {
 
   const handleDeleteCategory = async (categoryId: string) => {
     try {
-      // verify if tasks are associated with the category
-      const response = await api.get<ITask[]>(`/tasks`);
+      // verify if tasks and users are associated with the category
+      const responseTasks = await api.get<ITask[]>(`/tasks`);
+      const responseUsers = await api.get<IUser[]>(`/users`);
 
-      const associatedTasks = response.data.filter(
-        (task) => task.category._id === categoryId
+      const associatedTasks = responseTasks.data.filter((task) =>
+        task.category.some((category) => category._id === categoryId)
       );
 
-      if (associatedTasks.length) {
-        const message = 'Essa categoria possui tarefas associadas a ela.';
+      const associatedUsers = responseUsers.data.filter((user) =>
+        user.category.some((category) => category._id === categoryId)
+      );
+
+      if (associatedTasks.length || associatedUsers.length) {
+        const message = 'Essa categoria possui tarefas ou usuários associadas a ela.';
 
         toast.error(message);
         return;
@@ -46,6 +51,7 @@ const ManageCategoriesContent = () => {
       const filteredCategories = allCategories.filter(
         (category) => category._id !== categoryId
       );
+
       mutateCategories(filteredCategories);
 
       toast.success('Categoria removida com sucesso');

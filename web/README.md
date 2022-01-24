@@ -24,7 +24,7 @@ const cases: casesType = {
 [x] resetar a senha
 [x] um usuário pode ter mais de uma categoria
 
-[] todos devem ter um gerente atrelado
+[] todos devem ter um gerente atrelado -> pensar no caso de deletarem o gerente
 
 [] barra de progresso deve ser baseada na prioridade da tarefa
 [] remover erro de login

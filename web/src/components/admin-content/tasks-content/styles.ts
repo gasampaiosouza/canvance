@@ -71,7 +71,7 @@ export const NewTaskForm = styled.section`
   margin: 0 auto;
 
   display: grid;
-  grid-template-columns: 1fr 0.5fr 110px;
+  grid-template-columns: 1fr 1fr 110px;
   gap: 1rem;
 
   padding-bottom: 82px;

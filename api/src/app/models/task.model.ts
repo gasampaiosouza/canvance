@@ -5,7 +5,7 @@ export interface TaskDocument extends mongoose.Document {
   description: string;
   relevance: number;
 
-  category: ObjectId;
+  category: ObjectId[];
 
   createdAt: Date | number;
 }
@@ -15,11 +15,13 @@ const TaskSchema = new mongoose.Schema<TaskDocument>({
   description: { type: String, required: true },
   relevance: { type: Number, required: true },
 
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: true,
-  },
+  category: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: true,
+    },
+  ],
 
   createdAt: { type: Date, default: Date.now },
 });

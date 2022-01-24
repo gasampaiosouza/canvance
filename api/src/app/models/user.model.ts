@@ -12,6 +12,8 @@ export interface UserDocument extends mongoose.Document {
   passwordResetToken: string;
   passwordResetExpires: Date;
 
+  manager: ObjectId;
+
   active: boolean;
 
   createdAt: Date | number;
@@ -24,6 +26,8 @@ const UserSchema = new mongoose.Schema<UserDocument>({
   permissionLevel: { type: Number, required: true },
 
   active: { type: Boolean, default: true },
+
+  manager: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 
   category: [
     {

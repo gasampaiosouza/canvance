@@ -26,11 +26,17 @@ async function updateUserByIdController(req: Request, res: Response) {
   }
 
   try {
+    if (typeof req.body.category == 'string') {
+      req.body.category = req.body.category.split(',');
+    }
+
     const user = await User.findByIdAndUpdate(
       req.params.userId,
       omit(req.body, 'password'),
       { new: true }
-    ).populate('category');
+    )
+      .populate('category')
+      .populate('manager');
 
     return res.status(200).send(user);
   } catch (error) {
@@ -43,7 +49,7 @@ async function updateUserByIdController(req: Request, res: Response) {
 async function getUserByTokenController(req: Request, res: Response) {
   try {
     // @ts-ignore
-    const user = await User.findById(req.userId).populate('category');
+    const user = await User.findById(req.userId).populate('category').populate('manager');
 
     return res.status(200).send(user);
   } catch (error) {
@@ -65,17 +71,17 @@ async function deleteUserByIdController(req: Request, res: Response) {
     // delete all user's tasks
     await DoneTask.deleteMany({ userId: req.params.userId });
 
-    return res.status(200).send({ message: 'Usuário apagado com sucesso' });
+    return res.status(200).send({ message: 'Usuário removido com sucesso' });
   } catch (error) {
     console.log(error);
 
-    return res.status(400).send({ error: 'Não foi possível apagar o usuário' });
+    return res.status(400).send({ error: 'Não foi possível remover o usuário' });
   }
 }
 
 async function getAllUsersController(req: Request, res: Response) {
   try {
-    const users = await User.find().populate('category');
+    const users = await User.find().populate('category').populate('manager');
 
     return res.status(200).send(users);
   } catch (error) {
@@ -86,15 +92,6 @@ async function getAllUsersController(req: Request, res: Response) {
 }
 
 async function getUserTasksController(req: Request, res: Response) {
-  const isSomeCategoryIdInvalid = req.params.categoryId
-    ?.split(',')
-    .some((categoryId) => !mongoose.isValidObjectId(categoryId || ''));
-
-  if (isSomeCategoryIdInvalid) {
-    res.status(400).send({ error: 'O ID da categoria não é válido' });
-    return;
-  }
-
   try {
     // @ts-ignore
     const user = await User.findById(req.userId);
@@ -154,13 +151,13 @@ async function getUserTasksController(req: Request, res: Response) {
 
     Task.populate(tasks, { path: 'category' }, (err, tasks) => {
       const filteredTasks = tasks.filter((task) => {
-        console.log('TASK CATEGORY', task.category);
-        console.log('USER CATEGORY', user?.category);
-
-        return (
-          user?.category
+        return user?.category.some((categoryId) =>
+          task.category.some((taskCategoryId) => {
             // @ts-ignore
-            .some((category) => task.category._id.toString() === category.toString())
+            const hasSameId = taskCategoryId._id.toString() === categoryId.toString();
+
+            return hasSameId;
+          })
         );
       });
 
