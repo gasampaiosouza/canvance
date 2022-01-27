@@ -75,6 +75,12 @@ export const SelectedPageContainer = styled.div`
   }
 `;
 
+// change password
+export const ChangePasswordContainer = styled.section`
+  width: 100%;
+  height: 100%;
+`;
+
 export const ForgotPasswordContainer = styled.section`
   display: flex;
   flex-direction: column;
@@ -132,4 +138,51 @@ export const UncompletedIcon = styled(Close)`
   ${defaultIconStyles}
 
   background: ${({ theme }) => theme.colors.error};
+`;
+
+// input email to change password
+export const InputEmailContainer = styled.section`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+
+  /* background: coral; */
+  background: #f6f7fa;
+
+  .back-button {
+    font-size: 0.8rem;
+    color: ${({ theme }) => theme.colors.text_soft};
+    text-align: center;
+    display: block;
+    margin-top: 1.2rem;
+    transition: 0.2s ease-in-out;
+
+    :hover {
+      color: ${({ theme }) => theme.colors.primary};
+    }
+  }
+
+  .content {
+    padding: 2rem 2.5rem;
+    background: #fff;
+    /* text-align: center; */
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(204, 204, 204, 0.75);
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: ${({ theme }) => theme.colors.text_soft};
+      text-align: center;
+    }
+  }
 `;

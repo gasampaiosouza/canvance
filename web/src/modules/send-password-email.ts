@@ -1,5 +1,9 @@
-import { MailProps } from '@/pages/account/change-password';
 import api from 'services/api';
+
+export interface MailProps {
+  success: boolean;
+  message: string;
+}
 
 export async function sendPasswordMail(email: string) {
   try {

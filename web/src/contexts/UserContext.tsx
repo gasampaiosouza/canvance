@@ -1,4 +1,5 @@
 import { IUser } from '@/interfaces';
+import { useAuth } from 'hooks/useAuth';
 import { useFetch } from 'hooks/useFetch';
 import { KeyedMutator } from 'swr';
 import { createContext } from 'use-context-selector';
@@ -14,7 +15,9 @@ interface UsersContextData {
 export const UsersContext = createContext({} as UsersContextData);
 
 export const UsersProvider: React.FC = ({ children }) => {
-  // const { user } = useAuth();
+  const { user } = useAuth();
+
+  if (!user) return <>{children}</>;
 
   const { data: users, mutate: mutateUsers } = useFetch<IUser[]>('/users');
   // const { data: tasks, mutate: mutateTasks } = useFetch<ITask[]>(tasksUrl);

@@ -1,43 +1,38 @@
-import { sendPasswordMail } from '@/modules/send-password-email';
-import ChangePasswordContent from 'components/account/change-password';
-import Header from 'components/header';
-import Sidebar from 'components/sidebar';
-import { useAuth } from 'hooks/useAuth';
-import Head from 'next/head';
-import React from 'react';
-import { Container, Content } from 'styles/dashboard-styles';
+import { useState, useEffect } from 'react';
 
-export interface MailProps {
-  success: boolean;
-  message: string;
-}
+import { MailProps, sendPasswordMail } from '@/modules/send-password-email';
+import ChangePasswordContent from 'components/account/change-password/change-password_content';
+
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import InputEmailToChangePassword from 'components/account/change-password/input-email';
+import { ChangePasswordContainer } from 'components/account/styles';
+
+// path -> /account/change-password?userEmail=<email>
+// query is NOT required
+
+type PageStatusType = Omit<MailProps, 'message'> | null;
 
 const ChangePasswordPage = () => {
-  const [pageContentStatus, setPageContentStatus] = React.useState<Omit<
-    MailProps,
-    'message'
-  > | null>(null);
+  const [pageContentStatus, setPageContentStatus] = useState<PageStatusType>(null);
 
-  const { user } = useAuth();
+  const { query } = useRouter();
 
-  React.useEffect(() => {
-    async function handlePasswordMail() {
-      const response = await sendPasswordMail(user?.email || '');
+  // useEffect(() => {
+  //   async function handlePasswordMail() {
+  //     const email = query.userEmail;
+  //     const response = await sendPasswordMail(email);
 
-      if (!response.success) {
-        setPageContentStatus({ success: false });
-        return;
-      }
+  //     if (!response.success) {
+  //       setPageContentStatus({ success: false });
+  //       return;
+  //     }
 
-      setPageContentStatus({ success: true });
-    }
+  //     setPageContentStatus({ success: true });
+  //   }
 
-    handlePasswordMail();
-  }, [user]);
-  const breadcrumb = [
-    { label: 'Minha conta', href: '/account' },
-    { label: 'Alterar minha senha', href: '/account/change-password' },
-  ];
+  //   handlePasswordMail();
+  // }, []);
 
   return (
     <>
@@ -45,22 +40,17 @@ const ChangePasswordPage = () => {
         <title>Canvance - Alterar minha senha</title>
       </Head>
 
-      <Container>
-        <Header title="Alterar minha senha" breadcrumb={breadcrumb} />
+      <ChangePasswordContainer>
+        <InputEmailToChangePassword />
 
-        <Content>
-          {pageContentStatus ? (
-            <ChangePasswordContent
-              success={pageContentStatus.success}
-              email={user?.email || ''}
-            />
-          ) : (
-            <h3>Enviando email...</h3>
-          )}
-        </Content>
-
-        <Sidebar />
-      </Container>
+        {/* <Content>
+            {pageContentStatus ? (
+              <ChangePasswordContent success={pageContentStatus.success} email={email} />
+            ) : (
+              <h3>Enviando email...</h3>
+            )}
+          </Content> */}
+      </ChangePasswordContainer>
     </>
   );
 };

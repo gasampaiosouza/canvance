@@ -1,30 +1,27 @@
 import { Email, Lock } from '@styled-icons/material-rounded';
-import { ErrorMessage } from 'components/error-message';
-import { patterns } from 'helpers/patterns';
+
 import { useAuth } from 'hooks/useAuth';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useRef, useState } from 'react';
 import { Form, Input, InputContainer, SubmitButton } from './styles';
 
 import { toast } from 'react-toastify';
-import { handleClassValidation } from 'helpers/handle-form_class';
 
 import Link from 'next/link';
-
-interface SubmitProps {
-  email: string;
-  password: string;
-}
 
 export const LoginForm: React.FC = () => {
   const { signIn } = useAuth();
   const [submitText, setSubmitText] = useState('Fazer login');
-  const { register, handleSubmit, formState, setError } = useForm<SubmitProps>();
 
-  const { errors } = formState;
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  async function handleSignIn(data: SubmitProps) {
+  async function handleSignIn(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    event.stopPropagation();
+
     setSubmitText('Autenticando...');
+
+    const data = { email, password };
 
     try {
       // @ts-ignore
@@ -35,16 +32,9 @@ export const LoginForm: React.FC = () => {
         return setSubmitText('Tudo certo!');
       }
 
-      // and error occurred
-      const { error_message, type } = error.response.data;
-
-      if (type == 'email') {
-        setError('email', { type: 'value', message: error_message });
-      }
-
-      if (type == 'password') {
-        setError('password', { type: 'value', message: error_message });
-      }
+      // an error occurred
+      const errorMessage = 'Email ou senha incorretos';
+      toast.error(errorMessage);
     } catch (error) {
       toast.error('Ocorreu um erro ao tentar fazer login');
     }
@@ -52,19 +42,9 @@ export const LoginForm: React.FC = () => {
     setSubmitText('Fazer login');
   }
 
-  const REmailOptions = {
-    required: 'O email é obrigatório.',
-    pattern: { value: patterns.email, message: 'Insira um email válido.' },
-  };
-
-  const RPasswordOptions = {
-    required: 'A senha é obrigatória.',
-    minLength: { value: 5, message: 'A senha deve conter mais de 5 caracteres' },
-  };
-
   return (
-    <Form onSubmit={handleSubmit(handleSignIn)}>
-      <InputContainer className={handleClassValidation(errors?.email)}>
+    <Form onSubmit={(event) => handleSignIn(event)}>
+      <InputContainer>
         <div className="icon">
           <Email />
         </div>
@@ -72,12 +52,11 @@ export const LoginForm: React.FC = () => {
         <Input
           type="email"
           placeholder="Digite seu email"
-          {...register('email', REmailOptions)}
+          onBlur={(ev) => setEmail(ev.target.value)}
         />
       </InputContainer>
-      {errors?.email && <ErrorMessage message={errors.email.message || ''} />}
 
-      <InputContainer className={handleClassValidation(errors?.password)}>
+      <InputContainer>
         <div className="icon">
           <Lock />
         </div>
@@ -85,14 +64,16 @@ export const LoginForm: React.FC = () => {
         <Input
           type="password"
           placeholder="Digite sua senha"
-          {...register('password', RPasswordOptions)}
+          onBlur={(ev) => setPassword(ev.target.value)}
         />
       </InputContainer>
-      {errors?.password && <ErrorMessage message={errors.password.message || ''} />}
 
       <SubmitButton>{submitText}</SubmitButton>
 
-      <Link href="/account/change-password">
+      <Link
+        href={`/account/change-password?userEmail=${email}`}
+        as="/account/change-password"
+      >
         <a className="change-password">Esqueceu sua senha?</a>
       </Link>
     </Form>

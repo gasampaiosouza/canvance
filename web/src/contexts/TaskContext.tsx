@@ -25,6 +25,8 @@ export const TasksProvider: React.FC = ({ children }) => {
   const { mutate } = useSWRConfig();
   const { user } = useAuth();
 
+  if (!user) return <>{children}</>;
+
   // const userCategories = user?.category.map((category) => category._id).join(',');
   const { data: tasks, mutate: mutateTasks } = useFetch<ITask[]>('/tasks', {
     revalidateOnMount: true,
