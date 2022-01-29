@@ -8,17 +8,36 @@ import { Form, Input, InputContainer, SubmitButton } from 'components/login/styl
 
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
+import { sendPasswordMail } from '@/modules/send-password-email';
 
-const InputEmailToChangePassword = () => {
+interface Props {
+  defaultEmail: string;
+}
+
+const InputEmailToChangePassword: React.FC<Props> = ({ defaultEmail }) => {
   const { query, back } = useRouter();
 
   const [userEmail, setUserEmail] = useState(query.userEmail as string);
+  const [buttonText, setButtonText] = useState('Enviar');
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    setButtonText('Enviando...');
+
     event.preventDefault();
     event.stopPropagation();
 
-    console.log({ userEmail });
+    const response = await sendPasswordMail(defaultEmail || userEmail);
+
+    if (!response.success) {
+      toast.error('Erro ao enviar email, tente novamente mais tarde.');
+      setButtonText('Enviar');
+      return;
+    }
+
+    toast.success('Email enviado com sucesso!');
+    setButtonText('Enviado!');
+
+    setTimeout(() => setButtonText('Enviar'), 3000);
   }
 
   return (
@@ -41,7 +60,7 @@ const InputEmailToChangePassword = () => {
             />
           </InputContainer>
 
-          <SubmitButton>Enviar</SubmitButton>
+          <SubmitButton>{buttonText}</SubmitButton>
           <a href="#" onClick={back} className="back-button">
             Voltar
           </a>

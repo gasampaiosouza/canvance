@@ -1,15 +1,12 @@
 import React from 'react';
 
-import { ChangePasswordForm } from './styles';
-import { Input, InputContainer, PageBottom } from 'components/admin-content/styles';
+import { ChangePasswordForm } from '../styles';
+import { Input, InputContainer } from 'components/admin-content/styles';
 
-import Link from 'next/link';
-import { ErrorMessage } from 'components/error-message';
 import { toast } from 'react-toastify';
 import api from 'services/api';
-import { useAuth } from 'hooks/useAuth';
 import router from 'next/router';
-import { AxiosError } from 'axios';
+import { Description, SubmitButton, Title } from 'components/login/styles';
 
 interface FormProps {
   password: string;
@@ -18,25 +15,21 @@ interface FormProps {
 
 interface IProps {
   token: string;
+  email: string;
 }
 
-const ChangePasswordTokenContent: React.FC<IProps> = ({ token }) => {
+const ChangePasswordTokenContent: React.FC<IProps> = ({ token, email }) => {
   const [formData, setFormData] = React.useState({} as FormProps);
-  const [formErrors, setFormErrors] = React.useState({} as FormProps);
-
-  const { user } = useAuth();
 
   const handleFormValidation = async () => {
-    const isValid = isFormValid();
+    const { isValid } = isFormValid();
 
     if (!isValid) return;
 
     try {
-      await api.post('/auth/reset_password', {
-        email: user?.email,
-        token,
-        password: formData.password,
-      });
+      const data = { email, token, password: formData.password };
+
+      await api.post('/auth/reset_password', data);
 
       toast.success('Senha alterada com sucesso!');
 
@@ -47,9 +40,9 @@ const ChangePasswordTokenContent: React.FC<IProps> = ({ token }) => {
       console.log(error);
 
       if (error.error_message == 'token.invalid') {
-        toast.error('O seu token expirou!');
+        toast.error('O token da senha expirou, tente novamente.');
 
-        return router.push('/account');
+        return router.push('/account/change-password');
       }
 
       toast.error('Ocorreu um erro ao tentar alterar a senha.');
@@ -57,24 +50,34 @@ const ChangePasswordTokenContent: React.FC<IProps> = ({ token }) => {
   };
 
   const isFormValid = () => {
-    const errors = {} as FormProps;
-
-    if (!formData.password) {
-      errors.password = 'Campo obrigatório';
+    if (!formData.password || !formData.confirmPassword) {
+      toast.error('Preencha todos os campos');
+      return { isValid: false };
     }
 
     if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'As senhas devem ser iguais';
+      toast.error('As senhas devem ser iguais');
+      return { isValid: false };
     }
 
-    setFormErrors(errors);
+    if (formData.password.length < 6) {
+      toast.error('A senha deve ter ao menos 6 caracteres');
+      return { isValid: false };
+    }
 
-    return Object.keys(errors).length === 0;
+    return { isValid: true };
   };
 
   return (
-    <>
-      <ChangePasswordForm>
+    <ChangePasswordForm>
+      <div className="content">
+        <div>
+          <Title className="token-title">Alteração de senha</Title>
+          <Description className="token-description">
+            Digite e confirme sua senha para realizar a alteração
+          </Description>
+        </div>
+
         <InputContainer label="Senha nova">
           <Input
             type="password"
@@ -82,8 +85,6 @@ const ChangePasswordTokenContent: React.FC<IProps> = ({ token }) => {
               setFormData((prev) => ({ ...prev, password: ev.target.value }))
             }
           />
-
-          {formErrors?.password && <ErrorMessage message={formErrors.password || ''} />}
         </InputContainer>
 
         <InputContainer label="Confirme a senha nova">
@@ -93,23 +94,13 @@ const ChangePasswordTokenContent: React.FC<IProps> = ({ token }) => {
               setFormData((prev) => ({ ...prev, confirmPassword: ev.target.value }))
             }
           />
-
-          {formErrors?.confirmPassword && (
-            <ErrorMessage message={formErrors.confirmPassword || ''} />
-          )}
         </InputContainer>
-      </ChangePasswordForm>
 
-      <PageBottom>
-        <button className="change-password" onClick={handleFormValidation}>
+        <SubmitButton className="token-submit" onClick={handleFormValidation}>
           Alterar senha
-        </button>
-
-        <Link href="/account">
-          <a className="change-password_cancel">Cancelar</a>
-        </Link>
-      </PageBottom>
-    </>
+        </SubmitButton>
+      </div>
+    </ChangePasswordForm>
   );
 };
 

@@ -110,14 +110,44 @@ export const ForgotPasswordContainer = styled.section`
 `;
 
 export const ChangePasswordForm = styled.div`
-  max-width: 50%;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  width: 100%;
+  height: 100%;
 
-  padding-bottom: 82px;
+  /* background: coral; */
+  background: #f6f7fa;
+
+  .content {
+    padding: 2rem 2.5rem;
+    background: #fff;
+    /* text-align: center; */
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(204, 204, 204, 0.75);
+
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    p {
+      font-size: 0.9rem;
+      color: ${({ theme }) => theme.colors.text_soft};
+      text-align: center;
+    }
+  }
+
+  .token-submit {
+    margin-top: 0;
+  }
+
+  .token-title {
+    margin-bottom: 1rem;
+  }
 `;
 
 const defaultIconStyles = `
@@ -184,5 +214,17 @@ export const InputEmailContainer = styled.section`
       color: ${({ theme }) => theme.colors.text_soft};
       text-align: center;
     }
+  }
+`;
+
+export const ChangePasswordTokenContainer = styled.section`
+  height: 100%;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    min-width: 450px;
   }
 `;

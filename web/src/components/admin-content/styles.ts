@@ -113,14 +113,9 @@ export const InputContainer = styled.div<{ label?: string }>`
   position: relative;
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
-
-  /* margin-bottom: 0.25rem; */
   text-align: left;
 
   > span {
-    /* position: absolute; */
-    /* bottom: -1rem; */
     margin-top: 0.5rem;
   }
 
@@ -130,22 +125,6 @@ export const InputContainer = styled.div<{ label?: string }>`
     font-size: 0.85rem;
 
     color: ${({ theme }) => theme.colors.text_soft};
-  }
-
-  &.has-error {
-    > input,
-    > textarea,
-    .category-select__control {
- 
-    border-color: ${({ theme }) => theme.colors.error};
-  }
-
-  &.is-valid {
-    > input,
-    > textarea,
-    .category-select__control {
-
-    border-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
