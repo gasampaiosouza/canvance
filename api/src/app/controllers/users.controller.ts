@@ -9,7 +9,7 @@ import Task from '../models/task.model';
 
 // req.userId
 
-async function updateUserByIdController(req: Request, res: Response) {
+async function updateUserById(req: Request, res: Response) {
   if (!mongoose.isValidObjectId(req.params.userId || '')) {
     res.status(400).send({ error: 'O ID do usuário não é válido' });
     return;
@@ -46,7 +46,7 @@ async function updateUserByIdController(req: Request, res: Response) {
   }
 }
 
-async function getUserByTokenController(req: Request, res: Response) {
+async function getUserByToken(req: Request, res: Response) {
   try {
     // @ts-ignore
     const user = await User.findById(req.userId).populate('category').populate('manager');
@@ -59,7 +59,7 @@ async function getUserByTokenController(req: Request, res: Response) {
   }
 }
 
-async function deleteUserByIdController(req: Request, res: Response) {
+async function deleteUserById(req: Request, res: Response) {
   if (!mongoose.isValidObjectId(req.params.userId || '')) {
     res.status(400).send({ error: 'O ID do usuário não é válido' });
     return;
@@ -79,7 +79,7 @@ async function deleteUserByIdController(req: Request, res: Response) {
   }
 }
 
-async function getAllUsersController(req: Request, res: Response) {
+async function getAllUsers(req: Request, res: Response) {
   try {
     const users = await User.find().populate('category').populate('manager');
 
@@ -91,7 +91,7 @@ async function getAllUsersController(req: Request, res: Response) {
   }
 }
 
-async function getUserTasksController(req: Request, res: Response) {
+async function getUserTasks(req: Request, res: Response) {
   try {
     // @ts-ignore
     const user = await User.findById(req.userId);
@@ -175,11 +175,11 @@ async function getUserTasksController(req: Request, res: Response) {
 }
 
 const exportData = {
-  find: getAllUsersController,
-  getByToken: getUserByTokenController,
-  updateById: updateUserByIdController,
-  deleteById: deleteUserByIdController,
-  getUserTasks: getUserTasksController,
+  find: getAllUsers,
+  getByToken: getUserByToken,
+  updateById: updateUserById,
+  deleteById: deleteUserById,
+  getUserTasks: getUserTasks,
 };
 
 export default exportData;

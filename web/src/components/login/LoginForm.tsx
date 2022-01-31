@@ -1,16 +1,26 @@
 import { Email, Lock } from '@styled-icons/material-rounded';
 
 import { useAuth } from 'hooks/useAuth';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Form, Input, InputContainer, SubmitButton } from './styles';
 
 import { toast } from 'react-toastify';
 
 import Link from 'next/link';
+import { useUserList } from 'hooks/useUserList';
+import InactiveUserModal from './InactiveUserModal';
+import { IUser } from '@/interfaces';
 
 export const LoginForm: React.FC = () => {
+  const { allUsers } = useUserList();
+
   const { signIn } = useAuth();
   const [submitText, setSubmitText] = useState('Fazer login');
+
+  const [isInactive, setIsInactive] = useState({
+    isOpen: false,
+    user: {} as IUser,
+  });
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,9 +31,18 @@ export const LoginForm: React.FC = () => {
 
     setSubmitText('Autenticando...');
 
-    const data = { email, password };
-
     try {
+      const user = allUsers.find((user) => user.email === email);
+
+      if (!user?.active) {
+        setSubmitText('Fazer login');
+        setIsInactive({ isOpen: true, user: user as IUser });
+
+        return;
+      }
+
+      const data = { email, password };
+
       // @ts-ignore
       const { error } = await signIn(data);
 
@@ -42,40 +61,52 @@ export const LoginForm: React.FC = () => {
     setSubmitText('Fazer login');
   }
 
+  const closeInactiveModal = () => setIsInactive({ isOpen: false, user: {} as IUser });
+
   return (
-    <Form onSubmit={(event) => handleSignIn(event)}>
-      <InputContainer>
-        <div className="icon">
-          <Email />
-        </div>
+    <>
+      <Form onSubmit={(event) => handleSignIn(event)}>
+        <InputContainer>
+          <div className="icon">
+            <Email />
+          </div>
 
-        <Input
-          type="email"
-          placeholder="Digite seu email"
-          onBlur={(ev) => setEmail(ev.target.value)}
-        />
-      </InputContainer>
+          <Input
+            type="email"
+            placeholder="Digite seu email"
+            value={email}
+            onChange={(ev) => setEmail(ev.target.value)}
+          />
+        </InputContainer>
 
-      <InputContainer>
-        <div className="icon">
-          <Lock />
-        </div>
+        <InputContainer>
+          <div className="icon">
+            <Lock />
+          </div>
 
-        <Input
-          type="password"
-          placeholder="Digite sua senha"
-          onBlur={(ev) => setPassword(ev.target.value)}
-        />
-      </InputContainer>
+          <Input
+            type="password"
+            placeholder="Digite sua senha"
+            value={password}
+            onChange={(ev) => setPassword(ev.target.value)}
+          />
+        </InputContainer>
 
-      <SubmitButton>{submitText}</SubmitButton>
+        <SubmitButton>{submitText}</SubmitButton>
 
-      <Link
-        href={`/account/change-password?userEmail=${email}`}
-        as="/account/change-password"
-      >
-        <a className="change-password">Esqueceu sua senha?</a>
-      </Link>
-    </Form>
+        <Link
+          href={`/account/change-password?userEmail=${email}`}
+          as="/account/change-password"
+        >
+          <a className="change-password">Esqueceu sua senha?</a>
+        </Link>
+      </Form>
+
+      <InactiveUserModal
+        isOpen={isInactive.isOpen}
+        onClose={closeInactiveModal}
+        user={isInactive.user}
+      />
+    </>
   );
 };

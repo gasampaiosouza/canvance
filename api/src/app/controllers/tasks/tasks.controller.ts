@@ -2,11 +2,11 @@ import { handleMissingFields } from '@/utils/handle-missing-fields';
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 
-import Task from '../models/task.model';
+import Task from '../../models/task.model';
 
 // req.userId
 
-async function getAllTasksController(req: Request, res: Response) {
+async function getAllTasks(req: Request, res: Response) {
   try {
     const tasks = await Task.find().populate('category');
 
@@ -18,7 +18,7 @@ async function getAllTasksController(req: Request, res: Response) {
   }
 }
 
-async function createTasksController(req: Request, res: Response) {
+async function createTasks(req: Request, res: Response) {
   const { isMissingFields, fieldsMissing } = handleMissingFields(
     ['title', 'description', 'relevance', 'category'],
     req.body
@@ -36,14 +36,11 @@ async function createTasksController(req: Request, res: Response) {
   } catch (error) {
     console.log(error);
 
-    return res.status(400).send({ error: 'Não foi possível criar uma tarefa' });
+    return res.status(400).send({ error: 'Não foi possível criar a tarefa' });
   }
 }
 
-async function getTaskByCategoryController(
-  req: Request<{ categoryId?: string }>,
-  res: Response
-) {
+async function getTaskByCategory(req: Request<{ categoryId?: string }>, res: Response) {
   const isSomeCategoryIdInvalid = req.params.categoryId
     ?.split(',')
     .some((categoryId) => !mongoose.isValidObjectId(categoryId || ''));
@@ -72,7 +69,7 @@ async function getTaskByCategoryController(
   }
 }
 
-async function getTaskByIdController(req: Request<{ taskId: string }>, res: Response) {
+async function getTaskById(req: Request<{ taskId: string }>, res: Response) {
   if (!mongoose.isValidObjectId(req.params.taskId || '')) {
     res.status(400).send({ error: 'O ID da categoria não é válido' });
     return;
@@ -85,11 +82,11 @@ async function getTaskByIdController(req: Request<{ taskId: string }>, res: Resp
   } catch (error) {
     console.log(error);
 
-    return res.status(400).send({ error: 'Não foi possível listar a tarefa' });
+    return res.status(400).send({ error: 'Não foi possível encontrar a tarefa' });
   }
 }
 
-async function updateTaskByIdController(req: Request<{ taskId: string }>, res: Response) {
+async function updateTaskById(req: Request<{ taskId: string }>, res: Response) {
   if (!mongoose.isValidObjectId(req.params.taskId || '')) {
     res.status(400).send({ error: 'O ID da categoria não é válido' });
     return;
@@ -122,7 +119,7 @@ async function updateTaskByIdController(req: Request<{ taskId: string }>, res: R
   }
 }
 
-async function deleteTaskByIdController(req: Request<{ taskId: string }>, res: Response) {
+async function deleteTaskById(req: Request<{ taskId: string }>, res: Response) {
   if (!mongoose.isValidObjectId(req.params.taskId || '')) {
     res.status(400).send({ error: 'O ID da categoria não é válido' });
     return;
@@ -140,12 +137,12 @@ async function deleteTaskByIdController(req: Request<{ taskId: string }>, res: R
 }
 
 const exportData = {
-  find: getAllTasksController,
-  create: createTasksController,
-  getById: getTaskByIdController,
-  getByCategory: getTaskByCategoryController,
-  updateById: updateTaskByIdController,
-  deleteById: deleteTaskByIdController,
+  find: getAllTasks,
+  create: createTasks,
+  getById: getTaskById,
+  getByCategory: getTaskByCategory,
+  updateById: updateTaskById,
+  deleteById: deleteTaskById,
 };
 
 export default exportData;

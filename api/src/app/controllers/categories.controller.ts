@@ -12,7 +12,7 @@ interface RequestType {
   priority: string;
 }
 
-async function getAllCategoriesController(req: Request, res: Response) {
+async function getAllCategories(req: Request, res: Response) {
   try {
     const categories = await Category.find();
 
@@ -20,16 +20,11 @@ async function getAllCategoriesController(req: Request, res: Response) {
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível listar as categorias' });
+    return res.status(400).send({ error: 'Não foi possível listar as categorias' });
   }
 }
 
-async function createCategoriesController(
-  req: Request<{}, {}, RequestType>,
-  res: Response
-) {
+async function createCategories(req: Request<{}, {}, RequestType>, res: Response) {
   const { isMissingFields, fieldsMissing } = handleMissingFields(
     ['name', 'description', 'priority'],
     req.body
@@ -47,13 +42,11 @@ async function createCategoriesController(
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível criar uma categoria' });
+    return res.status(400).send({ error: 'Não foi possível criar uma categoria' });
   }
 }
 
-async function getCategoryByIdController(req: Request, res: Response) {
+async function getCategoryById(req: Request, res: Response) {
   if (!mongoose.isValidObjectId(req.params.categoryId || '')) {
     res.status(400).send({ error: 'O ID da categoria não é válido' });
     return;
@@ -66,13 +59,11 @@ async function getCategoryByIdController(req: Request, res: Response) {
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível listar a categoria' });
+    return res.status(400).send({ error: 'Não foi possível listar a categoria' });
   }
 }
 
-async function updateCategoryByIdController(
+async function updateCategoryById(
   req: Request<{ categoryId: string }, {}, RequestType>,
   res: Response
 ) {
@@ -92,23 +83,19 @@ async function updateCategoryByIdController(
   }
 
   try {
-    const category = await Category.findByIdAndUpdate(
-      req.params.categoryId,
-      req.body,
-      { new: true }
-    );
+    const category = await Category.findByIdAndUpdate(req.params.categoryId, req.body, {
+      new: true,
+    });
 
     return res.status(202).send(category);
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível atualizar a categoria' });
+    return res.status(400).send({ error: 'Não foi possível atualizar a categoria' });
   }
 }
 
-async function deleteCategoryByIdController(req: Request, res: Response) {
+async function deleteCategoryById(req: Request, res: Response) {
   if (!mongoose.isValidObjectId(req.params.categoryId || '')) {
     res.status(400).send({ error: 'O ID da categoria não é válido' });
     return;
@@ -121,18 +108,16 @@ async function deleteCategoryByIdController(req: Request, res: Response) {
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível remover a categoria' });
+    return res.status(400).send({ error: 'Não foi possível remover a categoria' });
   }
 }
 
 const exportData = {
-  find: getAllCategoriesController,
-  create: createCategoriesController,
-  getById: getCategoryByIdController,
-  updateById: updateCategoryByIdController,
-  deleteById: deleteCategoryByIdController,
+  find: getAllCategories,
+  create: createCategories,
+  getById: getCategoryById,
+  updateById: updateCategoryById,
+  deleteById: deleteCategoryById,
 };
 
 export default exportData;

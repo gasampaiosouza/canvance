@@ -1,26 +1,21 @@
 import mongoose from 'mongoose';
 
-// 1. Você se considera uma pessoa legal?
-
-// essas abaixo são as opções de respostas - interface Question
-// [ ] Sim
-// [ ] Não
-// [ ] Não sei responder
-
-interface Question {
-  label: string;
-}
-
 export interface QuestionDocument extends mongoose.Document {
-  title: string;
-  questions?: Question[];
+  type: 'essay' | 'multiple';
+  category: mongoose.Types.ObjectId;
+  label: string;
+  order: number;
+  answers: string[];
 }
 
-const CategorySchema = new mongoose.Schema<QuestionDocument>({
-  title: { type: String, required: true },
-  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
+const QuestionSchema = new mongoose.Schema<QuestionDocument>({
+  type: { type: String, enum: ['essay', 'multiple'], required: true },
+  category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
+  label: { type: String, required: true },
+  order: { type: Number, default: 0 },
+  answers: { type: [String], required: true },
 });
 
-const Category = mongoose.model<QuestionDocument>('Category', CategorySchema);
+const Question = mongoose.model<QuestionDocument>('Question', QuestionSchema);
 
-export default Category;
+export default Question;

@@ -19,7 +19,7 @@ function generateToken(params: string | object | Buffer) {
 }
 
 // register user handler
-async function registerUserController(req: Request, res: Response) {
+async function registerUser(req: Request, res: Response) {
   const { isMissingFields, fieldsMissing } = handleMissingFields(
     ['name', 'email', 'password', 'category', 'permissionLevel'],
     req.body
@@ -50,7 +50,7 @@ async function registerUserController(req: Request, res: Response) {
 }
 
 // login user handler
-async function loginUserController(req: Request, res: Response) {
+async function loginUser(req: Request, res: Response) {
   const { isMissingFields, fieldsMissing } = handleMissingFields(
     ['email', 'password'],
     req.body
@@ -87,7 +87,7 @@ async function loginUserController(req: Request, res: Response) {
   }
 }
 
-async function forgotPasswordController(req: Request, res: Response) {
+async function forgotPassword(req: Request, res: Response) {
   const { isMissingFields, fieldsMissing } = handleMissingFields(['email'], req.body);
 
   if (isMissingFields) {
@@ -140,7 +140,7 @@ async function forgotPasswordController(req: Request, res: Response) {
   }
 }
 
-async function resetPasswordController(req: Request, res: Response) {
+async function resetPassword(req: Request, res: Response) {
   const { isMissingFields, fieldsMissing } = handleMissingFields(
     ['email', 'token', 'password'],
     req.body
@@ -190,10 +190,10 @@ async function resetPasswordController(req: Request, res: Response) {
 }
 
 const exportData = {
-  login: loginUserController,
-  register: registerUserController,
-  forgotPassword: forgotPasswordController,
-  resetPassword: resetPasswordController,
+  login: loginUser,
+  register: registerUser,
+  forgotPassword: forgotPassword,
+  resetPassword: resetPassword,
 };
 
 export default exportData;

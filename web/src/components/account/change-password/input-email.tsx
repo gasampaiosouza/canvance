@@ -21,12 +21,13 @@ const InputEmailToChangePassword: React.FC<Props> = ({ defaultEmail }) => {
   const [buttonText, setButtonText] = useState('Enviar');
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    const email = defaultEmail || userEmail;
     setButtonText('Enviando...');
 
     event.preventDefault();
     event.stopPropagation();
 
-    const response = await sendPasswordMail(defaultEmail || userEmail);
+    const response = await sendPasswordMail(email);
 
     if (!response.success) {
       toast.error('Erro ao enviar email, tente novamente mais tarde.');
@@ -34,6 +35,7 @@ const InputEmailToChangePassword: React.FC<Props> = ({ defaultEmail }) => {
       return;
     }
 
+    localStorage.setItem('user-email', email);
     toast.success('Email enviado com sucesso!');
     setButtonText('Enviado!');
 

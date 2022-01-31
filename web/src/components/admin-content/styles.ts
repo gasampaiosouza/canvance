@@ -43,13 +43,18 @@ export const BoxesContainer = styled.div`
   margin-top: 2rem;
 `;
 
-export const Box = styled.a`
+type BoxProps = {
+  active?: boolean;
+};
+
+export const Box = styled.a<BoxProps>`
   position: relative;
   cursor: pointer;
 
   background: ${({ theme }) => theme.colors.background};
   box-shadow: 2px 2px 5px rgba(204, 204, 204, 0.5);
-  padding: 1rem;
+  padding: 1rem 1rem 1rem;
+  padding-top: ${({ active }) => (!active ? '1.75rem' : '1rem')};
   border-radius: 5px;
 
   text-align: left;
@@ -67,6 +72,13 @@ export const Box = styled.a`
   display: grid;
   grid-template-rows: 0.5fr 1fr 1fr;
 
+  ${(props) =>
+    props.active == false &&
+    `
+      opacity: 0.7;
+      filter: grayscale(1);
+    `}
+
   :hover {
     border: 1px solid ${({ theme }) => theme.colors.primary};
   }
@@ -78,13 +90,20 @@ export const PageBottom = styled.div`
   left: 0;
   right: 0;
 
+  width: calc(100% - 250px);
+  margin-left: auto;
+
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
+  justify-content: space-between;
 
   background: ${({ theme }) => theme.colors.background};
   padding: 1.56rem;
   border-top: 1px solid ${({ theme }) => theme.colors.border};
+
+  > div {
+    display: flex;
+    gap: 1rem;
+  }
 
   button,
   a {

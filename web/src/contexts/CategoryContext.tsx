@@ -1,5 +1,4 @@
 import { ICategory } from '@/interfaces';
-import { useAuth } from 'hooks/useAuth';
 import { useFetch } from 'hooks/useFetch';
 import { KeyedMutator } from 'swr';
 import { createContext } from 'use-context-selector';
@@ -15,10 +14,6 @@ interface CategoriesContextData {
 export const CategoriesContext = createContext({} as CategoriesContextData);
 
 export const CategoriesProvider: React.FC = ({ children }) => {
-  const { user } = useAuth();
-
-  if (!user) return <>{children}</>;
-
   const { data: users, mutate: mutateCategories } = useFetch<ICategory[]>('/category');
   // const { data: tasks, mutate: mutateTasks } = useFetch<ITask[]>(tasksUrl);
 

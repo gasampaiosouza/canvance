@@ -140,3 +140,39 @@ export const SubmitButton = styled.button`
     filter: brightness(1.1);
   }
 `;
+
+export const InactiveModalContent = styled.div`
+  position: absolute;
+  background: ${({ theme }) => theme.colors.background};
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  max-width: 600px;
+  min-height: 200px;
+  border-radius: 5px;
+
+  text-align: center;
+
+  padding: 2rem 3rem;
+
+  h3 {
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1rem;
+    margin-top: 1rem;
+  }
+
+  strong {
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 600;
+  }
+`;
+
+export const OverlayStyle = styled.div`
+  background-color: rgba(0, 0, 0, 0.75) !important;
+  z-index: 30;
+`;

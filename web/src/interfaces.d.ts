@@ -7,6 +7,7 @@ export interface ICategory {
 
 export interface IUser {
   _id: string;
+  active: boolean;
   name: string;
   email: string;
   category: ICategory[];

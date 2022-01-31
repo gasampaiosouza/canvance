@@ -7,6 +7,14 @@ export const Container = styled.section`
     text-transform: uppercase;
   }
 
+  .user-inactive {
+    position: absolute;
+    left: 1rem;
+    top: 0.5rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
   .user-permission {
     position: absolute;
     top: 0;

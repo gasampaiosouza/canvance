@@ -9,7 +9,7 @@ import Task from 'models/task.model';
 
 // req.userId
 
-async function getAllDoneTasksController(req: Request, res: Response) {
+async function getAllDoneTasks(req: Request, res: Response) {
   try {
     // sort by createdAt and status as done
     const tasks = await DoneTask.find().populate('newTask');
@@ -24,7 +24,7 @@ async function getAllDoneTasksController(req: Request, res: Response) {
   }
 }
 
-async function createDoneTasksController(req: Request, res: Response) {
+async function createDoneTasks(req: Request, res: Response) {
   const isValidTaskId = mongoose.isValidObjectId(req.body.newTask || '');
   const isValidUserId = mongoose.isValidObjectId(req.body.userId || '');
 
@@ -79,7 +79,7 @@ async function createDoneTasksController(req: Request, res: Response) {
   }
 }
 
-async function getDoneTaskByCategoryIdController(req: Request, res: Response) {
+async function getDoneTaskByCategoryId(req: Request, res: Response) {
   if (!mongoose.isValidObjectId(req.body.userId || '')) {
     res.status(400).send({ error: 'O ID do usuário não é válido' });
     return;
@@ -97,10 +97,7 @@ async function getDoneTaskByCategoryIdController(req: Request, res: Response) {
   }
 }
 
-async function getDoneTaskByIdController(
-  req: Request<{ taskId: string }>,
-  res: Response
-) {
+async function getDoneTaskById(req: Request<{ taskId: string }>, res: Response) {
   if (!mongoose.isValidObjectId(req.params.taskId || '')) {
     res.status(400).send({ error: 'O ID da task não é válido' });
     return;
@@ -117,10 +114,7 @@ async function getDoneTaskByIdController(
   }
 }
 
-async function updateDoneTaskByIdController(
-  req: Request<{ taskId: string }>,
-  res: Response
-) {
+async function updateDoneTaskById(req: Request<{ taskId: string }>, res: Response) {
   if (!mongoose.isValidObjectId(req.params.taskId || '')) {
     res.status(400).send({ error: 'O ID da task não é válido' });
     return;
@@ -139,10 +133,7 @@ async function updateDoneTaskByIdController(
   }
 }
 
-async function deleteDoneTaskByIdController(
-  req: Request<{ taskId: string }>,
-  res: Response
-) {
+async function deleteDoneTaskById(req: Request<{ taskId: string }>, res: Response) {
   if (!mongoose.isValidObjectId(req.params.taskId || '')) {
     res.status(400).send({ error: 'O ID da task não é válido' });
     return;
@@ -160,12 +151,12 @@ async function deleteDoneTaskByIdController(
 }
 
 const exportData = {
-  find: getAllDoneTasksController,
-  create: createDoneTasksController,
-  getByCategory: getDoneTaskByCategoryIdController,
-  getById: getDoneTaskByIdController,
-  updateById: updateDoneTaskByIdController,
-  deleteById: deleteDoneTaskByIdController,
+  find: getAllDoneTasks,
+  create: createDoneTasks,
+  getByCategory: getDoneTaskByCategoryId,
+  getById: getDoneTaskById,
+  updateById: updateDoneTaskById,
+  deleteById: deleteDoneTaskById,
 };
 
 export default exportData;

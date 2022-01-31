@@ -13,6 +13,11 @@ export const Container = styled.section`
   }
 `;
 
+export const OverlayStyle = styled.div`
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  z-index: 30;
+`;
+
 export const Title = styled.h2`
   font-weight: 700;
   font-size: 1.5rem;
@@ -80,32 +85,6 @@ export const UncompletedIcon = styled(Close)`
 `;
 
 // task modal
-interface ModalProps {
-  isOpen: boolean;
-}
-
-export const TaskModalContainer = styled.div<ModalProps>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
-  visibility: ${({ isOpen }) => (isOpen ? 'visible' : 'hidden')};
-  transition: 0.2s ease-in-out;
-`;
-
-export const TaskModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: ${({ theme }) => theme.colors.text};
-  opacity: 0.5;
-`;
-
 interface TaskStatusProps {
   completed: boolean;
 }

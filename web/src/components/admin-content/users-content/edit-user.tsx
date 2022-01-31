@@ -13,12 +13,15 @@ import { useUserList } from 'hooks/useUserList';
 import { PermissionDescription } from './components/permission-description';
 import UserFormContent from './components/form-content';
 import handleFormValidation from './components/handleFormValidation';
+import { IUser } from '@/interfaces';
+import { useSWRConfig } from 'swr';
 
 interface IProps {
   userId: string;
 }
 
 const ManageEditUser: React.FC<IProps> = ({ userId }) => {
+  const { mutate } = useSWRConfig();
   const { allUsers, mutateUsers } = useUserList();
   const selectedUser = allUsers.find((user) => user._id === userId);
 
@@ -65,6 +68,22 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
     });
   };
 
+  const handleUserActivation = async (user: IUser) => {
+    const data = { ...user, active: !user.active };
+
+    try {
+      await api.put(`/user/profile/${user._id}`, data);
+
+      mutate('/users');
+
+      toast.success(
+        `O usuário foi ${user.active ? 'desativado' : 'ativado'} com sucesso!`
+      );
+    } catch (error) {
+      toast.error('Ocorreu um erro ao tentar atualizar o usuário.');
+    }
+  };
+
   return (
     <Container>
       <EditUserForm>
@@ -74,13 +93,22 @@ const ManageEditUser: React.FC<IProps> = ({ userId }) => {
       <PermissionDescription />
 
       <PageBottom>
-        <button className="create-entity" onClick={() => handleSaveUser(formData)}>
-          Salvar
+        <button
+          className="activation-entity"
+          onClick={() => handleUserActivation(selectedUser as IUser)}
+        >
+          {selectedUser?.active ? 'Desativar usuário' : 'Ativar usuário'}
         </button>
 
-        <Link href="/admin/users">
-          <a className="create-entity_cancel">Cancelar</a>
-        </Link>
+        <div>
+          <button className="create-entity" onClick={() => handleSaveUser(formData)}>
+            Salvar
+          </button>
+
+          <Link href="/admin/users">
+            <a className="create-entity_cancel">Cancelar</a>
+          </Link>
+        </div>
       </PageBottom>
     </Container>
   );

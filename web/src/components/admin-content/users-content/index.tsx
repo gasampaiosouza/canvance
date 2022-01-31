@@ -50,10 +50,14 @@ const ManageUsersContent = () => {
       <BoxesContainer>
         {sortedUsersByPermission?.map((user) => (
           <Link href={`/admin/users/edit/${user?._id}`} key={user?._id}>
-            <Box>
+            <Box active={user.active}>
               <span className="user-permission">
                 {permissions[user?.permissionLevel]}
               </span>
+
+              {!user.active ? (
+                <span className="user-inactive">Usuário inativo</span>
+              ) : null}
 
               <h3 className="user-name">{user?.name}</h3>
               <p className="user-email">{user?.email}</p>

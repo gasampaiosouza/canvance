@@ -15,10 +15,9 @@ interface FormProps {
 
 interface IProps {
   token: string;
-  email: string;
 }
 
-const ChangePasswordTokenContent: React.FC<IProps> = ({ token, email }) => {
+const ChangePasswordTokenContent: React.FC<IProps> = ({ token }) => {
   const [formData, setFormData] = React.useState({} as FormProps);
 
   const handleFormValidation = async () => {
@@ -27,13 +26,14 @@ const ChangePasswordTokenContent: React.FC<IProps> = ({ token, email }) => {
     if (!isValid) return;
 
     try {
+      const email = localStorage.getItem('user-email');
       const data = { email, token, password: formData.password };
 
       await api.post('/auth/reset_password', data);
 
       toast.success('Senha alterada com sucesso!');
 
-      router.push('/account');
+      router.push('/login');
     } catch (err: any) {
       const error = err.response.data;
 

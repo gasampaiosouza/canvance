@@ -1,9 +1,10 @@
 import React from 'react';
 import { ITask } from '@/interfaces';
-import { TaskModalContainer, TaskModalOverlay, TaskModalContent } from './styles';
+import { TaskModalContent, OverlayStyle } from './styles';
 
 import { useRouter } from 'next/router';
 import TaskContent from './task-content';
+import ReactModal from 'react-modal';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -18,13 +19,18 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, task }) => {
   }
 
   return task ? (
-    <TaskModalContainer isOpen={isOpen}>
-      <TaskModalOverlay onClick={closeModal} />
-
+    <ReactModal
+      isOpen={isOpen}
+      onRequestClose={closeModal}
+      className="task-modal"
+      overlayElement={(props, contentElement) => (
+        <OverlayStyle {...props}>{contentElement}</OverlayStyle>
+      )}
+    >
       <TaskModalContent>
         <TaskContent task={task} />
       </TaskModalContent>
-    </TaskModalContainer>
+    </ReactModal>
   ) : null;
 };
 

@@ -23,22 +23,50 @@ const cases: casesType = {
 [x] Colocar label /\
 [x] resetar a senha
 [x] um usuário pode ter mais de uma categoria
-
-[] todos devem ter um gerente atrelado -> pensar no caso de deletarem o gerente
-
-[] barra de progresso deve ser baseada na prioridade da tarefa
-[] remover erro de login
-
-[] resumo de tarefas finalizadas na página de minha conta
-[] formulário de perguntas
-
-- type (dissertativa ou questions)
-- pergunta
-- categoria
-- step
-- ordem
-- questions
+[x] todos devem ter um gerente atrelado -> pensar no caso de deletarem o gerente
+[x] barra de progresso deve ser baseada na prioridade da tarefa
+[x] remover erro de login
 
 [] dois campos na tarefa - observação - campo obrigatório pra ele explicar que ele realmente fez - anexar arquivo
 
-[] botão de inativar o usuário
+[] formulário de perguntas
+- type (dissertativa ou questions)
+- pergunta
+- categoria
+- ordem
+- questions
+
+[] como se fosse um jogo
+
+[x] botão de inativar o usuário
+
+[] pesquisa de usuário, categoria e tarefa
+[] resumo de tarefas finalizadas na página de minha conta
+
+questions -> [
+  {
+    _id: 'QuestionID',
+    type: 'essay',
+    category: 'CategoryID',
+    order: 1,
+    label: 'Você se considera uma pessoa legal?',
+    answers: [],
+  },
+  {
+    _id: 'QuestionID',
+    type: 'multiple',
+    category: 'CategoryID',
+    order: 1,
+    label: 'Você se considera uma pessoa legal?',
+    answers: ['Sim', 'Não'],
+  }
+]
+
+Answered questions -> {
+  user: 'UserID',
+  questions: [
+    { question: 'QuestionID', answer: 'Sim' },
+    { question: 'QuestionID', answer: 'Sim' },
+    { question: 'QuestionID', answer: 'Sim' },
+  ]
+}
