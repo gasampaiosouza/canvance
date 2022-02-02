@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 
 async function getAllQuestions(req: Request, res: Response) {
   try {
-    const questions = await Question.find().populate('category').sort({ order: 1 });
+    const questions = await Question.find().sort({ order: 1 });
 
     return res.status(200).send(questions);
   } catch (error) {
@@ -23,7 +23,7 @@ async function getQuestionById(req: Request<{ questionId: string }>, res: Respon
   }
 
   try {
-    const question = await Question.findById(req.params.questionId).populate('category');
+    const question = await Question.findById(req.params.questionId);
 
     return res.status(201).send(question);
   } catch (error) {
@@ -66,7 +66,7 @@ async function updateQuestionById(req: Request<{ questionId: string }>, res: Res
       new: true,
     });
 
-    return res.status(202).send(question?.populate('category'));
+    return res.status(202).send(question);
   } catch (error) {
     console.log(error);
 
@@ -91,9 +91,35 @@ async function deleteQuestion(req: Request, res: Response) {
   }
 }
 
+async function getQuestionByCategory(req: Request<{ categoryId: string }>, res: Response) {
+  const categoryId = req.params.categoryId;
+  const parsedId = categoryId.includes(',') ? categoryId.split(',') : [categoryId];
+
+  // if (!mongoose.isValidObjectId(req.params.categoryId || '')) {
+  //   res.status(400).send({ error: 'O ID da categoria não é válido' });
+  //   return;
+  // }
+
+  if (parsedId.some((id) => !mongoose.isValidObjectId(id))) {
+    res.status(400).send({ error: 'O ID da categoria não é válido' });
+    return;
+  }
+
+  try {
+    const question = await Question.find({ category: { $in: parsedId } }).sort({ order: 1 });
+
+    return res.status(201).send(question);
+  } catch (error) {
+    console.log(error);
+
+    return res.status(400).send({ error: 'Não foi possível encontrar a perguntas' });
+  }
+}
+
 const exportData = {
   find: getAllQuestions,
   getById: getQuestionById,
+  getByCategory: getQuestionByCategory,
   create: createQuestion,
   updateById: updateQuestionById,
   deleteById: deleteQuestion,

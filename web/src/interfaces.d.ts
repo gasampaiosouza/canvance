@@ -33,3 +33,18 @@ export interface ITaskDone {
   status: string;
   createdAt: string;
 }
+
+export interface IQuestion {
+  _id: string;
+  type: 'essay' | 'multiple';
+  category: string;
+  label: string;
+  order: number;
+  answers: IAnswer[];
+}
+
+export interface IAnswer {
+  _id: string;
+  user: string;
+  questions: { _id: string; question: string; answer: string }[];
+}

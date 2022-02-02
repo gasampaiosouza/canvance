@@ -6,15 +6,14 @@ import { Form, Input, InputContainer, SubmitButton } from './styles';
 
 import { toast } from 'react-toastify';
 
+import Router from 'next/router';
+
 import Link from 'next/link';
-import { useUserList } from 'hooks/useUserList';
 import InactiveUserModal from './InactiveUserModal';
 import { IUser } from '@/interfaces';
 
 export const LoginForm: React.FC = () => {
-  const { allUsers } = useUserList();
-
-  const { signIn } = useAuth();
+  const { signIn, signOut } = useAuth();
   const [submitText, setSubmitText] = useState('Fazer login');
 
   const [isInactive, setIsInactive] = useState({
@@ -32,22 +31,23 @@ export const LoginForm: React.FC = () => {
     setSubmitText('Autenticando...');
 
     try {
-      const user = allUsers.find((user) => user.email === email);
-
-      if (!user?.active) {
-        setSubmitText('Fazer login');
-        setIsInactive({ isOpen: true, user: user as IUser });
-
-        return;
-      }
-
       const data = { email, password };
 
       // @ts-ignore
-      const { error } = await signIn(data);
+      const { user, error } = await signIn(data);
 
       // everything ok
       if (!error) {
+        if (!user?.active) {
+          setSubmitText('Fazer login');
+          setIsInactive({ isOpen: true, user: user as IUser });
+          signOut();
+
+          return;
+        }
+
+        Router.push('/dashboard');
+
         return setSubmitText('Tudo certo!');
       }
 

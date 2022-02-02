@@ -46,13 +46,13 @@ export const AuthProvider: React.FC = ({ children }) => {
 
       setUser(user);
 
-      Router.push('/dashboard');
+      // Router.push('/dashboard');
 
-      return { error: null };
+      return { user, error: null };
     } catch (error) {
       console.log('context', error);
 
-      return { error };
+      return { user: null, error };
     }
   }, []);
 

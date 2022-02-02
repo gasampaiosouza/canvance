@@ -4,7 +4,7 @@ import ReactModal from 'react-modal';
 import { InactiveModalContent, OverlayStyle } from './styles';
 
 interface Props {
-  user: IUser;
+  user?: IUser;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -21,7 +21,7 @@ const InactiveUserModal: React.FC<Props> = ({ isOpen, onClose, user }) => {
     >
       <InactiveModalContent>
         <h3>
-          O usuário {user.name || ''} foi <strong>desativado</strong>
+          O usuário {user?.name || ''} foi <strong>desativado</strong>
         </h3>
 
         <p>

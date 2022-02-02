@@ -48,12 +48,13 @@ export default function (app: Express) {
   app.get('/tasks-done', MAuth, TasksDone.find);
   app.get('/tasks-done/:taskId', MAuth, TasksDone.getById);
   app.post('/tasks-done', MAuth, TasksDone.create);
-  app.put('/tasks-done/:taskId', [MAuth, MPermission], TasksDone.updateById);
-  app.delete('/tasks-done/:taskId', [MAuth, MPermission], TasksDone.deleteById);
+  app.put('/tasks-done/:taskId', MAuth, TasksDone.updateById);
+  app.delete('/tasks-done/:taskId', MAuth, TasksDone.deleteById);
 
   // questions
   app.get('/questions', [MAuth, MPermission], Questions.find);
   app.get('/questions/:questionId', [MAuth, MPermission], Questions.getById);
+  app.get('/questions/category/:categoryId', MAuth, Questions.getByCategory);
   app.post('/questions', [MAuth, MPermission], Questions.create);
   app.put('/questions/:questionId', [MAuth, MPermission], Questions.updateById);
   app.delete('/questions/:questionId', [MAuth, MPermission], Questions.deleteById);

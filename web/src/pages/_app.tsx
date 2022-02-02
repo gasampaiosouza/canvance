@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { TasksProvider } from 'contexts/TaskContext';
 import { UsersProvider } from 'contexts/UserContext';
 import { CategoriesProvider } from 'contexts/CategoryContext';
+import ReactModal from 'react-modal';
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
@@ -35,5 +36,7 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
     </AuthProvider>
   );
 };
+
+ReactModal.setAppElement('#__next');
 
 export default App;
