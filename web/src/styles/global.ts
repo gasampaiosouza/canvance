@@ -1,3 +1,4 @@
+import { darken, transparentize } from 'polished';
 import { createGlobalStyle } from 'styled-components';
 import theme from './theme';
 
@@ -106,6 +107,153 @@ const globalStyles = createGlobalStyle`
   .category-select__value-container {
     padding-left: 16px !important;
   }
+
+  // custom checkbox
+.b-contain *,
+.b-contain *::before,
+.b-contain *::after {
+	box-sizing: content-box !important;
+}
+
+.b-contain {
+  display: table;
+	position: relative;
+	padding-left: 1.8rem;
+	cursor: pointer;
+	margin-bottom: .5rem;
+
+  :first-child .b-input::before {
+    visibility: hidden;
+  }
+
+  :hover input ~ .b-input,
+  input:focus ~ .b-input {
+    background: rgb(231, 238, 243);
+  }
+
+  input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+
+    :focus ~ .b-input {
+      box-shadow: 0 0 0 2px ${({ theme }) => transparentize(0.8, theme.colors.text)};
+
+      ::before {
+        visibility: visible;
+      }
+    }
+
+    :checked:focus ~ .b-input,
+    :not([disabled]):checked ~ .b-input {
+      background: ${({ theme }) => theme.colors.primary};
+	    border-color: ${({ theme }) => darken(0.025, theme.colors.primary)};
+    }
+
+    :disabled ~ .b-input::after {
+      border-color: rgba(135, 149, 161, 1);
+    }
+
+    :checked ~ .b-input {
+      background: ${({ theme }) => theme.colors.primary};
+      border-color: ${({ theme }) => darken(0.05, theme.colors.primary)};
+
+      ::after {
+        display: block;
+      }
+    }
+
+
+    ~ .b-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 1.25rem;
+      width: 1.25rem;
+      border: 1px solid rgba(184, 194, 204, 1);
+      transition: background 250ms;
+      background: rgba(241, 245, 248, 1);
+
+      ::after {
+        content: '';
+        position: absolute;
+        display: none;
+        transition: background 250ms;
+      }
+    }
+
+    &[type="checkbox"] ~ .b-input {
+      border-radius: 0.125rem;
+
+      :disabled ~ .b-input {
+        background: rgba(241, 245, 248, 1);
+        border-color: rgba(184, 194, 204, 1);
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      ::after {
+        left: .45rem;
+        top: .18rem;
+        width: .25rem;
+        height: .6rem;
+        border: solid rgba(255, 255, 255, 1);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+    }
+
+    &[type="radio"] ~ .b-input {
+      border-radius: 2.0rem;
+
+      :disabled ~ .b-input {
+        background: rgba(241, 245, 248, 1);
+        border-color: rgba(184, 194, 204, 1);
+        opacity: 0.6;
+        cursor: not-allowed;
+
+        ::after {
+          background: rgba(135, 149, 161, 1);
+        }
+      }
+
+      ::after {
+        left: .25rem;
+        top: .25rem;
+        width: .75rem;
+        height: .75rem;
+        border-radius: 2.0rem;
+        background: rgba(255, 255, 255, 1);
+      }
+
+    }
+  }
+
+  .b-input::before {
+    content: '';
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3rem;
+    height: 3rem;
+    margin-left: -0.85rem;
+    margin-top: -0.85rem;
+    background: rgba(0, 130, 243, 1);
+    border-radius: 2rem;
+    opacity: .6;
+    z-index: 99999;
+    transform: scale(0);
+
+    visibility: hidden;
+  }
+
+  span {
+    line-height: 1.54;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+}
 `;
 
 export default globalStyles;

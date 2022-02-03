@@ -40,7 +40,7 @@ export interface IQuestion {
   category: string;
   label: string;
   order: number;
-  answers: IAnswer[];
+  answers: string[] | [];
 }
 
 export interface IAnswer {

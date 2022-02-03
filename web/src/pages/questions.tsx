@@ -1,17 +1,48 @@
 import { IQuestion, IUser } from '@/interfaces';
+import QuestionsContent from 'components/questions/questions-content';
+import { Container, Limiter, QuestionsContainer } from 'components/questions/styles';
 import { GetServerSideProps } from 'next';
 import { parseCookies } from 'nookies';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import api from 'services/api';
 
 interface Props {
-  questions: IQuestion;
+  questions: IQuestion[];
 }
 
 const Questions: React.FC<Props> = ({ questions }) => {
-  console.log(questions);
+  const [goToQuestions, setGoToQuestions] = useState(false);
 
-  return <div></div>;
+  return (
+    <Container>
+      <Limiter>
+        {!goToQuestions ? (
+          <>
+            <h1>
+              Seja bem vindo a <strong>Econverse</strong>!
+            </h1>
+
+            <QuestionsContainer>
+              <>
+                <p>
+                  Para conhecermos você melhor, vamos precisar que você responda a{' '}
+                  <strong>{questions.length} perguntas</strong> sobre você, ok?
+                </p>
+                <p>Então se ajeite na cadeira, pegue uma água e vamos lá!</p>
+
+                <button className="default-button" onClick={() => setGoToQuestions(true)}>
+                  Estou pronto!
+                </button>
+              </>
+            </QuestionsContainer>
+          </>
+        ) : (
+          <QuestionsContent questions={questions} />
+        )}
+      </Limiter>
+    </Container>
+  );
 };
 
 export default Questions;
