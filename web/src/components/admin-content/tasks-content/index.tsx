@@ -48,33 +48,35 @@ const ManageTasksContent = () => {
 
           return (
             <Link href={`/admin/tasks/edit/${task?._id}`} key={task?._id}>
-              <Box>
-                <span className="task-relevance">{task?.relevance}</span>
+              <a>
+                <Box>
+                  <span className="task-relevance">{task?.relevance}</span>
 
-                <h3 className="task-title">{task?.title}</h3>
-                <p className="task-description">{task?.description}</p>
+                  <h3 className="task-title">{task?.title}</h3>
+                  <p className="task-description">{task?.description}</p>
 
-                <div className="task-bottom">
-                  <span className="task-category">{categoriesList}</span>
-                  <span
-                    className="task-delete"
-                    onClick={(ev) => {
-                      ev.preventDefault();
-                      ev.stopPropagation();
+                  <div className="task-bottom">
+                    <span className="task-category">{categoriesList}</span>
+                    <span
+                      className="task-delete"
+                      onClick={(ev) => {
+                        ev.preventDefault();
+                        ev.stopPropagation();
 
-                      const confirmTaskDeletion = window.confirm(
-                        'Quer mesmo remover a tarefa?'
-                      );
+                        const confirmTaskDeletion = window.confirm(
+                          'Quer mesmo remover a tarefa?'
+                        );
 
-                      if (!confirmTaskDeletion) return;
+                        if (!confirmTaskDeletion) return;
 
-                      handleDeleteTask(task?._id);
-                    }}
-                  >
-                    <DeleteIcon />
-                  </span>
-                </div>
-              </Box>
+                        handleDeleteTask(task?._id);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </span>
+                  </div>
+                </Box>
+              </a>
             </Link>
           );
         })}

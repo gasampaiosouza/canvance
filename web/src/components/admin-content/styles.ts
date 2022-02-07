@@ -59,6 +59,8 @@ export const Box = styled.a<BoxProps>`
 
   text-align: left;
 
+  height: 100%;
+
   font-size: 0.6rem;
   border: 1px solid ${({ theme }) => theme.colors.border};
 

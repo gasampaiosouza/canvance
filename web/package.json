@@ -17,6 +17,8 @@
     "prop-types": "^15.7.2",
     "react": "latest",
     "react-dom": "latest",
+    "react-gesture-responder": "^2.1.0",
+    "react-grid-dnd": "^2.1.2",
     "react-modal": "^3.14.4",
     "react-moment": "^1.1.1",
     "react-select": "^5.2.1",

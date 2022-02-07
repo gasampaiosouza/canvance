@@ -1,4 +1,4 @@
-import { ITask, IUser } from '@/interfaces';
+import { ITask } from '@/interfaces';
 
 import Header from 'components/header';
 import ProgressBar from 'components/progress-bar';

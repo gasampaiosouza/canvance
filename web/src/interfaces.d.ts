@@ -35,16 +35,16 @@ export interface ITaskDone {
 }
 
 export interface IQuestion {
-  _id: string;
+  _id?: string;
   type: 'essay' | 'multiple';
-  category: string;
+  category: ICategory[];
   label: string;
   order: number;
   answers: string[] | [];
 }
 
-export interface IAnswer {
-  _id: string;
+export interface IQuestionAnswered {
+  _id?: string;
   user: string;
-  questions: { _id: string; question: string; answer: string }[];
+  questions: { _id?: string; question: IQuestion; answer: string }[];
 }

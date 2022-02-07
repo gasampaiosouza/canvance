@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import api from 'services/api';
 
+import Head from 'next/head';
+
 interface Props {
   questions: IQuestion[];
 }
@@ -15,33 +17,42 @@ const Questions: React.FC<Props> = ({ questions }) => {
   const [goToQuestions, setGoToQuestions] = useState(false);
 
   return (
-    <Container>
-      <Limiter>
-        {!goToQuestions ? (
-          <>
-            <h1>
-              Seja bem vindo a <strong>Econverse</strong>!
-            </h1>
+    <>
+      <Head>
+        <title>Canvance - Questionário</title>
+      </Head>
 
-            <QuestionsContainer>
-              <>
-                <p>
-                  Para conhecermos você melhor, vamos precisar que você responda a{' '}
-                  <strong>{questions.length} perguntas</strong> sobre você, ok?
-                </p>
-                <p>Então se ajeite na cadeira, pegue uma água e vamos lá!</p>
+      <Container>
+        <Limiter>
+          {!goToQuestions ? (
+            <>
+              <h1>
+                Seja bem vindo a <strong>Econverse</strong>!
+              </h1>
 
-                <button className="default-button" onClick={() => setGoToQuestions(true)}>
-                  Estou pronto!
-                </button>
-              </>
-            </QuestionsContainer>
-          </>
-        ) : (
-          <QuestionsContent questions={questions} />
-        )}
-      </Limiter>
-    </Container>
+              <QuestionsContainer style={{ minHeight: 'auto' }}>
+                <>
+                  <p>
+                    Para conhecermos você melhor, vamos precisar que você responda a{' '}
+                    <strong>{questions.length} perguntas</strong> sobre você, ok?
+                  </p>
+                  <p>Então se ajeite na cadeira, pegue uma água e vamos lá!</p>
+
+                  <button
+                    className="default-button"
+                    onClick={() => setGoToQuestions(true)}
+                  >
+                    Estou pronto!
+                  </button>
+                </>
+              </QuestionsContainer>
+            </>
+          ) : (
+            <QuestionsContent questions={questions} />
+          )}
+        </Limiter>
+      </Container>
+    </>
   );
 };
 

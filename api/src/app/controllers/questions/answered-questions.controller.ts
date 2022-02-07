@@ -40,9 +40,11 @@ async function getASWQuestionByUserId(req: Request<{ userId: string }>, res: Res
   }
 
   try {
-    const question = await AnsweredQuestion.find({ user: req.params.userId });
+    const question = await AnsweredQuestion.find({ user: req.params.userId }).populate(
+      'questions.question'
+    );
 
-    return res.status(201).send(question);
+    return res.status(200).send(question);
   } catch (error) {
     console.log(error);
 

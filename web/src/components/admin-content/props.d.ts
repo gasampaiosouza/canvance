@@ -18,3 +18,10 @@ interface CategoryFormProps {
   description: string;
   priority: string;
 }
+
+type QuestionFormProps = {
+  type: string;
+  category: string;
+  label: string;
+  answers: string[];
+};

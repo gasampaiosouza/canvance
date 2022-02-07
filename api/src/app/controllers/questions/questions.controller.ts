@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 
 async function getAllQuestions(req: Request, res: Response) {
   try {
-    const questions = await Question.find().sort({ order: 1 });
+    const questions = await Question.find().sort({ order: 1 }).populate('category');
 
     return res.status(200).send(questions);
   } catch (error) {
@@ -23,7 +23,7 @@ async function getQuestionById(req: Request<{ questionId: string }>, res: Respon
   }
 
   try {
-    const question = await Question.findById(req.params.questionId);
+    const question = await Question.findById(req.params.questionId).populate('category');
 
     return res.status(201).send(question);
   } catch (error) {
@@ -62,6 +62,10 @@ async function updateQuestionById(req: Request<{ questionId: string }>, res: Res
   }
 
   try {
+    if (typeof req.body.category == 'string') {
+      req.body.category = req.body.category.split(',');
+    }
+
     const question = await Question.findByIdAndUpdate(req.params.questionId, req.body, {
       new: true,
     });

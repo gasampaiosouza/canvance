@@ -228,3 +228,32 @@ export const ChangePasswordTokenContainer = styled.section`
     min-width: 450px;
   }
 `;
+
+export const UserQuestionsContainer = styled.section`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  margin-top: 2rem;
+
+  .question-item {
+    width: 80%;
+
+    margin-bottom: 1rem;
+
+    ::after {
+      content: '';
+      display: block;
+      width: 25%;
+      height: 1px;
+      background: ${({ theme }) => theme.colors.border};
+      margin-top: 1rem;
+    }
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    color: ${({ theme }) => theme.colors.text};
+    margin-bottom: 0.25rem;
+    opacity: 0.85;
+  }
+`;

@@ -64,6 +64,12 @@ const Sidebar: React.FC = () => {
                   Gerenciar categorias
                 </a>
               </Link>
+
+              <Link href="/admin/questions">
+                <a className={asPath.includes('/admin/questions') ? 'active' : ''}>
+                  Gerenciar perguntas
+                </a>
+              </Link>
             </SidebarSubItems>
           </>
         ) : null}

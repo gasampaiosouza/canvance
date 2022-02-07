@@ -23,11 +23,11 @@ const AccountMenu: React.FC<AccountMenuProps> = ({ active, switcher }) => {
       </button>
 
       <button
-        className={active == 'interface' ? 'active' : ''}
-        onClick={() => switcher('interface')}
+        className={active == 'questions' ? 'active' : ''}
+        onClick={() => switcher('questions')}
       >
         <ViewQuilt />
-        Interface
+        Perguntas
       </button>
     </MenuContainer>
   );

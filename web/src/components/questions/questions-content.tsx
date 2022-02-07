@@ -1,8 +1,13 @@
-import { IQuestion } from '@/interfaces';
+import { IQuestion, IQuestionAnswered } from '@/interfaces';
 import React from 'react';
 import { QuestionContent, QuestionsContainer } from './styles';
 
 import { ArrowBackIos } from '@styled-icons/material-rounded';
+import { useAuth } from 'hooks/useAuth';
+import api from 'services/api';
+import { toast } from 'react-toastify';
+
+import router from 'next/router';
 
 interface Props {
   questions: IQuestion[];
@@ -20,10 +25,20 @@ interface Props {
 }
 */
 
-const QuestionsContent: React.FC<Props> = ({ questions }) => {
-  const [currentQuestion, setCurrentQuestion] = React.useState(1);
+interface QuestionsToSaveType {
+  user: string;
+  questions: { question: string; answer: string }[];
+}
 
-  console.log(questions);
+const QuestionsContent: React.FC<Props> = ({ questions }) => {
+  const { user } = useAuth();
+  const [currentQuestion, setCurrentQuestion] = React.useState(1);
+  const [questionsData, setQuestionsData] = React.useState<QuestionsToSaveType>({
+    user: user?._id || '',
+    questions: [],
+  });
+
+  const isLastQuestion = currentQuestion == questions.length - 1;
 
   const updateQuestion = (quantity: number) => {
     //...
@@ -36,6 +51,36 @@ const QuestionsContent: React.FC<Props> = ({ questions }) => {
 
       return newQuestion;
     });
+  };
+
+  const saveQuestionToState = (value: string, questionId: string) => {
+    const newQuestion = { question: questionId, answer: value.trim() };
+    const questionsToSave = questionsData.questions.filter(
+      ({ question }) => question !== questionId
+    );
+
+    const saveToState = (prev: QuestionsToSaveType) => ({
+      ...prev,
+      questions: [...questionsToSave, newQuestion],
+    });
+
+    setQuestionsData(saveToState);
+  };
+
+  const saveQuestions = async () => {
+    const confirmation = window.confirm('Deseja mesmo enviar suas respostas?');
+
+    if (!confirmation) return;
+
+    try {
+      await api.post<IQuestionAnswered>('/questions-answered', questionsData);
+
+      toast.success('Respostas salvas com sucesso!');
+      router.push('/account/questions');
+    } catch (error) {
+      console.log(error);
+      toast.error('Ocorreu um erro ao salvar as respostas.');
+    }
   };
 
   return (
@@ -60,7 +105,13 @@ const QuestionsContent: React.FC<Props> = ({ questions }) => {
               >
                 <h2>{question.label}</h2>
 
-                {questionType == 'essay' && <textarea />}
+                {questionType == 'essay' && (
+                  <textarea
+                    onBlur={(ev) =>
+                      saveQuestionToState(ev.target.value, question?._id || '')
+                    }
+                  />
+                )}
 
                 {questionType == 'multiple' && (
                   <>
@@ -68,7 +119,14 @@ const QuestionsContent: React.FC<Props> = ({ questions }) => {
                       {question.answers.map((answer, index) => (
                         <label className="b-contain" key={index}>
                           <span>{answer}</span>
-                          <input type="radio" value={answer} name={question.label} />
+                          <input
+                            type="radio"
+                            value={answer}
+                            name={question.label}
+                            onChange={(ev) =>
+                              saveQuestionToState(ev.target.value, question?._id || '')
+                            }
+                          />
                           <div className="b-input"></div>
                         </label>
                       ))}
@@ -81,14 +139,18 @@ const QuestionsContent: React.FC<Props> = ({ questions }) => {
 
           <div className="buttons-container">
             <button className="prev-question" onClick={() => updateQuestion(-1)}>
-              <ArrowBackIos /> Voltar
+              {currentQuestion > 1 && (
+                <>
+                  <ArrowBackIos /> Voltar
+                </>
+              )}
             </button>
 
             <button
               className="next-question default-button"
-              onClick={() => updateQuestion(1)}
+              onClick={isLastQuestion ? saveQuestions : () => updateQuestion(1)}
             >
-              Próximo
+              {isLastQuestion ? 'Finalizar' : 'Próxima'}
             </button>
           </div>
         </QuestionContent>

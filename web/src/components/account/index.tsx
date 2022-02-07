@@ -5,8 +5,9 @@ import { useAuth } from 'hooks/useAuth';
 import { useState } from 'react';
 
 import { Container, SelectedPageContainer } from './styles';
+import UserQuestionSettings from './user-questions';
 
-export type MenuOptionsInterface = 'profile' | 'interface';
+export type MenuOptionsInterface = 'profile' | 'questions';
 
 const AccountContent = () => {
   const [menuOption, setMenuOption] = useState<MenuOptionsInterface>('profile');
@@ -21,7 +22,39 @@ const AccountContent = () => {
     router.push('/account/change-password');
   }
 
-  console.log(user);
+  const UserGeneralSettings = () => (
+    <>
+      <table className="profile-data">
+        <tbody>
+          <tr>
+            <td>Nome</td>
+            <td>{user?.name}</td>
+          </tr>
+
+          <tr>
+            <td>Email</td>
+            <td>{user?.email}</td>
+          </tr>
+
+          <tr>
+            <td>Categoria</td>
+            <td>{user?.category.map((cat) => cat.name).join(', ')}</td>
+          </tr>
+
+          {user?.manager?.name && (
+            <tr>
+              <td>Gerente</td>
+              <td>{user?.manager?.name}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <button onClick={handleChangePassword} className="default-button">
+        Redefinir senha
+      </button>
+    </>
+  );
 
   return (
     <Container>
@@ -33,65 +66,16 @@ const AccountContent = () => {
           <>
             <h3>Informações gerais da conta</h3>
 
-            <table className="profile-data">
-              <tbody>
-                <tr>
-                  <td>Nome</td>
-                  <td>{user?.name}</td>
-                </tr>
-
-                <tr>
-                  <td>Email</td>
-                  <td>{user?.email}</td>
-                </tr>
-
-                <tr>
-                  <td>Categoria</td>
-                  <td>{user?.category.map((cat) => cat.name).join(', ')}</td>
-                </tr>
-
-                {user?.manager?.name && (
-                  <tr>
-                    <td>Gerente</td>
-                    <td>{user?.manager?.name}</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-
-            <button onClick={handleChangePassword} className="default-button">
-              Redefinir senha
-            </button>
+            <UserGeneralSettings />
           </>
         )}
 
         {/* INTERFACE */}
-        {menuOption === 'interface' && (
+        {menuOption === 'questions' && (
           <>
-            <h3>Interface</h3>
+            <h3>Perguntas</h3>
 
-            <table>
-              <tbody>
-                <tr>
-                  <td>Tema</td>
-                  <td>
-                    <select>
-                      <option>Escuro</option>
-                      <option>Claro</option>
-                    </select>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Linguagem</td>
-                  <td>
-                    <select>
-                      <option>Português</option>
-                      <option>Inglês</option>
-                    </select>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <UserQuestionSettings />
           </>
         )}
       </SelectedPageContainer>
