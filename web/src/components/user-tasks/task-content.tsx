@@ -11,6 +11,7 @@ import { useSWRConfig } from 'swr';
 import { useRouter } from 'next/router';
 
 import 'moment/locale/pt-br';
+// import { useDropzone } from 'react-dropzone';
 
 interface TaskContentProps {
   task: ITask;
@@ -21,17 +22,37 @@ const TaskContent: React.FC<TaskContentProps> = ({ task }) => {
   const doneTask = tasksDone?.find((taskDone) => taskDone.newTask?._id === task?._id);
   const { addNewTask, removeTask } = useTaskList();
 
-  const { mutate } = useSWRConfig();
+  const [observation, setObservation] = React.useState('');
 
+  const { mutate } = useSWRConfig();
   const router = useRouter();
 
-  function handleTaskManagement() {
-    if (task?.status === 'done') {
-      removeTask(task?._id);
-      return;
-    }
+  // const onDrop = useCallback((acceptedFiles) => {
+  //   function getBase64(file: File) {
+  //     var reader = new FileReader();
+  //     reader.readAsDataURL(file);
 
-    addNewTask(task?._id || '');
+  //     reader.onerror = (error) => {
+  //       console.log('Error: ', error);
+  //     };
+
+  //     return reader;
+  //   }
+
+  //   const [file] = acceptedFiles;
+  //   const reader = getBase64(file);
+
+  //   console.log(reader);
+  // }, []);
+
+  // const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
+  function handleTaskManagement() {
+    if (task?.status === 'done') return removeTask(task?._id);
+
+    if (!observation) return alert('Explique como você finalizou a tarefa');
+
+    addNewTask({ _id: task?._id, observation } || '');
 
     mutate(`/tasks-done`);
   }
@@ -39,6 +60,8 @@ const TaskContent: React.FC<TaskContentProps> = ({ task }) => {
   function closeModal() {
     router.push('/dashboard');
   }
+
+  console.log(doneTask);
 
   return (
     <TaskContentContainer>
@@ -66,6 +89,27 @@ const TaskContent: React.FC<TaskContentProps> = ({ task }) => {
         className="task-description"
         dangerouslySetInnerHTML={{ __html: task?.description }}
       />
+
+      <div className="observation-field">
+        <textarea
+          placeholder="Explique como você completou a tarefa"
+          onChange={(ev) => setObservation(ev.target.value)}
+          value={observation}
+          defaultValue={doneTask?.observation}
+        />
+      </div>
+
+      {/* <div
+        {...getRootProps({ className: `file-dropzone ${isDragActive ? 'active' : ''}` })}
+      >
+        <input {...getInputProps()} />
+
+        {isDragActive ? (
+          <p>Arraste o arquivo aqui</p>
+        ) : (
+          <p>Arraste arquivos aqui, ou clique para selecionar</p>
+        )}
+      </div> */}
     </TaskContentContainer>
   );
 };

@@ -71,16 +71,18 @@ const ManageNewTask = () => {
           Salvar
         </button>
 
-        <button
-          className="create-task_new"
-          onClick={() => validateBeforeSaving(handleSaveTaskAndNew)}
-        >
-          Salvar e novo
-        </button>
+        <div>
+          <button
+            className="create-task_new"
+            onClick={() => validateBeforeSaving(handleSaveTaskAndNew)}
+          >
+            Salvar e novo
+          </button>
 
-        <Link href="/admin/tasks">
-          <a className="create-task_cancel">Cancelar</a>
-        </Link>
+          <Link href="/admin/tasks">
+            <a className="create-task_cancel">Cancelar</a>
+          </Link>
+        </div>
       </PageBottom>
     </Container>
   );

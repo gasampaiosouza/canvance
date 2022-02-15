@@ -56,7 +56,7 @@ const QuestionFormContent: React.FC<QuestionFormContentProps> = ({
     if (ev.key != 'Enter') return;
 
     setFormData((prev) => {
-      const answers = [...prev.answers, writingAnswer];
+      const answers = [...(prev.answers || []), writingAnswer];
 
       return { ...prev, answers: answers };
     });
@@ -118,7 +118,7 @@ const QuestionFormContent: React.FC<QuestionFormContentProps> = ({
             <h4>Respostas cadastradas:</h4>
 
             <div className="registered-answers_container">
-              {formData.answers.length ? (
+              {formData?.answers?.length ? (
                 formData.answers.map((answer, index) => (
                   <div className="registered-answers_item" key={index}>
                     {answer}{' '}

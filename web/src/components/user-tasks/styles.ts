@@ -121,6 +121,7 @@ export const TaskModalContent = styled.div`
 
 export const TaskContentContainer = styled.div`
   margin: 0 auto;
+  padding: 0.5rem 2rem 2rem;
 
   .modal-close {
     position: absolute;
@@ -138,11 +139,56 @@ export const TaskContentContainer = styled.div`
 
     gap: 0.75rem;
 
-    padding: 1rem 2rem 0;
+    padding: 1rem 0 0;
     font-size: 0.8rem;
 
     .modal-date {
       color: ${({ theme }) => theme.colors.text_soft};
+    }
+  }
+
+  .file-dropzone {
+    cursor: pointer;
+    padding: 1rem;
+    color: ${({ theme }) => theme.colors.text_soft};
+    border: 1px dashed ${({ theme }) => theme.colors.border};
+    font-size: 0.9rem;
+
+    max-width: 300px;
+    text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 150px;
+
+    transition: 0.2s ease-in-out;
+
+    :hover,
+    &.active {
+      color: ${({ theme }) => theme.colors.primary};
+      border-color: ${({ theme }) => theme.colors.primary};
+    }
+  }
+
+  .observation-field {
+    margin-top: 1rem;
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      border: 1px solid ${({ theme }) => theme.colors.border};
+      border-radius: 5px;
+      padding: 1rem;
+      font-size: 0.9rem;
+      resize: none;
+
+      outline: 1px solid ${({ theme }) => theme.colors.border};
+
+      ::placeholder {
+        color: ${({ theme }) => theme.colors.text_soft};
+      }
     }
   }
 
@@ -151,7 +197,6 @@ export const TaskContentContainer = styled.div`
     align-items: center;
     justify-content: space-between;
     margin-top: 0.5rem;
-    padding: 0 3rem 0 2rem;
 
     font-size: 0.9rem;
 
@@ -179,7 +224,7 @@ export const TaskContentContainer = styled.div`
   }
 
   .task-description {
-    padding: 1rem 2rem;
+    padding: 1rem 0;
     line-height: 1.5;
     color: ${({ theme }) => darken(0.2, theme.colors.text_soft)};
   }

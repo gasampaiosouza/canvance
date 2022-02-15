@@ -24,14 +24,14 @@ const ManageQuestionsContent: React.FC = () => {
   const handleDeleteQuestion = async (questionId: string) => {
     try {
       // first, we need to put the question as the last one (by order)
-      const question = questions.find((q) => q._id == questionId);
-      const lastQuestion = {
-        ...questions.at(-1),
-        order: question!.order,
-      };
+      // const question = questions.find((q) => q._id == questionId);
+      // const lastQuestion = {
+      //   ...questions.at(-1),
+      //   order: question!.order,
+      // };
 
-      await api.put(`/questions/${question!._id}`, question);
-      await api.put(`/questions/${lastQuestion!._id}`, lastQuestion);
+      // await api.put(`/questions/${question!._id}`, question);
+      // await api.put(`/questions/${lastQuestion!._id}`, lastQuestion);
 
       await api.delete(`/questions/${questionId}`);
 

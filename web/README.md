@@ -29,7 +29,7 @@ const cases: casesType = {
 
 [] dois campos na tarefa - observação - campo obrigatório pra ele explicar que ele realmente fez - anexar arquivo
 
-[] formulário de perguntas
+[x] formulário de perguntas
 - type (dissertativa ou questions)
 - pergunta
 - categoria
@@ -42,31 +42,3 @@ const cases: casesType = {
 
 [] pesquisa de usuário, categoria e tarefa
 [] resumo de tarefas finalizadas na página de minha conta
-
-questions -> [
-  {
-    _id: 'QuestionID',
-    type: 'essay',
-    category: 'CategoryID',
-    order: 1,
-    label: 'Você se considera uma pessoa legal?',
-    answers: [],
-  },
-  {
-    _id: 'QuestionID',
-    type: 'multiple',
-    category: 'CategoryID',
-    order: 1,
-    label: 'Você se considera uma pessoa legal?',
-    answers: ['Sim', 'Não'],
-  }
-]
-
-Answered questions -> {
-  user: 'UserID',
-  questions: [
-    { question: 'QuestionID', answer: 'Sim' },
-    { question: 'QuestionID', answer: 'Sim' },
-    { question: 'QuestionID', answer: 'Sim' },
-  ]
-}

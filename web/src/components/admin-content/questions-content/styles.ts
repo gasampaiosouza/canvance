@@ -93,6 +93,15 @@ export const Container = styled.section`
     flex: 1;
     height: 400px;
   }
+
+  .enter-hint {
+    display: block;
+    color: ${({ theme }) => theme.colors.text_soft};
+
+    text-align: right;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
 `;
 
 // new question
@@ -110,15 +119,6 @@ export const NewQuestionForm = styled.section`
 // edit question
 export const EditQuestionForm = styled(NewQuestionForm)`
   //...
-
-  .enter-hint {
-    display: block;
-    color: ${({ theme }) => theme.colors.text_soft};
-
-    text-align: right;
-    font-size: 0.8rem;
-    margin-top: 0.5rem;
-  }
 `;
 
 export const AnswersContainer = styled.div`

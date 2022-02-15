@@ -13,7 +13,7 @@ import { KeyedMutator, useSWRConfig } from 'swr';
 interface TasksContextData {
   allTasks: ITask[];
   userTasks: ITask[];
-  addNewTask: (taskId: string) => void;
+  addNewTask: (task: { _id: string; observation: string }) => void;
   removeTask: (taskId: string) => void;
 
   mutateTasks: KeyedMutator<ITask[]>;
@@ -32,12 +32,17 @@ export const TasksProvider: React.FC = ({ children }) => {
   });
 
   const addNewTask = useCallback(
-    async (taskId: string) => {
+    async (task: { _id: string; observation: string }) => {
       try {
-        const newTask = { newTask: taskId, userId: user?._id, status: 'done' };
+        const newTask = {
+          newTask: task._id,
+          userId: user?._id,
+          status: 'done',
+          observation: task.observation,
+        };
         const { data } = await api.post<ITaskDone>('/tasks-done', newTask);
 
-        const filteredTasks = tasks?.filter((task) => task._id !== taskId);
+        const filteredTasks = tasks?.filter((task) => task._id !== task._id);
         const mutatedTasks = [
           { ...data.newTask, status: 'done' },
           ...(filteredTasks || []),

@@ -34,8 +34,14 @@ async function getQuestionById(req: Request<{ questionId: string }>, res: Respon
 }
 
 async function createQuestion(req: Request, res: Response) {
+  if (!req.body.type) {
+    return res.status(400).send({ error: 'O tipo da pergunta é obrigatório' });
+  }
+
+  let answerIsRequired = req.body.type === 'multiple' ? true : false;
+
   const { isMissingFields, fieldsMissing } = handleMissingFields(
-    ['type', 'category', 'label', 'order', 'answers'],
+    ['category', 'label', answerIsRequired ? 'answers' : ''].filter(Boolean),
     req.body
   );
 
@@ -45,6 +51,16 @@ async function createQuestion(req: Request, res: Response) {
   }
 
   try {
+    if (typeof req.body.category == 'string') {
+      req.body.category = req.body.category.split(',');
+    }
+
+    if (!req.body.order) {
+      const questions = await Question.find().sort({ order: 1 });
+
+      req.body.order = questions[questions.length - 1].order + 1 || 1;
+    }
+
     const question = await Question.create(req.body);
 
     return res.status(201).send(question);

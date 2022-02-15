@@ -7,7 +7,7 @@ import { Container, Content } from 'styles/dashboard-styles';
 
 import { GetServerSideProps } from 'next';
 import { handleAdminAuthentication } from 'helpers/admin-auth';
-import ManageNewTask from 'components/admin-content/tasks-content/new-task';
+import ManageNewQuestion from 'components/admin-content/questions-content/new-question';
 
 const CreateNewTask = () => {
   const breadcrumb = [
@@ -26,7 +26,7 @@ const CreateNewTask = () => {
         <Header title="Criar nova tarefa" breadcrumb={breadcrumb} />
 
         <Content>
-          <ManageNewTask />
+          <ManageNewQuestion />
         </Content>
 
         <Sidebar />

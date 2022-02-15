@@ -6,6 +6,9 @@ export interface CompletedTaskDocument extends mongoose.Document {
   status: string;
 
   createdAt: Date | number;
+
+  observation: string;
+  file?: string;
 }
 
 const CompletedTaskSchema = new mongoose.Schema<CompletedTaskDocument>({
@@ -24,11 +27,11 @@ const CompletedTaskSchema = new mongoose.Schema<CompletedTaskDocument>({
   status: { type: String, required: true },
 
   createdAt: { type: Date, default: Date.now },
+
+  observation: { type: String, required: true },
+  file: { type: String },
 });
 
-const CompletedTask = mongoose.model<CompletedTaskDocument>(
-  'completed-task',
-  CompletedTaskSchema
-);
+const CompletedTask = mongoose.model<CompletedTaskDocument>('completed-task', CompletedTaskSchema);
 
 export default CompletedTask;

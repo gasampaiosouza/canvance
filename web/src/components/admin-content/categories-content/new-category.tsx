@@ -77,16 +77,18 @@ const ManageNewCategory = () => {
           Salvar
         </button>
 
-        <button
-          className="create-entity_new"
-          onClick={() => validateBeforeSaving(handleSaveCategoryAndNew)}
-        >
-          Salvar e novo
-        </button>
+        <div>
+          <button
+            className="create-entity_new"
+            onClick={() => validateBeforeSaving(handleSaveCategoryAndNew)}
+          >
+            Salvar e novo
+          </button>
 
-        <Link href="/admin/categories">
-          <a className="create-entity_cancel">Cancelar</a>
-        </Link>
+          <Link href="/admin/categories">
+            <a className="create-entity_cancel">Cancelar</a>
+          </Link>
+        </div>
       </PageBottom>
     </Container>
   );

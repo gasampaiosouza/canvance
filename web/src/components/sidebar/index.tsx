@@ -5,6 +5,7 @@ import {
   PermIdentity,
   EmojiPeople,
   AdminPanelSettings,
+  CheckCircleOutline,
 } from '@styled-icons/material-rounded';
 import SidebarItem from './sidebar-item';
 
@@ -42,6 +43,10 @@ const Sidebar: React.FC = () => {
 
         {user?.permissionLevel === 1 ? (
           <>
+            <SidebarItem href="/account">
+              <CheckCircleOutline /> Tarefas finalizadas
+            </SidebarItem>
+
             <SidebarItem href="/admin">
               <AdminPanelSettings /> Painel de administração
             </SidebarItem>
