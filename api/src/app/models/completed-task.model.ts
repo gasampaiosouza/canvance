@@ -2,7 +2,7 @@ import mongoose, { ObjectId } from 'mongoose';
 
 export interface CompletedTaskDocument extends mongoose.Document {
   newTask: ObjectId | string;
-  userId: ObjectId | string;
+  user: ObjectId | string;
   status: string;
 
   createdAt: Date | number;
@@ -18,7 +18,7 @@ const CompletedTaskSchema = new mongoose.Schema<CompletedTaskDocument>({
     required: true,
   },
 
-  userId: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,

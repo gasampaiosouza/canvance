@@ -12,21 +12,19 @@ import Task from 'models/task.model';
 async function getAllDoneTasks(req: Request, res: Response) {
   try {
     // sort by createdAt and status as done
-    const tasks = await DoneTask.find().populate('newTask');
+    const tasks = await DoneTask.find().populate('newTask').populate('user');
 
     return res.status(200).send(tasks);
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(400)
-      .send({ error: 'Não foi possível listar as tarefas completas' });
+    return res.status(400).send({ error: 'Não foi possível listar as tarefas completas' });
   }
 }
 
 async function createDoneTasks(req: Request, res: Response) {
   const isValidTaskId = mongoose.isValidObjectId(req.body.newTask || '');
-  const isValidUserId = mongoose.isValidObjectId(req.body.userId || '');
+  const isValidUserId = mongoose.isValidObjectId(req.body.user || '');
 
   if (!isValidTaskId || !isValidUserId) {
     res.status(400).send({ error: 'O ID não é válido' });
@@ -34,7 +32,7 @@ async function createDoneTasks(req: Request, res: Response) {
   }
 
   const { isMissingFields, fieldsMissing } = handleMissingFields(
-    ['newTask', 'userId', 'status'],
+    ['newTask', 'user', 'status'],
     req.body
   );
 
@@ -44,7 +42,7 @@ async function createDoneTasks(req: Request, res: Response) {
   }
 
   try {
-    const userExists = await User.findOne({ _id: req.body.userId });
+    const userExists = await User.findOne({ _id: req.body.user });
 
     if (!userExists) {
       return res.status(400).send({ error: 'Usuário não encontrado' });
@@ -57,7 +55,7 @@ async function createDoneTasks(req: Request, res: Response) {
     }
 
     const completedTaskExists = await DoneTask.findOne({
-      userId: req.body.userId,
+      user: req.body.user,
       newTask: req.body.newTask,
     });
 
@@ -76,24 +74,6 @@ async function createDoneTasks(req: Request, res: Response) {
     console.log(error);
 
     return res.status(400).send({ error: 'Não foi possível criar uma tarefa' });
-  }
-}
-
-async function getDoneTaskByCategoryId(req: Request, res: Response) {
-  if (!mongoose.isValidObjectId(req.body.userId || '')) {
-    res.status(400).send({ error: 'O ID do usuário não é válido' });
-    return;
-  }
-
-  try {
-    // @ts-ignore
-    const tasks = await DoneTask.find({ userId: req.userId }).sort({ createdAt: -1 });
-
-    return res.status(200).send(tasks);
-  } catch (error) {
-    console.log(error);
-
-    return res.status(400).send({ error: 'Não foi possível listar a tarefa' });
   }
 }
 
@@ -153,7 +133,7 @@ async function deleteDoneTaskById(req: Request<{ taskId: string }>, res: Respons
 const exportData = {
   find: getAllDoneTasks,
   create: createDoneTasks,
-  getByCategory: getDoneTaskByCategoryId,
+  // getByCategory: getDoneTaskByCategoryId,
   getById: getDoneTaskById,
   updateById: updateDoneTaskById,
   deleteById: deleteDoneTaskById,

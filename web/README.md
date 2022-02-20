@@ -27,9 +27,10 @@ const cases: casesType = {
 [x] barra de progresso deve ser baseada na prioridade da tarefa
 [x] remover erro de login
 
-[] dois campos na tarefa - observação - campo obrigatório pra ele explicar que ele realmente fez - anexar arquivo
+[x] dois campos na tarefa - observação - campo obrigatório pra ele explicar que ele realmente fez - anexar arquivo
 
 [x] formulário de perguntas
+
 - type (dissertativa ou questions)
 - pergunta
 - categoria
@@ -41,4 +42,4 @@ const cases: casesType = {
 [x] botão de inativar o usuário
 
 [] pesquisa de usuário, categoria e tarefa
-[] resumo de tarefas finalizadas na página de minha conta
+[x] resumo de tarefas finalizadas na página de minha conta

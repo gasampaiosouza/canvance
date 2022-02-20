@@ -158,10 +158,23 @@ const defaultIconStyles = `
   width: 40px;
 `;
 
-export const CompletedIcon = styled(Check)`
+interface CompletedIconProps {
+  accountPage?: boolean;
+}
+
+export const CompletedIcon = styled(Check)<CompletedIconProps>`
   ${defaultIconStyles}
 
   background: ${({ theme }) => theme.colors.success};
+
+  ${({ accountPage }) =>
+    accountPage &&
+    `
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 2rem;
+  `}
 `;
 
 export const UncompletedIcon = styled(Close)`
@@ -255,5 +268,83 @@ export const UserQuestionsContainer = styled.section`
     color: ${({ theme }) => theme.colors.text};
     margin-bottom: 0.25rem;
     opacity: 0.85;
+  }
+`;
+
+export const AccountFinishedTasksContainer = styled.section`
+  h1 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-view {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid ${({ theme }) => theme.colors.border};
+
+    > h1 {
+      margin-bottom: 0.25rem;
+    }
+
+    h2 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    > p {
+      color: ${({ theme }) => theme.colors.text_soft};
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .finished-tasks {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    li {
+      padding: 1rem 4rem 1rem 1rem;
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    list-style: none;
+
+    li {
+      position: relative;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      border: 1px solid ${({ theme }) => theme.colors.border};
+
+      border-radius: 5px;
+      max-width: 350px;
+
+      a {
+        padding: 1rem 4rem 1rem 1rem;
+      }
+
+      strong {
+        display: block;
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+      }
+
+      p {
+        font-size: 0.85rem;
+
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    }
   }
 `;

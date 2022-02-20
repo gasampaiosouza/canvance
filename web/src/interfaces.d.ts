@@ -30,7 +30,7 @@ export interface ITaskDone {
   _id: string;
   newTask: ITask;
   observation: string;
-  userId: string;
+  user: IUser;
   status: string;
   createdAt: string;
 }

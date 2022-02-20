@@ -34,12 +34,15 @@ export const TasksProvider: React.FC = ({ children }) => {
   const addNewTask = useCallback(
     async (task: { _id: string; observation: string }) => {
       try {
+        console.log(user);
+
         const newTask = {
           newTask: task._id,
-          userId: user?._id,
+          user: user?._id,
           status: 'done',
           observation: task.observation,
         };
+
         const { data } = await api.post<ITaskDone>('/tasks-done', newTask);
 
         const filteredTasks = tasks?.filter((task) => task._id !== task._id);

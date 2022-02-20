@@ -30,11 +30,9 @@ async function updateUserById(req: Request, res: Response) {
       req.body.category = req.body.category.split(',');
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.params.userId,
-      omit(req.body, 'password'),
-      { new: true }
-    )
+    const user = await User.findByIdAndUpdate(req.params.userId, omit(req.body, 'password'), {
+      new: true,
+    })
       .populate('category')
       .populate('manager');
 
@@ -116,7 +114,7 @@ async function getUserTasks(req: Request, res: Response) {
                     { $eq: ['$newTask', '$$id'] },
                     {
                       // @ts-ignore
-                      $eq: ['$userId', { $toObjectId: req.userId }],
+                      $eq: ['$user', { $toObjectId: req.userId }],
                     },
                   ],
                 },

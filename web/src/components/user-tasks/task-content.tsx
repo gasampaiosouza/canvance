@@ -1,5 +1,5 @@
 import React from 'react';
-import { TaskCompletedStatus, TaskContentContainer } from './styles';
+import { BackArrowContainer, TaskCompletedStatus, TaskContentContainer } from './styles';
 
 import Moment from 'react-moment';
 import { ITask, ITaskDone } from '@/interfaces';
@@ -11,6 +11,10 @@ import { useSWRConfig } from 'swr';
 import { useRouter } from 'next/router';
 
 import 'moment/locale/pt-br';
+import { useAuth } from 'hooks/useAuth';
+
+import { ArrowBackIos } from '@styled-icons/material-rounded';
+
 // import { useDropzone } from 'react-dropzone';
 
 interface TaskContentProps {
@@ -18,10 +22,14 @@ interface TaskContentProps {
 }
 
 const TaskContent: React.FC<TaskContentProps> = ({ task }) => {
+  const { user } = useAuth();
   const { data: tasksDone } = useFetch<ITaskDone[]>('/tasks-done');
-  const doneTask = tasksDone?.find((taskDone) => taskDone.newTask?._id === task?._id);
-  const { addNewTask, removeTask } = useTaskList();
 
+  const doneTask = tasksDone?.find(
+    (taskDone) => taskDone.newTask?._id === task?._id && taskDone.user?._id === user?._id
+  );
+
+  const { addNewTask, removeTask } = useTaskList();
   const [observation, setObservation] = React.useState('');
 
   const { mutate } = useSWRConfig();
@@ -61,45 +69,48 @@ const TaskContent: React.FC<TaskContentProps> = ({ task }) => {
     router.push('/dashboard');
   }
 
-  console.log(doneTask);
-
   return (
-    <TaskContentContainer>
-      <div className="modal-information">
-        <TaskCompletedStatus completed={task?.status === 'done'}>
-          {task?.status === 'done' ? 'Concluído' : 'Pendente'}
-        </TaskCompletedStatus>
+    <>
+      <BackArrowContainer onClick={router.back}>
+        <ArrowBackIos /> Voltar
+      </BackArrowContainer>
 
-        {task?.status === 'done' && (
-          <Moment className="modal-date" date={doneTask?.createdAt} fromNow />
-        )}
-      </div>
+      <TaskContentContainer>
+        <div className="modal-information">
+          <TaskCompletedStatus completed={task?.status === 'done'}>
+            {task?.status === 'done' ? 'Concluído' : 'Pendente'}
+          </TaskCompletedStatus>
 
-      <header className="modal-header">
-        <h2 className="task-title">{task?.title}</h2>
+          {task?.status === 'done' && (
+            <Moment className="modal-date" date={doneTask?.createdAt} fromNow />
+          )}
+        </div>
 
-        <button className="default-button task-finish" onClick={handleTaskManagement}>
-          {task?.status === 'done' ? 'Reabrir tarefa' : 'Finalizar tarefa'}
-        </button>
+        <header className="modal-header">
+          <h2 className="task-title">{task?.title}</h2>
 
-        <Close className="modal-close" onClick={closeModal} />
-      </header>
+          <button className="default-button task-finish" onClick={handleTaskManagement}>
+            {task?.status === 'done' ? 'Reabrir tarefa' : 'Finalizar tarefa'}
+          </button>
 
-      <p
-        className="task-description"
-        dangerouslySetInnerHTML={{ __html: task?.description }}
-      />
+          <Close className="modal-close" onClick={closeModal} />
+        </header>
 
-      <div className="observation-field">
-        <textarea
-          placeholder="Explique como você completou a tarefa"
-          onChange={(ev) => setObservation(ev.target.value)}
-          value={observation}
-          defaultValue={doneTask?.observation}
+        <p
+          className="task-description"
+          dangerouslySetInnerHTML={{ __html: task?.description }}
         />
-      </div>
 
-      {/* <div
+        <div className="observation-field">
+          <textarea
+            placeholder="Explique como você completou a tarefa"
+            onChange={(ev) => setObservation(ev.target.value)}
+            value={observation}
+            defaultValue={doneTask?.observation}
+          />
+        </div>
+
+        {/* <div
         {...getRootProps({ className: `file-dropzone ${isDragActive ? 'active' : ''}` })}
       >
         <input {...getInputProps()} />
@@ -110,7 +121,8 @@ const TaskContent: React.FC<TaskContentProps> = ({ task }) => {
           <p>Arraste arquivos aqui, ou clique para selecionar</p>
         )}
       </div> */}
-    </TaskContentContainer>
+      </TaskContentContainer>
+    </>
   );
 };
 

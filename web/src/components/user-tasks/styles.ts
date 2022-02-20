@@ -229,3 +229,24 @@ export const TaskContentContainer = styled.div`
     color: ${({ theme }) => darken(0.2, theme.colors.text_soft)};
   }
 `;
+
+export const BackArrowContainer = styled.div`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 0;
+  background: transparent;
+
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+
+  transition: 0.2s ease-in-out;
+
+  :hover {
+    color: ${({ theme }) => theme.colors.primary};
+  }
+
+  svg {
+    max-width: 15px;
+  }
+`;

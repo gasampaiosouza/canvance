@@ -16,7 +16,6 @@ const Header: React.FC<IHeader> = ({ title, breadcrumb }) => {
     <Container>
       <div className="left-side">
         <Title>{title}</Title>
-
         {breadcrumb && <Breadcrumb items={breadcrumb} />}
       </div>
 

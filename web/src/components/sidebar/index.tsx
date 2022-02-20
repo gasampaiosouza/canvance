@@ -43,7 +43,7 @@ const Sidebar: React.FC = () => {
 
         {user?.permissionLevel === 1 ? (
           <>
-            <SidebarItem href="/account">
+            <SidebarItem href="/account/finished-tasks">
               <CheckCircleOutline /> Tarefas finalizadas
             </SidebarItem>
 
