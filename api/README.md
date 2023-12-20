@@ -1,60 +1,38 @@
-# Authorization
+# Canvance Backend ⚙️
 
-Token must be present in the header `Authorization` and must contain `Bearer <<Token>>`
+The backend part of Canvance is developed using TypeScript, Express, MongoDB, JWT authentication, and Nodemailer for seamless functionality.
 
-## Model
+## About 🌟
 
-CATEGORY_TASKS:
+The Canvance backend is designed to support the frontend with a robust and secure API, allowing for user authentication, assessment creation, and management.
 
-- name
-- priority
+## Running the Application 🚀
 
----
+### Getting Started
 
-TASKS:
+1. Clone this repository.
+2. Navigate to the api directory: `cd api`
+3. Install dependencies using either *npm install* or *yarn install*.
 
-- title
-- categoryId (RELACIONAL)
-- description
-- relevancy
+### How to Run Locally
 
-1 = php
-2 = js
-3 = node
+To run the Canvance backend locally, use the following command:
 
-100 - 40
+```bash
+npm run dev
+```
 
----
+### Accessing the Backend
 
-USER:
+The backend API endpoints are accessible at *http://localhost:3333*.
 
-- name
-- last name
-- email
+The `/healthcheck` endpoint is available to verify the API's status.
 
----
+### Test User Account
 
-COMPLETED_TASKS
+For testing purposes, a test user account is available:
 
-- taskId
-- userId
-- status - string
+- **Email**: user@canvance.com
+- **Password**: 123456
 
-1 - Pedro - 'done'
-2 - Pedro - 'ongoing'
-
-1 - Gabriel - 'done'
-2 - Gabriel - 'done'
-3 - Gabriel - 'done'
-
----
-
-FORM
-
-- Question
-- a, b, c, d
-
-FORM_registered
-
-- answers: { [ id ] }
-- userId
+Feel free to use these credentials to interact with the backend functionalities.
