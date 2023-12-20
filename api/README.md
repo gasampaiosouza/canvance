@@ -36,3 +36,7 @@ For testing purposes, a test user account is available:
 - **Password**: 123456
 
 Feel free to use these credentials to interact with the backend functionalities.
+
+### Environment Variables
+
+For testing purposes, the MongoDB URI is exposed as an environment variable, containing no sensitive information and intended solely for **testing purposes**. Please ensure this URI is not utilized for production deployments.
