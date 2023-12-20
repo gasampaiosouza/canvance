@@ -16,10 +16,9 @@ The Canvance frontend leverages Next.js alongside TypeScript, Styled Components,
 
 ### Running Locally
 
-To run the Canvance frontend locally, use the following commands:
+To run the Canvance frontend locally, use the following command:
 
 ```bash
-# starts development server
 npm run dev
 ```
 
@@ -31,7 +30,7 @@ Once the server is up and running, access the application by navigating to *http
 
 ### Test User Account
 
-For testing purposes, a test user account is available:
+For testing purposes, a test admin account is available:
 
 - **Email**: user@canvance.com
 - **Password**: 123456
